@@ -1,0 +1,57 @@
+group 'cf.adriantodt.oldbot'
+version '1.0'
+
+apply plugin: 'java'
+apply plugin: 'application'
+
+mainClassName = "cf.adriantodt.bot.Bot"
+
+println System.getProperty("java.home")
+
+repositories {
+    mavenCentral()
+    jcenter()
+}
+
+dependencies {
+    compile 'net.dv8tion:JDA:2.2.0_334'
+    compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.6.2'
+    compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.6.2'
+    compile group: 'com.google.code.gson', name: 'gson', version: '1.7.2'
+    compile group: 'org.apache.commons', name: 'commons-io', version: '1.3.2'
+    compile group: 'org.luaj', name: 'luaj-jse', version: '3.0.1'
+}
+
+def commonManifest = {
+    attributes 'Main-Class': mainClassName
+}
+
+task fatJar(type: Jar) {
+    baseName = project.name + '-fat'
+    from {
+        configurations.compile.collect {
+            dependency ->
+                if (dependency.directory) { // If it is a folder, just include the folder in its entirety
+                    return dependency
+                } else {
+                    // If it isn't a folder, put it in a zipTree. if it is a zip or jar the contents will be extracted.
+                    return zipTree(dependency)
+                }
+        }
+    }
+    manifest commonManifest
+    with jar
+}
+
+compileJava.options.encoding = 'UTF-8'
+
+jar {
+    manifest commonManifest
+}
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+artifacts {
+    archives fatJar//, sourceJar
+}
