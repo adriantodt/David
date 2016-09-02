@@ -4,10 +4,10 @@
  * https://github.com/adriantodt/David
  *
  * DavidBot is Open Source and distributed under the
- * GNU AFFERO GENERAL PUBLIC LICENSE Version 3:
+ * GNU Lesser General Public License v2.1:
  * https://github.com/adriantodt/David/blob/master/LICENSE
  *
- * File Created @ [02/09/16 07:55]
+ * File Created @ [02/09/16 08:18]
  */
 
 package cf.adriantodt.bot.interfaces;
