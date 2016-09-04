@@ -77,8 +77,8 @@ public class Audio {
 	}
 
 	private static void doQueueing(Guild guild, List<Queue> queue) {
-		if (queue.size() < 0) {
-			if (!guild.getAudioManager().isConnected() && !guild.getAudioManager().isAttemptingToConnect())
+		if (queue.size() < 1 || (queue.size() == 1 && queue.get(0).player != null && queue.get(0).player.isStopped())) {
+			if (guild.getAudioManager().isConnected() && !guild.getAudioManager().isAttemptingToConnect())
 				guild.getAudioManager().closeAudioConnection();
 			return;
 		}
