@@ -10,7 +10,7 @@
  * File Created @ [02/09/16 08:18]
  */
 
-package cf.adriantodt.bot.cmd;
+package cf.adriantodt.bot.base.cmd;
 
 import java.util.Objects;
 

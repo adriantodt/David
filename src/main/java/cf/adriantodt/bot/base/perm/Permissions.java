@@ -10,11 +10,11 @@
  * File Created @ [02/09/16 08:18]
  */
 
-package cf.adriantodt.bot.perm;
+package cf.adriantodt.bot.base.perm;
 
-import cf.adriantodt.bot.cmd.ICommand;
-import cf.adriantodt.bot.guild.DiscordGuild;
-import cf.adriantodt.bot.persistent.DataManager;
+import cf.adriantodt.bot.base.cmd.ICommand;
+import cf.adriantodt.bot.base.guild.DiscordGuild;
+import cf.adriantodt.bot.impl.oldpers.DataManager;
 import net.dv8tion.jda.events.message.MessageReceivedEvent;
 
 import java.lang.reflect.Field;
@@ -135,7 +135,7 @@ public class Permissions {
 
 	public static long getPermFor(DiscordGuild guild, String target) {
 		target = processID(target);
-		long global = DiscordGuild.GLOBAL.userPerms.getOrDefault(target, 0L), unrevokeable = (target.equals(processID(DataManager.options.owner)) ? BOT_OWNER : (guild.guild != null && guild.guild.getOwnerId().equals(target)) ? GUILD_OWNER : 0);
+		long global = DiscordGuild.GLOBAL.userPerms.getOrDefault(target, 0L), unrevokeable = (target.equals(processID(DataManager.configs.owner)) ? BOT_OWNER : (guild.guild != null && guild.guild.getOwnerId().equals(target)) ? GUILD_OWNER : 0);
 		return global | guild.userPerms.getOrDefault(target, (global == 0 ? guild.userPerms.getOrDefault("default", BASE_USER) : global)) | unrevokeable;
 		//this will merge the Global Perms, the Local Perms, and Unrevokeable Perms (BOT_OWNER or GUILD_OWNER)
 	}

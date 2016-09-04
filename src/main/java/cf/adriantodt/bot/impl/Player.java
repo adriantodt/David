@@ -7,11 +7,10 @@
  * GNU Lesser General Public License v2.1:
  * https://github.com/adriantodt/David/blob/master/LICENSE
  *
- * File Created @ [02/09/16 08:18]
+ * File Created @ [04/09/16 10:15]
  */
 
-package cf.adriantodt.bot.cmd;
+package cf.adriantodt.bot.impl;
 
-public class Holder<T> {
-	public T var;
+public class Player {
 }

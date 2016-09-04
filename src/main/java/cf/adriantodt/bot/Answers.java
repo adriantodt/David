@@ -12,8 +12,8 @@
 
 package cf.adriantodt.bot;
 
+import cf.adriantodt.bot.base.perm.Permissions;
 import cf.adriantodt.bot.impl.EventHandler;
-import cf.adriantodt.bot.perm.Permissions;
 import net.dv8tion.jda.events.message.MessageReceivedEvent;
 
 
@@ -35,7 +35,7 @@ public class Answers {
 	}
 
 	public static void sendCased(MessageReceivedEvent event, String message) {
-		sendCased(event, message, "xl");
+		sendCased(event, message, "");
 	}
 
 	public static void sendCased(MessageReceivedEvent event, String message, String format) {

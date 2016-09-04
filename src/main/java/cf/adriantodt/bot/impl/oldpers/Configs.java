@@ -10,12 +10,8 @@
  * File Created @ [02/09/16 08:18]
  */
 
-package cf.adriantodt.bot.persistent;
+package cf.adriantodt.bot.impl.oldpers;
 
-import java.util.ArrayList;
-import java.util.List;
-
-public class BotData {
-	public List<DiscordGuildData> guilds = new ArrayList<>();
-	public String game = "";
+public class Configs {
+	public String token = "", owner = "";
 }

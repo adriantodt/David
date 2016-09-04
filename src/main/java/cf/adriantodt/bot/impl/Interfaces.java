@@ -12,7 +12,7 @@
 
 package cf.adriantodt.bot.impl;
 
-import cf.adriantodt.bot.interfaces.IChannelInterface;
+import cf.adriantodt.bot.base.interfaces.IChannelInterface;
 
 import java.util.HashMap;
 import java.util.Map;

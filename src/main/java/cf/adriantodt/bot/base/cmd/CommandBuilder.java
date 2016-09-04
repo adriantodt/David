@@ -10,9 +10,9 @@
  * File Created @ [02/09/16 08:18]
  */
 
-package cf.adriantodt.bot.cmd;
+package cf.adriantodt.bot.base.cmd;
 
-import cf.adriantodt.bot.guild.DiscordGuild;
+import cf.adriantodt.bot.base.guild.DiscordGuild;
 import net.dv8tion.jda.events.message.MessageReceivedEvent;
 
 import java.util.function.BiConsumer;

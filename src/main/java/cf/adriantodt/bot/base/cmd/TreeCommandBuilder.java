@@ -10,12 +10,12 @@
  * File Created @ [02/09/16 08:18]
  */
 
-package cf.adriantodt.bot.cmd;
+package cf.adriantodt.bot.base.cmd;
 
 import cf.adriantodt.bot.Answers;
-import cf.adriantodt.bot.guild.DiscordGuild;
+import cf.adriantodt.bot.base.guild.DiscordGuild;
+import cf.adriantodt.bot.base.perm.Permissions;
 import cf.adriantodt.bot.impl.EventHandler;
-import cf.adriantodt.bot.perm.Permissions;
 import net.dv8tion.jda.events.message.MessageReceivedEvent;
 
 import java.util.HashMap;

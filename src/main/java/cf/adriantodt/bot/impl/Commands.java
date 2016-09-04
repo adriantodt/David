@@ -15,12 +15,12 @@ package cf.adriantodt.bot.impl;
 import cf.adriantodt.bot.Bot;
 import cf.adriantodt.bot.Statistics;
 import cf.adriantodt.bot.Utils;
-import cf.adriantodt.bot.cmd.*;
-import cf.adriantodt.bot.guild.DiscordGuild;
-import cf.adriantodt.bot.perm.Permissions;
-import cf.adriantodt.bot.persistent.DataManager;
-import cf.adriantodt.bot.spy.Spy;
+import cf.adriantodt.bot.base.cmd.*;
+import cf.adriantodt.bot.base.guild.DiscordGuild;
+import cf.adriantodt.bot.base.perm.Permissions;
+import cf.adriantodt.bot.impl.oldpers.DataManager;
 import cf.brforgers.core.lib.IOHelper;
+import net.dv8tion.jda.entities.User;
 import net.dv8tion.jda.events.message.MessageReceivedEvent;
 
 import java.text.Collator;
@@ -30,8 +30,8 @@ import static cf.adriantodt.bot.Answers.*;
 import static cf.adriantodt.bot.Statistics.parseInt;
 import static cf.adriantodt.bot.Utils.splitArgs;
 import static cf.adriantodt.bot.Utils.startAsyncDramaProvider;
+import static cf.adriantodt.bot.base.perm.Permissions.*;
 import static cf.adriantodt.bot.impl.EventHandler.*;
-import static cf.adriantodt.bot.perm.Permissions.*;
 
 public class Commands {
 	public static final Map<String, ICommand> COMMANDS = new HashMap<>();
@@ -60,6 +60,29 @@ public class Commands {
 
 		//implWget
 		addCommand("wget", (guild, arguments, event) -> sendCased(event, IOHelper.toString(arguments), ""));
+
+		//implUser
+		addCommand("user", (g, a, e) -> {
+			User user = (e.getMessage().getMentionedUsers().isEmpty() ? e.getAuthor() : e.getMessage().getMentionedUsers().get(0));
+			send(e,
+				user.getAsMention() + ": \nAvatar: " + user.getAvatarUrl() + "\n```" +
+					"Nome: " + user.getUsername() + "\n" +
+					"Apelido: " + (e.getGuild().getNicknameForUser(user) == null ? "(nenhum)" : e.getGuild().getNicknameForUser(user)) + "\n" +
+					"Cargos: " + e.getGuild().getRolesForUser(user).size() + "\n" +
+					(g.guild == null ? "" : "Membro desde: " + g.guild.getJoinDateForUser(user).getDayOfMonth() + "-"
+						+ g.guild.getJoinDateForUser(user).getMonth() + "-"
+						+ g.guild.getJoinDateForUser(user).getYear() + "\n") +
+					"Guilds em Comum: " + Utils.getCommonGuilds(user, e) + "\n" +
+					"ID: " + user.getId() + "\n" +
+					"Status: " + user.getOnlineStatus() + "\n" +
+					"Jogando: " + (user.getCurrentGame() == null ? "(nada)" : user.getCurrentGame().toString()) + "\n```"
+			);
+		});
+
+		//implQueue
+		addCommand("queue", (guild, arguments, event) ->
+			Audio.queue(IOHelper.newURL(arguments), event)
+		);
 	}
 
 	private static void implGuild() {
@@ -71,13 +94,7 @@ public class Commands {
 			.addDefault("info")
 			.addCommand("channels",
 				new TreeCommandBuilder().setPermRequired(GUILD)
-					.addCommand("list", addUsage((guild, arguments, event) -> Spy.listChannelsKnown(guild, event), "Liste os Canais conhecidos.")
-					)
-					.addCommand("flush", addUsage((guild, arguments, event) -> Spy.channelFlush(guild, event), "Limpe os Canais conhecidos.")
-					)
-					.addCommand("discover",
-						new CommandBuilder().setUsage("Descubra todos os Canais visíveis da Guild.").setAction(Spy::discoverChannels).build()
-					)
+					.addCommand("list", addUsage((guild, arguments, event) -> Spy.listChannelsKnown(guild, event), "Liste os Canais conhecidos."))
 					.addCommand("broadcast", addUsage(Spy::broadcast, "Envie uma mensagem para todos os canais (conhecidos) da Guild"))
 					.build()
 			)
@@ -247,36 +264,36 @@ public class Commands {
 				.addCommand("send",
 					new CommandBuilder()
 						.setUsage("Envia uma Mensagem para o canal especificado.\n(Parâmetros: <channel_id> <message>)\nO channel_id pode ser visto através do (#NUM) das mensagens de espionagem.")
-						.setAction((arguments, event) -> {
+						.setAction((guild, arguments, event) -> {
 							String[] args = splitArgs(arguments, 2); //!spysend CH MSG
 							if (args[0].isEmpty() || args[1].isEmpty()) invalidargs(event);
 							else {
 								int ch = parseInt(args[0], -1);
-								if (ch <= -1 || ch >= DiscordGuild.GLOBAL.channelList.size()) invalidargs(event);
-								else DiscordGuild.GLOBAL.channelList.get(ch).sendMessage(args[1]);
+								if (ch <= -1 || ch >= Spy.getChannels(guild).size()) invalidargs(event);
+								else Spy.getChannels(guild).get(ch).sendMessage(args[1]);
 							}
 						}).build()
 				)
 				.addCommand("past",
 					new CommandBuilder()
 						.setUsage("Mostra o Passado de um Canal.\n(Parâmetros: <channel_id>)\nO channel_id pode ser visto através do (#NUM) das mensagens de espionagem.")
-						.setAction((arguments, event) -> {
+						.setAction((guild, arguments, event) -> {
 							String arg = splitArgs(arguments, 2)[0]; //!spypast CH
 							if (arg.isEmpty()) invalidargs(event);
 							else {
 								int ch = parseInt(arg, -1);
-								if (ch <= -1 || ch >= DiscordGuild.GLOBAL.channelList.size()) invalidargs(event);
-								else Spy.spyPast(event, DiscordGuild.GLOBAL.channelList.get(ch));
+								if (ch <= -1 || ch >= Spy.getChannels(guild).size()) invalidargs(event);
+								else Spy.spyPast(event, Spy.getChannels(guild).get(ch));
 							}
 						}).build()
 				)
 				.addCommand("kickself",
-					new CommandBuilder().setAction((arg, event) -> { //!broadcast MSG
+					new CommandBuilder().setAction((guild, arg, event) -> { //!broadcast MSG
 						if (arg.isEmpty()) invalidargs(event);
 						else {
 							int ch = parseInt(arg, -1);
-							if (ch <= -1 || ch >= DiscordGuild.GLOBAL.channelList.size()) invalidargs(event);
-							else Spy.kickSelf(ch);
+							if (ch <= -1 || ch >= Spy.getChannels(guild).size()) invalidargs(event);
+							else Spy.kickSelf(event, ch);
 							bool(event, true);
 						}
 					}).build()

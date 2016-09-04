@@ -10,9 +10,9 @@
  * File Created @ [02/09/16 08:18]
  */
 
-package cf.adriantodt.bot.interfaces;
+package cf.adriantodt.bot.base.interfaces;
 
-import cf.adriantodt.bot.perm.Permissions;
+import cf.adriantodt.bot.base.perm.Permissions;
 import net.dv8tion.jda.events.message.MessageReceivedEvent;
 
 public interface IChannelInterface {

@@ -12,9 +12,10 @@
 
 package cf.adriantodt.bot;
 
-import cf.adriantodt.bot.cmd.Holder;
+import cf.adriantodt.bot.base.cmd.Holder;
 import cf.brforgers.core.lib.IOHelper;
 import com.sun.management.OperatingSystemMXBean;
+import net.dv8tion.jda.entities.Guild;
 import net.dv8tion.jda.entities.User;
 import net.dv8tion.jda.events.message.MessageReceivedEvent;
 
@@ -77,5 +78,11 @@ public class Utils {
 			}
 		}
 		return normalized;
+	}
+
+	public static int getCommonGuilds(User user, MessageReceivedEvent e) {
+		int count = 0;
+		for (Guild guild : e.getJDA().getGuilds()) if (guild.isMember(user)) count++;
+		return count;
 	}
 }

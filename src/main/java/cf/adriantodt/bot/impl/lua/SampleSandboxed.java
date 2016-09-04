@@ -17,7 +17,7 @@
  * Refer to them in this specific case.
  */
 
-package cf.adriantodt.bot.lua;
+package cf.adriantodt.bot.impl.lua;
 
 import org.luaj.vm2.*;
 import org.luaj.vm2.compiler.LuaC;

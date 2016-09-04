@@ -10,7 +10,7 @@
  * File Created @ [02/09/16 08:18]
  */
 
-package cf.adriantodt.bot.interfaces;
+package cf.adriantodt.bot.base.interfaces;
 
 import cf.brforgers.core.lib.GeneralRegistry;
 

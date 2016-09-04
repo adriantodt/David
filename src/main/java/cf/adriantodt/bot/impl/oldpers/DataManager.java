@@ -10,14 +10,13 @@
  * File Created @ [02/09/16 08:18]
  */
 
-package cf.adriantodt.bot.persistent;
+package cf.adriantodt.bot.impl.oldpers;
 
 import cf.adriantodt.bot.Bot;
 import cf.adriantodt.bot.Java;
 import cf.adriantodt.bot.Statistics;
-import cf.adriantodt.bot.cmd.ICommand;
-import cf.adriantodt.bot.cmd.UserCommand;
-import cf.adriantodt.bot.guild.DiscordGuild;
+import cf.adriantodt.bot.base.cmd.UserCommand;
+import cf.adriantodt.bot.base.guild.DiscordGuild;
 
 import java.nio.charset.Charset;
 import java.nio.file.Files;
@@ -29,12 +28,10 @@ import static cf.adriantodt.bot.Bot.LOGGER;
 
 public class DataManager {
 	public static BotData data;
-	public static OptionsData options;
+	public static Configs configs;
 
 	public static void saveData() {
-		Statistics.saves++;
 		data = new BotData();
-
 		data.game = Bot.GAME;
 
 		DiscordGuild.all.forEach(guild -> {
@@ -49,22 +46,23 @@ public class DataManager {
 		});
 
 		try {
-			Files.write(getPath(), JSON.toJson(data).getBytes(Charset.forName("UTF-8")));
+			Files.write(getSaveFile(), JSON.toJson(data).getBytes(Charset.forName("UTF-8")));
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
+		Statistics.saves++;
 	}
 
 	public static void loadData() {
-		Statistics.loads++;
 		try {
-			data = JSON.fromJson(new String(Files.readAllBytes(getPath()), Charset.forName("UTF-8")), BotData.class);
+			data = JSON.fromJson(new String(Files.readAllBytes(getSaveFile()), Charset.forName("UTF-8")), BotData.class);
 		} catch (Exception e) {
 			data = new BotData();
 			saveData();
 		}
 
 		Bot.GAME = data.game;
+		Bot.setDefault();
 
 		data.guilds.forEach(data -> {
 			DiscordGuild tmpG = DiscordGuild.fromId(data.id);
@@ -73,51 +71,50 @@ public class DataManager {
 			guild.name = data.name;
 			guild.userPerms = data.userPerms;
 			data.commands.forEach((cmdName, responses) -> {
-				ICommand cmd = guild.commands.get(cmdName);
+				UserCommand cmd = guild.commands.get(cmdName);
 				if (cmd == null) {
 					UserCommand usrCmd = new UserCommand();
 					usrCmd.responses = responses;
 					guild.commands.put(cmdName, usrCmd);
 				} else {
-					UserCommand usrCmd = (UserCommand) cmd;
-					usrCmd.responses = responses;
+					cmd.responses = responses;
 				}
 			});
 		});
 
-		Bot.setDefault();
+		Statistics.loads++;
 	}
 
-	public static void loadOptions() {
+	public static void loadConfig() {
 		try {
-			options = JSON.fromJson(new String(Files.readAllBytes(getMaster()), Charset.forName("UTF-8")), OptionsData.class);
+			configs = JSON.fromJson(new String(Files.readAllBytes(getConfigs()), Charset.forName("UTF-8")), Configs.class);
 		} catch (Exception e) {
-			LOGGER.error("Options File not found. The Bot will generate one at " + getMaster() + " and exit.");
-			options = new OptionsData();
+			LOGGER.error("Configuration File not found. Generating one at " + getConfigs() + "...");
+			configs = new Configs();
 			try {
-				Files.write(getMaster(), JSON.toJson(options).getBytes(Charset.forName("UTF-8")));
-				LOGGER.error("Options File generated. Please fill the 2 required options. The bot will now Exit.");
+				Files.write(getConfigs(), JSON.toJson(configs).getBytes(Charset.forName("UTF-8")));
+				LOGGER.error("Configuration File generated. Please fill the 2 required configs. The App will now Exit.");
 			} catch (Exception ex) {
-				LOGGER.error("Options File could not be generated. Please fix the permissions. The bot will now Exit.");
+				LOGGER.error("Configuration File could not be generated. Please fix the permissions. The App will now Exit.");
 			}
 
 			Java.stopApp();
 		}
 	}
 
-	public static Path getPath() {
+	public static Path getSaveFile() {
+		return getPath(Bot.BOTNAME);
+	}
+
+	public static Path getPath(String file) {
 		try {
-			return Paths.get(Bot.BOTNAME + ".JSON");
+			return Paths.get(file + ".json");
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
 	}
 
-	public static Path getMaster() {
-		try {
-			return Paths.get("BotOptions.JSON");
-		} catch (Exception e) {
-			throw new RuntimeException(e);
-		}
+	public static Path getConfigs() {
+		return getPath("Configs");
 	}
 }

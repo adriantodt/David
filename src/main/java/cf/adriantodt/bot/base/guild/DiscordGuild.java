@@ -10,14 +10,13 @@
  * File Created @ [02/09/16 08:18]
  */
 
-package cf.adriantodt.bot.guild;
+package cf.adriantodt.bot.base.guild;
 
 import cf.adriantodt.bot.Bot;
-import cf.adriantodt.bot.cmd.UserCommand;
-import cf.adriantodt.bot.perm.Permissions;
-import cf.adriantodt.bot.persistent.DataManager;
+import cf.adriantodt.bot.base.cmd.UserCommand;
+import cf.adriantodt.bot.base.perm.Permissions;
+import cf.adriantodt.bot.impl.oldpers.DataManager;
 import net.dv8tion.jda.entities.Guild;
-import net.dv8tion.jda.entities.MessageChannel;
 import net.dv8tion.jda.events.message.MessageReceivedEvent;
 
 import java.util.ArrayList;
@@ -41,7 +40,6 @@ public class DiscordGuild {
 	}
 
 	public Guild guild = null;
-	public List<MessageChannel> channelList = new ArrayList<>();
 	public Map<String, Long> userPerms = new HashMap<>();
 	public Map<String, UserCommand> commands = new HashMap<>();
 	public String id = "-1", name = "";
@@ -64,7 +62,6 @@ public class DiscordGuild {
 		if (g.id.equals("-1")) g.id = guild.getId();
 		if (g.guild == null) g.guild = guild;
 		if (g.name.isEmpty()) g.name = getAvailable(guild.getName());
-		if (g.channelList.isEmpty()) g.channelList.addAll(guild.getTextChannels());
 
 		return g;
 	}
@@ -98,10 +95,10 @@ public class DiscordGuild {
 
 	public String toString() {
 		return "Guild: " + name + (guild != null && !name.equals(guild.getName()) ? " (" + guild.getName() + ")" : "")
-			+ "\n - Admin: " + (guild == null ? Bot.API.getUserById(DataManager.options.owner).getUsername() : guild.getOwner().getUsername())
+			+ "\n - Admin: " + (guild == null ? Bot.API.getUserById(DataManager.configs.owner).getUsername() : guild.getOwner().getUsername())
 			+ "\n - Comandos: " + commands.size()
-			+ "\n - Canais: " + channelList.size()
-			+ "\n - Usuários: " + (guild == null ? (this == PM ? channelList.size() : Bot.API.getUsers().size()) : guild.getUsers().size())
+			+ "\n - Canais: " + (guild == null ? (this == PM ? Bot.API.getPrivateChannels().size() : Bot.API.getTextChannels().size() + Bot.API.getPrivateChannels().size()) : guild.getTextChannels().size())
+			+ "\n - Usuários: " + (guild == null ? (this == PM ? Bot.API.getPrivateChannels().size() : Bot.API.getUsers().size()) : guild.getUsers().size())
 			+ "\n - GuildID: " + id
 			;
 	}

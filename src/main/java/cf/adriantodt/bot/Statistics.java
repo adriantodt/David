@@ -12,7 +12,6 @@
 
 package cf.adriantodt.bot;
 
-import cf.adriantodt.bot.guild.DiscordGuild;
 import net.dv8tion.jda.events.message.MessageReceivedEvent;
 
 import java.util.Date;
@@ -78,7 +77,8 @@ public class Statistics {
 				+ "\n - " + Statistics.wgets + " solicitações Web"
 				+ "\n - Sem Permissão: " + Statistics.noperm + " / Argumentos Invalidos: " + Statistics.invalidargs
 				+ "\n - Saves: " + Statistics.saves + " / Loads: " + Statistics.loads
-				+ "\n - Canais conhecidos: " + DiscordGuild.GLOBAL.channelList.size()
+				+ "\n - Guilds conhecidas: " + Bot.API.getGuilds().size()
+				+ "\n - Canais conhecidos: " + Bot.API.getTextChannels().size()
 				+ "\n - Uso de RAM(Usando/Total/Máximo): " + ((instance.totalMemory() - instance.freeMemory()) / mb) + " MB/" + (instance.totalMemory() / mb) + " MB/" + (instance.maxMemory() / mb) + " MB"
 				+ "\n - Uso de CPU: " + (Math.floor(cpuUsage * 10000) / 100) + "%"
 			, "");

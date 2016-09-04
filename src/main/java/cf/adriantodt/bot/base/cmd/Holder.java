@@ -10,7 +10,8 @@
  * File Created @ [02/09/16 08:18]
  */
 
-package cf.adriantodt.bot.i18n;
+package cf.adriantodt.bot.base.cmd;
 
-public class I18n { //TODO IMPL
+public class Holder<T> {
+	public T var;
 }

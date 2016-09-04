@@ -12,7 +12,14 @@
 
 package cf.adriantodt.bot;
 
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintStream;
 import java.util.ArrayList;
 
 public class Java {
@@ -29,6 +36,8 @@ public class Java {
 			final ProcessBuilder builder = new ProcessBuilder(command);
 			builder.start();
 			stopApp();
+		} catch (RuntimeException e) {
+			throw e;
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
@@ -36,5 +45,44 @@ public class Java {
 
 	public static void stopApp() {
 		System.exit(0);
+	}
+
+	public static void hackStdout() {
+		System.setOut(new PrintStream(new LoggerStream(LogManager.getLogger("OUT"), Level.INFO)));
+		System.setErr(new PrintStream(new LoggerStream(LogManager.getLogger("ERR"), Level.ERROR)));
+	}
+
+
+	public static class LoggerStream extends OutputStream {
+		private final Logger logger;
+		private final Level logLevel;
+
+		public LoggerStream(Logger logger, Level logLevel) {
+			super();
+
+			this.logger = logger;
+			this.logLevel = logLevel;
+		}
+
+		@Override
+		public void write(byte[] b) throws IOException {
+			String string = new String(b);
+			if (!string.trim().isEmpty())
+				logger.log(logLevel, string);
+		}
+
+		@Override
+		public void write(byte[] b, int off, int len) throws IOException {
+			String string = new String(b, off, len);
+			if (!string.trim().isEmpty())
+				logger.log(logLevel, string);
+		}
+
+		@Override
+		public void write(int b) throws IOException {
+			String string = String.valueOf((char) b);
+			if (!string.trim().isEmpty())
+				logger.log(logLevel, string);
+		}
 	}
 }

@@ -14,10 +14,10 @@ package cf.adriantodt.bot.impl;
 
 import cf.adriantodt.bot.Statistics;
 import cf.adriantodt.bot.Utils;
-import cf.adriantodt.bot.cmd.ICommand;
-import cf.adriantodt.bot.cmd.UserCommand;
-import cf.adriantodt.bot.guild.DiscordGuild;
-import cf.adriantodt.bot.perm.Permissions;
+import cf.adriantodt.bot.base.cmd.ICommand;
+import cf.adriantodt.bot.base.cmd.UserCommand;
+import cf.adriantodt.bot.base.guild.DiscordGuild;
+import cf.adriantodt.bot.base.perm.Permissions;
 import net.dv8tion.jda.events.message.MessageReceivedEvent;
 
 import java.util.HashMap;
