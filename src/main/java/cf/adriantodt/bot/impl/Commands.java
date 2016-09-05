@@ -98,6 +98,8 @@ public class Commands {
 		addCommand("skip", addUsage((guild, arguments, event) ->
 				Audio.skip(event)
 			, "Pula a faixa de áudio atual."));
+
+		addCommand("inviteme", ((guild, arguments, event) -> send(event, "**Clique no Link para convidar o Bot para a sua Guild:**\nhttps://discordapp.com/oauth2/authorize?client_id=" + Bot.BOTID + "&scope=bot")));
 	}
 
 	private static void implGuild() {
