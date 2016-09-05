@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 
 import static cf.adriantodt.bot.Answers.*;
+import static cf.adriantodt.bot.Utils.name;
 
 public class Audio {
 	private static Map<Guild, List<Queue>> guildQueues = new HashMap<>();
@@ -77,6 +78,20 @@ public class Audio {
 		bool(event, true);
 	}
 
+	public static void skip(MessageReceivedEvent event) {
+		if (event.getGuild() == null) {
+			prezado(event, "você tem que estar em uma Guild para pular a música.");
+			return;
+		}
+
+		URLPlayer player = guildQueues.get(event.getGuild()).get(0).player;
+		if (player != null && !player.isStopped()) {
+			player.stop();
+		}
+
+		doQueueing(event.getGuild(), guildQueues.get(event.getGuild()));
+	}
+
 	private static void doQueueing(Guild guild, List<Queue> queue) {
 		if (queue.size() < 1 || (queue.size() == 1 && queue.get(0).player != null && queue.get(0).player.isStopped())) {
 			if (guild.getAudioManager().isConnected() && !guild.getAudioManager().isAttemptingToConnect())
@@ -106,7 +121,7 @@ public class Audio {
 					guild.getAudioManager().setSendingHandler(q.player);
 					q.player.play();
 					Statistics.musics++;
-					send(q.sourceOfAllEvil, ":play_pause: - " + q);
+					send(q.sourceOfAllEvil, q.toString());
 					setup = true;
 				} catch (Exception e) {
 					Answers.exception(q.sourceOfAllEvil, e);
@@ -132,7 +147,7 @@ public class Audio {
 
 		@Override
 		public String toString() {
-			return url.toString() + " (added by " + sourceOfAllEvil.getAuthor().getAsMention() + " for channel " + channel.getName() + ")";
+			return (player != null ? player.isPlaying() ? ":play_pause: - " : ":stop_button: - " : "") + url.toString() + " (added by *" + name(sourceOfAllEvil.getAuthor(), sourceOfAllEvil.getGuild()) + "* for channel *" + channel.getName() + "*)";
 		}
 	}
 }

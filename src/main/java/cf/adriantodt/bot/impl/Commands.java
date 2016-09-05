@@ -80,20 +80,24 @@ public class Commands {
 		});
 
 		//implQueue
-		addCommand("queue", (guild, arguments, event) ->
+		addCommand("play", addUsage((guild, arguments, event) ->
 			Audio.queue(IOHelper.newURL(arguments), event)
-		);
+			, "Toca uma faixa de áudio da internet.\nSó são aceitos links diretos (YouTube não é suportado.)"));
 
-		addCommand("getqueue", (guild, arguments, event) -> {
+		addCommand("queue", (guild, arguments, event) -> {
 			if (event.getGuild() == null) {
 				prezado(event, "você tem que estar em uma Guild para ver a queue do canal.");
 				return;
 			}
 
 			send(event,
-				limit("Queue: \n" + (Audio.getQueue(event.getGuild()).length == 0 ? "(nenhuma música atualmente)" : " > " + String.join("\n > ", (CharSequence[]) Audio.getQueue(event.getGuild()))), 1990)
+				limit("**Queue:** \n" + (Audio.getQueue(event.getGuild()).length == 0 ? "(nenhuma música atualmente)" : " > " + String.join("\n > ", (CharSequence[]) Audio.getQueue(event.getGuild()))), 1990)
 			);
 		});
+
+		addCommand("skip", addUsage((guild, arguments, event) ->
+				Audio.skip(event)
+			, "Pula a faixa de áudio atual."));
 	}
 
 	private static void implGuild() {
