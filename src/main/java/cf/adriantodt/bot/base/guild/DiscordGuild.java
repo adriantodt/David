@@ -15,14 +15,12 @@ package cf.adriantodt.bot.base.guild;
 import cf.adriantodt.bot.Bot;
 import cf.adriantodt.bot.base.cmd.UserCommand;
 import cf.adriantodt.bot.base.perm.Permissions;
+import cf.adriantodt.bot.impl.i18n.I18n;
 import cf.adriantodt.bot.impl.oldpers.DataManager;
 import net.dv8tion.jda.entities.Guild;
 import net.dv8tion.jda.events.message.MessageReceivedEvent;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class DiscordGuild {
 	public static final DiscordGuild PM, GLOBAL;
@@ -42,6 +40,7 @@ public class DiscordGuild {
 	public Guild guild = null;
 	public Map<String, Long> userPerms = new HashMap<>();
 	public Map<String, UserCommand> commands = new HashMap<>();
+	public Map<String, Boolean> flags = new HashMap<>();
 	public String id = "-1", name = "";
 
 	public DiscordGuild() {
@@ -90,16 +89,16 @@ public class DiscordGuild {
 		for (int i = 2; i < 1000; i++) {
 			if (fromName(name + i) == null) return name + i;
 		}
-		throw new RuntimeException("AH PQP QUITEI DA VIDA");
+		throw new RuntimeException("What. the. fuck.");
 	}
 
 	public String toString() {
-		return "Guild: " + name + (guild != null && !name.equals(guild.getName()) ? " (" + guild.getName() + ")" : "")
-			+ "\n - Admin: " + (guild == null ? Bot.API.getUserById(DataManager.configs.owner).getUsername() : guild.getOwner().getUsername())
-			+ "\n - Comandos: " + commands.size()
-			+ "\n - Canais: " + (guild == null ? (this == PM ? Bot.API.getPrivateChannels().size() : Bot.API.getTextChannels().size() + Bot.API.getPrivateChannels().size()) : guild.getTextChannels().size())
-			+ "\n - Usuários: " + (guild == null ? (this == PM ? Bot.API.getPrivateChannels().size() : Bot.API.getUsers().size()) : guild.getUsers().size())
-			+ "\n - GuildID: " + id
+		return I18n.getLocalized("guild.guild", Locale.ENGLISH) + ": " + name + (guild != null && !name.equals(guild.getName()) ? " (" + guild.getName() + ")" : "")
+			+ "\n - " + I18n.getLocalized("guild.admin", Locale.ENGLISH) + ": " + (guild == null ? Bot.API.getUserById(DataManager.configs.owner).getUsername() : guild.getOwner().getUsername())
+			+ "\n - " + I18n.getLocalized("guild.cmds", Locale.ENGLISH) + ": " + commands.size()
+			+ "\n - " + I18n.getLocalized("guild.channels", Locale.ENGLISH) + ": " + (guild == null ? (this == PM ? Bot.API.getPrivateChannels().size() : Bot.API.getTextChannels().size() + Bot.API.getPrivateChannels().size()) : guild.getTextChannels().size())
+			+ "\n - " + I18n.getLocalized("guild.users", Locale.ENGLISH) + ": " + (guild == null ? (this == PM ? Bot.API.getPrivateChannels().size() : Bot.API.getUsers().size()) : guild.getUsers().size())
+			+ "\n - ID: " + id
 			;
 	}
 }

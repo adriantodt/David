@@ -17,14 +17,14 @@ import cf.adriantodt.bot.Java;
 import cf.adriantodt.bot.Statistics;
 import cf.adriantodt.bot.base.cmd.UserCommand;
 import cf.adriantodt.bot.base.guild.DiscordGuild;
+import cf.adriantodt.bot.impl.i18n.I18n;
 
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import static cf.adriantodt.bot.Bot.JSON;
-import static cf.adriantodt.bot.Bot.LOGGER;
+import static cf.adriantodt.bot.Bot.*;
 
 public class DataManager {
 	public static BotData data;
@@ -39,6 +39,7 @@ public class DataManager {
 			data.id = guild.id;
 			data.name = guild.name;
 			data.userPerms = guild.userPerms;
+			data.flags = guild.flags;
 			guild.commands.forEach((cmdName, cmd) -> {
 				if (cmd != null) data.commands.put(cmdName, cmd.responses);
 			});
@@ -70,6 +71,7 @@ public class DataManager {
 			if (guild.id.equals("-1")) guild.id = data.id;
 			guild.name = data.name;
 			guild.userPerms = data.userPerms;
+			guild.flags = data.flags;
 			data.commands.forEach((cmdName, responses) -> {
 				UserCommand cmd = guild.commands.get(cmdName);
 				if (cmd == null) {
@@ -83,6 +85,23 @@ public class DataManager {
 		});
 
 		Statistics.loads++;
+	}
+
+	public static void saveI18n() {
+		try {
+			Files.write(getPath(BOTNAME + "-i18n"), JSON.toJson(I18n.instance).getBytes(Charset.forName("UTF-8")));
+		} catch (Exception e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public static void loadI18n() {
+		try {
+			I18n.instance = JSON.fromJson(new String(Files.readAllBytes(getPath(BOTNAME + "-i18n")), Charset.forName("UTF-8")), I18n.class);
+		} catch (Exception e) {
+			data = new BotData();
+			saveData();
+		}
 	}
 
 	public static void loadConfig() {

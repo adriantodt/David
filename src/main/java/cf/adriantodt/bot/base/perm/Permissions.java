@@ -125,9 +125,9 @@ public class Permissions {
 	}
 
 	public static boolean checkPerms(long senderPerm, long targetPerm) {
-		long perms = bits(13, 14, 15);
+		long perms = bits(7, 8, 9);
 		senderPerm &= perms;
-		targetPerm &= perms; //Select bits 13 14 15
+		targetPerm &= perms; //Select bits 7 8 9
 		targetPerm = previousPowerOfTwo(roundToPowerOf2(targetPerm));
 		senderPerm = previousPowerOfTwo(roundToPowerOf2(senderPerm)); //Get the biggest
 		return targetPerm <= senderPerm;

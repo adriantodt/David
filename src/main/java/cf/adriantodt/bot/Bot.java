@@ -16,6 +16,7 @@ import cf.adriantodt.bot.impl.Audio;
 import cf.adriantodt.bot.impl.Commands;
 import cf.adriantodt.bot.impl.EventHandler;
 import cf.adriantodt.bot.impl.Spy;
+import cf.adriantodt.bot.impl.i18n.I18n;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import net.dv8tion.jda.JDA;
@@ -30,10 +31,7 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 import static cf.adriantodt.bot.impl.oldpers.DataManager.*;
 
@@ -117,7 +115,7 @@ public class Bot extends ListenerAdapter {
 
 	public static void stopBot() {
 		API.getAccountManager().setIdle(true);
-		API.getAccountManager().setGame("Saindo...");
+		API.getAccountManager().setGame(I18n.getLocalized("bot.stop", Locale.ENGLISH));
 		API.getAccountManager().update();
 		LOGGER.info("Bot exiting...");
 		try {
@@ -129,7 +127,7 @@ public class Bot extends ListenerAdapter {
 
 	public static void restartBot() {
 		API.getAccountManager().setIdle(true);
-		API.getAccountManager().setGame("Reiniciando...");
+		API.getAccountManager().setGame(I18n.getLocalized("bot.restart", Locale.ENGLISH));
 		API.getAccountManager().update();
 		LOGGER.info("Bot restarting...");
 		try {
@@ -154,8 +152,8 @@ public class Bot extends ListenerAdapter {
 	public void onGuildJoin(GuildJoinEvent event) {
 		try {
 			Spy.spy(event);
-			event.getGuild().getPublicChannel().sendMessage("Hello! I'm David. Someone dropped me here!");
-			event.getGuild().getPublicChannel().sendMessage("Someone call" + event.getGuild().getOwner().getAsMention() + " to set my Default Language! (By default is English)");
+			event.getGuild().getPublicChannel().sendMessage(I18n.getLocalized("bot.hello1", Locale.ENGLISH));
+			event.getGuild().getPublicChannel().sendMessage(String.format(I18n.getLocalized("bot.hello2", Locale.ENGLISH), event.getGuild().getOwner().getAsMention()));
 		} catch (Exception e) {
 			event.getGuild().getManager().leave();
 		}

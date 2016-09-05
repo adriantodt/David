@@ -15,16 +15,15 @@ package cf.adriantodt.bot.impl;
 import cf.adriantodt.bot.Answers;
 import cf.adriantodt.bot.Bot;
 import cf.adriantodt.bot.Statistics;
+import cf.adriantodt.bot.impl.i18n.I18n;
+import net.dv8tion.jda.audio.player.Player;
 import net.dv8tion.jda.audio.player.URLPlayer;
 import net.dv8tion.jda.entities.Guild;
 import net.dv8tion.jda.entities.VoiceChannel;
 import net.dv8tion.jda.events.message.MessageReceivedEvent;
 
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static cf.adriantodt.bot.Answers.*;
 import static cf.adriantodt.bot.Utils.name;
@@ -58,14 +57,14 @@ public class Audio {
 		}
 
 		if (event.getGuild() == null) {
-			prezado(event, "você tem que estar em uma Guild para pedir uma música.");
+			prezado(event, I18n.getLocalized("audio.notInGuild", Locale.ENGLISH));
 			return;
 		}
 		VoiceChannel channel = event.getGuild().getVoiceChannels().stream().filter(vch -> vch.getUsers().contains(event.getAuthor())
 		).findFirst().orElse(null);
 
 		if (channel == null) {
-			prezado(event, "você tem que estar em conectado em um canal para pedir uma música.");
+			prezado(event, I18n.getLocalized("audio.notInChannel", Locale.ENGLISH));
 			return;
 		}
 
@@ -80,11 +79,24 @@ public class Audio {
 
 	public static void skip(MessageReceivedEvent event) {
 		if (event.getGuild() == null) {
-			prezado(event, "você tem que estar em uma Guild para pular a música.");
+			prezado(event, I18n.getLocalized("audio.notInGuild", Locale.ENGLISH));
 			return;
 		}
 
-		URLPlayer player = guildQueues.get(event.getGuild()).get(0).player;
+		VoiceChannel channel = event.getGuild().getVoiceChannels().stream().filter(vch -> vch.getUsers().contains(event.getAuthor())
+		).findFirst().orElse(null);
+
+		if (channel == null) {
+			prezado(event, I18n.getLocalized("audio.notInChannel", Locale.ENGLISH));
+			return;
+		}
+
+		if (event.getGuild().getAudioManager().getConnectedChannel() != channel) {
+			prezado(event, I18n.getLocalized("audio.notInSameChannel", Locale.ENGLISH));
+			return;
+		}
+
+		Player player = guildQueues.get(event.getGuild()).get(0).player;
 		if (player != null && !player.isStopped()) {
 			player.stop();
 		}
@@ -113,7 +125,7 @@ public class Audio {
 				}
 				if (q != null) try {
 					q.player = new URLPlayer(Bot.API);
-					q.player.setAudioUrl(q.url);
+					((URLPlayer) q.player).setAudioUrl(q.url);
 					if (guild.getAudioManager().isAttemptingToConnect() || guild.getAudioManager().isConnected())
 						guild.getAudioManager().moveAudioConnection(q.channel);
 					else
@@ -143,11 +155,11 @@ public class Audio {
 		public VoiceChannel channel;
 		public URL url;
 		public MessageReceivedEvent sourceOfAllEvil;
-		private URLPlayer player;
+		private Player player;
 
 		@Override
 		public String toString() {
-			return (player != null ? player.isPlaying() ? ":play_pause: - " : ":stop_button: - " : "") + url.toString() + " (added by *" + name(sourceOfAllEvil.getAuthor(), sourceOfAllEvil.getGuild()) + "* for channel *" + channel.getName() + "*)";
+			return (player != null ? player.isPlaying() ? ":play_pause: - " : ":stop_button: - " : "") + url.toString() + " (" + String.format(I18n.getLocalized("audio.queue", Locale.ENGLISH), "*" + name(sourceOfAllEvil.getAuthor(), sourceOfAllEvil.getGuild()) + "*", "*" + channel.getName() + "*") + ")";
 		}
 	}
 }
