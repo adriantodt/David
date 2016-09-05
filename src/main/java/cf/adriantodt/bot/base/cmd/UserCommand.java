@@ -12,11 +12,10 @@
 
 package cf.adriantodt.bot.base.cmd;
 
-import cf.adriantodt.bot.Bot;
 import cf.adriantodt.bot.base.guild.DiscordGuild;
 import cf.adriantodt.bot.base.perm.Permissions;
+import cf.adriantodt.bot.impl.Audio;
 import cf.brforgers.core.lib.IOHelper;
-import net.dv8tion.jda.audio.player.URLPlayer;
 import net.dv8tion.jda.events.message.MessageReceivedEvent;
 
 import java.util.ArrayList;
@@ -37,8 +36,8 @@ public class UserCommand implements ICommand {
 				send(event, IOHelper.toString(response.substring(6)));
 				return;
 			} else if (response.substring(0, 6).equals("aud://")) {
-				URLPlayer player = new URLPlayer(Bot.API);
-				//API.getAudioManager(guild.guild).o
+				Audio.queue(IOHelper.newURL(response.substring(6)), event);
+				return;
 			} else if (response.substring(0, 6).equals("lua://")) {
 				if (Permissions.havePermsRequired(guild, event, Permissions.RUN_LUA_CMD)) {
 					send(event, "Lua support being implemented (Guild-based Sandboxed)");

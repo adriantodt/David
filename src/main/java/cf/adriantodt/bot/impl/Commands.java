@@ -83,6 +83,17 @@ public class Commands {
 		addCommand("queue", (guild, arguments, event) ->
 			Audio.queue(IOHelper.newURL(arguments), event)
 		);
+
+		addCommand("getqueue", (guild, arguments, event) -> {
+			if (event.getGuild() == null) {
+				prezado(event, "você tem que estar em uma Guild para ver a queue do canal.");
+				return;
+			}
+
+			send(event,
+				limit("Queue: " + (Audio.getQueue(event.getGuild()).length == 0 ? "(nenhuma música atualmente)" : String.join("\n", (CharSequence[]) Audio.getQueue(event.getGuild()))), 1990)
+			);
+		});
 	}
 
 	private static void implGuild() {
