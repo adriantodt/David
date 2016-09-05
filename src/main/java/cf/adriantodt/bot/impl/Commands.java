@@ -91,7 +91,7 @@ public class Commands {
 			}
 
 			send(event,
-				limit("Queue: " + (Audio.getQueue(event.getGuild()).length == 0 ? "(nenhuma música atualmente)" : String.join("\n", (CharSequence[]) Audio.getQueue(event.getGuild()))), 1990)
+				limit("Queue: \n" + (Audio.getQueue(event.getGuild()).length == 0 ? "(nenhuma música atualmente)" : " > " + String.join("\n > ", (CharSequence[]) Audio.getQueue(event.getGuild()))), 1990)
 			);
 		});
 	}

@@ -76,6 +76,7 @@ public class Statistics {
 				+ "\n - " + Statistics.toofasts + " comandos bloqueados por SpamDetection"
 				+ "\n - " + Statistics.wgets + " solicitações Web"
 				+ "\n - " + Statistics.musics + " músicas tocadas"
+				+ "\n - " + Thread.activeCount() + " threads ativas"
 				+ "\n - Sem Permissão: " + Statistics.noperm + " / Argumentos Invalidos: " + Statistics.invalidargs
 				+ "\n - Saves: " + Statistics.saves + " / Loads: " + Statistics.loads
 				+ "\n - Guilds conhecidas: " + Bot.API.getGuilds().size()

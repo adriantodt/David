@@ -37,13 +37,13 @@ public class EventHandler {
 	private static Map<MessageReceivedEvent, DiscordGuild> map2 = new HashMap<>();
 
 	public static void handle(MessageReceivedEvent event) {
-		if (BOTID.equals(event.getAuthor().getId()) && cleanup) { //Safer
+		if (BOTID.equals(event.getAuthor().getId())) { //Safer
 			new Thread(() -> {
 				try {
 					Thread.sleep(15 * 1000);
+					if (cleanup) event.getMessage().deleteMessage();
 				} catch (Exception ignored) {
 				}
-				event.getMessage().deleteMessage();
 			}).start();
 			return;
 		}

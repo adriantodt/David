@@ -26,8 +26,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static cf.adriantodt.bot.Answers.invalidargs;
-import static cf.adriantodt.bot.Answers.prezado;
+import static cf.adriantodt.bot.Answers.*;
 
 public class Audio {
 	private static Map<Guild, List<Queue>> guildQueues = new HashMap<>();
@@ -75,6 +74,7 @@ public class Audio {
 		queue.sourceOfAllEvil = event;
 		queue.url = url;
 		guildQueues.get(channel.getGuild()).add(queue);
+		bool(event, true);
 	}
 
 	private static void doQueueing(Guild guild, List<Queue> queue) {
@@ -82,7 +82,9 @@ public class Audio {
 			if (guild.getAudioManager().isConnected() && !guild.getAudioManager().isAttemptingToConnect())
 				guild.getAudioManager().closeAudioConnection();
 			if (queue.size() == 1) {
+				send(queue.get(0).sourceOfAllEvil, ":stop_button:");
 				queue.remove(0);
+
 			}
 			return;
 		}
@@ -90,11 +92,11 @@ public class Audio {
 		if (q.player == null || q.player.isStopped()) {
 			boolean setup = false;
 			while (!setup && queue.size() > 0) {
-				if (q.player != null) {
+				if (q == null || q.player != null) {
 					queue.remove(0);
 					q = queue.size() > 0 ? queue.get(0) : null;
 				}
-				try {
+				if (q != null) try {
 					q.player = new URLPlayer(Bot.API);
 					q.player.setAudioUrl(q.url);
 					if (guild.getAudioManager().isAttemptingToConnect() || guild.getAudioManager().isConnected())
@@ -104,6 +106,7 @@ public class Audio {
 					guild.getAudioManager().setSendingHandler(q.player);
 					q.player.play();
 					Statistics.musics++;
+					send(q.sourceOfAllEvil, ":play_pause: - " + q);
 					setup = true;
 				} catch (Exception e) {
 					Answers.exception(q.sourceOfAllEvil, e);
