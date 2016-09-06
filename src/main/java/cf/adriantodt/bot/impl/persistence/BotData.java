@@ -10,12 +10,15 @@
  * File Created @ [02/09/16 08:18]
  */
 
-package cf.adriantodt.bot.impl.oldpers;
+package cf.adriantodt.bot.impl.persistence;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class BotData {
 	public List<DiscordGuildData> guilds = new ArrayList<>();
 	public String game = "";
+	public Map<String, String> userLangs = new HashMap<>();
 }

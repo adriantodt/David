@@ -35,7 +35,6 @@ public class EventHandler {
 	public static boolean cleanup = true;
 	private static Map<MessageReceivedEvent, ICommand> map = new HashMap<>();
 	private static Map<MessageReceivedEvent, DiscordGuild> map2 = new HashMap<>();
-	private static Map<MessageReceivedEvent, String> map3 = new HashMap<>();
 
 	public static void handle(MessageReceivedEvent event) {
 		if (BOTID.equals(event.getAuthor().getId())) { //Safer

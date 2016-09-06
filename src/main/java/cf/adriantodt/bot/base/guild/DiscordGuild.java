@@ -16,7 +16,7 @@ import cf.adriantodt.bot.Bot;
 import cf.adriantodt.bot.base.cmd.UserCommand;
 import cf.adriantodt.bot.base.perm.Permissions;
 import cf.adriantodt.bot.impl.i18n.I18n;
-import cf.adriantodt.bot.impl.oldpers.DataManager;
+import cf.adriantodt.bot.impl.persistence.DataManager;
 import net.dv8tion.jda.entities.Guild;
 import net.dv8tion.jda.events.message.MessageReceivedEvent;
 

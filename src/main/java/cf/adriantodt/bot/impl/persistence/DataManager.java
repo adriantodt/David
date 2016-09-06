@@ -10,7 +10,7 @@
  * File Created @ [02/09/16 08:18]
  */
 
-package cf.adriantodt.bot.impl.oldpers;
+package cf.adriantodt.bot.impl.persistence;
 
 import cf.adriantodt.bot.Bot;
 import cf.adriantodt.bot.Java;
@@ -99,8 +99,7 @@ public class DataManager {
 		try {
 			I18n.instance = JSON.fromJson(new String(Files.readAllBytes(getPath(BOTNAME + "-i18n")), Charset.forName("UTF-8")), I18n.class);
 		} catch (Exception e) {
-			data = new BotData();
-			saveData();
+			saveI18n();
 		}
 	}
 

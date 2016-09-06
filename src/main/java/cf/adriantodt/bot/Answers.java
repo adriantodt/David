@@ -14,12 +14,13 @@ package cf.adriantodt.bot;
 
 import cf.adriantodt.bot.base.perm.Permissions;
 import cf.adriantodt.bot.impl.EventHandler;
+import cf.adriantodt.bot.impl.i18n.I18n;
 import net.dv8tion.jda.events.message.MessageReceivedEvent;
 
 
 public class Answers {
 	public static void exception(MessageReceivedEvent event, Exception e) {
-		prezado(event, "uma exceção ocorreu durante a execução do comando:");
+		dear(event, "uma exceção ocorreu durante a execução do comando:");
 		sendCased(event, limit(e.toString(), 500), "java");
 		Bot.LOGGER.error("Exception occurred during command \"" + event.getMessage().getContent() + "\": ", e);
 		Statistics.crashes++;
@@ -52,7 +53,7 @@ public class Answers {
 		StringBuilder b = new StringBuilder("*(Permissões Ausentes:");
 		Permissions.toCollection(perm).forEach(s -> b.append(" ").append(s));
 		b.append(")*");
-		prezado(event, "você não tem permissão para executar esse comando.");
+		dear(event, "você não tem permissão para executar esse comando.");
 		send(event, b.toString());
 		Statistics.noperm++;
 	}
@@ -62,19 +63,14 @@ public class Answers {
 	}
 
 	public static void invalidargs(MessageReceivedEvent event) {
-		String usage = EventHandler.getSelf(event).retrieveUsage();
-		if (usage == null) prezado(event, "você enviou argumento(s) incorreto(s) para o comando.");
+		String usage = EventHandler.getSelf(event).retrieveUsage(I18n.getLang(event));
+		if (usage == null) dear(event, "você enviou argumento(s) incorreto(s) para o comando.");
 		else if (!usage.isEmpty()) sendCased(event, usage, "");
 		Statistics.invalidargs++;
 	}
 
-	public static void nonoverwriteable(MessageReceivedEvent event) {
-		prezado(event, "o comando enviado como argumento não é volátil, e portanto não pode ser modificado.");
-		Statistics.invalidargs++;
-	}
-
-	public static void prezado(MessageReceivedEvent event, String resposta) {
-		send(event, "*Prezado " + event.getAuthor().getUsername() + ", " + resposta + "*");
+	public static void dear(MessageReceivedEvent event, String answer) {
+		send(event, "*" + I18n.getLocalized("answers.dear", event) + " " + event.getAuthor().getUsername() + ", " + answer + "*");
 	}
 
 	public static String limit(String value, int length) {

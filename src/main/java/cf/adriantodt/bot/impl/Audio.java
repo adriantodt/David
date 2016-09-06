@@ -60,14 +60,14 @@ public class Audio {
 		}
 
 		if (event.getGuild() == null) {
-			prezado(event, I18n.getLocalized("audio.notInGuild", "en_US"));
+			dear(event, I18n.getLocalized("audio.notInGuild", event));
 			return;
 		}
 		VoiceChannel channel = event.getGuild().getVoiceChannels().stream().filter(vch -> vch.getUsers().contains(event.getAuthor())
 		).findFirst().orElse(null);
 
 		if (channel == null) {
-			prezado(event, I18n.getLocalized("audio.notInChannel", "en_US"));
+			dear(event, I18n.getLocalized("audio.notInChannel", event));
 			return;
 		}
 
@@ -82,7 +82,7 @@ public class Audio {
 
 	public static void skip(MessageReceivedEvent event) {
 		if (event.getGuild() == null) {
-			prezado(event, I18n.getLocalized("audio.notInGuild", "en_US"));
+			dear(event, I18n.getLocalized("audio.notInGuild", event));
 			return;
 		}
 
@@ -90,12 +90,12 @@ public class Audio {
 		).findFirst().orElse(null);
 
 		if (channel == null) {
-			prezado(event, I18n.getLocalized("audio.notInChannel", "en_US"));
+			dear(event, I18n.getLocalized("audio.notInChannel", event));
 			return;
 		}
 
 		if (event.getGuild().getAudioManager().getConnectedChannel() != channel) {
-			prezado(event, I18n.getLocalized("audio.notInSameChannel", "en_US"));
+			dear(event, I18n.getLocalized("audio.notInSameChannel", event));
 			return;
 		}
 
@@ -159,7 +159,7 @@ public class Audio {
 
 		@Override
 		public String toString() {
-			return (player != null ? player.isPlaying() ? ":play_pause: - " : ":stop_button: - " : "") + url.toString() + " (" + String.format(I18n.getLocalized("audio.queue", "en_US"), "*" + name(sourceOfAllEvil.getAuthor(), sourceOfAllEvil.getGuild()) + "*", "*" + channel.getName() + "*") + ")";
+			return (player != null ? player.isPlaying() ? ":play_pause: - " : ":stop_button: - " : "") + url.toString() + " (" + String.format(I18n.getLocalized("audio.queue", sourceOfAllEvil), "*" + name(sourceOfAllEvil.getAuthor(), sourceOfAllEvil.getGuild()) + "*", "*" + channel.getName() + "*") + ")";
 		}
 	}
 }

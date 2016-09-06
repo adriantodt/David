@@ -53,10 +53,10 @@ public class I18nHardImpl {
 		localize("en_US", "audio.notInSameChannel", "you need to be connected to the same channel as the Bot to skip a music.");
 		localize("pt_BR", "audio.notInSameChannel", "você tem que estar em conectado no mesmo canal do Bot para pular uma música.");
 
-		localize("en_US", "playing.notPlaying", "Now I'm playing %s!");
-		localize("pt_BR", "playing.notPlaying", "Agora estou jogando %s!");
-		localize("en_US", "playing.nowPlaying", "Now I'm not playing!");
-		localize("pt_BR", "playing.nowPlaying", "Agora não estou jogando!");
+		localize("en_US", "playing.nowPlaying", "Now I'm playing %s!");
+		localize("pt_BR", "playing.nowPlaying", "Agora estou jogando %s!");
+		localize("en_US", "playing.notPlaying", "Now I'm not playing!");
+		localize("pt_BR", "playing.notPlaying", "Agora não estou jogando!");
 
 		localize("en_US", "user.none", "none");
 		localize("pt_BR", "user.none", "nenhum");
@@ -88,7 +88,22 @@ public class I18nHardImpl {
 		localize("en_US", "skip.usage", "Skip current audio track.");
 		localize("pt_BR", "skip.usage", "Pula a faixa de áudio atual.");
 
+		localize("en_US", "lang.set", "Now I'll speak in %s to you!");
+		localize("pt_BR", "lang.set", "Agora eu vou falar em %s para você!");
+		localize("en_US", "lang.setNone", "Now I'll speak the Guild's Default Language!");
+		localize("pt_BR", "lang.setNone", "Agora eu vou falar na lingua padrão da Guild!");
+
 		localize("en_US", "inviteme.link", "Click the Link to invite the Bot to your Guild");
 		localize("pt_BR", "inviteme.link", "Clique no Link para convidar o Bot para a sua Guild");
+
+		localize("en_US", "guild.info.usage", "Show Guild info.");
+		localize("pt_BR", "guild.info.usage", "Mostre informações sobre a Guild.");
+		localize("en_US", "guild.list.usage", "List the Guild channels.");
+		localize("pt_BR", "guild.list.usage", "Mostre os canais da Guild.");
+		localize("en_US", "guild.broadcast.usage", "Send a message to all channels of the Guild.");
+		localize("pt_BR", "guild.broadcast.usage", "Envie uma mensagem para todos os canais da Guild.");
+
+		localize("en_US", "answers.dear", "Dear");
+		localize("pt_BR", "answers.dear", "Prezado");
 	}
 }

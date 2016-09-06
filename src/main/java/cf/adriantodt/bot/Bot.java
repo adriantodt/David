@@ -37,7 +37,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
 
-import static cf.adriantodt.bot.impl.oldpers.DataManager.*;
+import static cf.adriantodt.bot.impl.persistence.DataManager.*;
 
 public class Bot extends ListenerAdapter {
 	public static final Random RAND = new Random();
@@ -65,6 +65,7 @@ public class Bot extends ListenerAdapter {
 			Audio.setup();
 			Commands.impl();
 			loadData();
+			loadI18n();
 			I18nHardImpl.impl();
 			Statistics.startDate = new Date();
 		} catch (Exception e) {

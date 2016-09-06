@@ -41,7 +41,7 @@ public class Spy {
 
 
 	public static void sendToNodes(String message) {
-		for (MessageChannel channel : nodes) if (channel != null) channel.sendMessage(message);
+		nodes.stream().filter(channel -> channel != null).forEach(channel -> channel.sendMessage(message));
 	}
 
 
@@ -61,7 +61,7 @@ public class Spy {
 	}
 
 	public static void spyPast(MessageReceivedEvent event, MessageChannel channel) {
-		String msgs = "***Passado:***";
+		String msgs = "***Past:***";
 		List<Message> msgl = channel.getHistory().retrieve(10);
 		for (int i = Math.min(10, msgl.size() - 1); i > 0; i--) {
 			Message msg = msgl.get(i);
@@ -89,8 +89,8 @@ public class Spy {
 		bool(event, true);
 	}
 
-	public static void listChannelsKnown(DiscordGuild guild, MessageReceivedEvent event) {
-		String msgs = "***Canais Conhecidos:***";
+	public static void listChannels(DiscordGuild guild, MessageReceivedEvent event) {
+		String msgs = "***Canais:***";
 		List<MessageChannel> l = getChannels(guild);
 		for (int i = 0; i < l.size(); i++) {
 			MessageChannel channel = l.get(i);

@@ -12,6 +12,11 @@
 
 package cf.adriantodt.bot.impl.i18n;
 
+import cf.adriantodt.bot.base.perm.Permissions;
+import cf.adriantodt.bot.impl.EventHandler;
+import net.dv8tion.jda.entities.User;
+import net.dv8tion.jda.events.message.MessageReceivedEvent;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -19,7 +24,7 @@ public class I18n {
 	public static I18n instance = new I18n();
 
 	private Map<String, Map<String, String>> locales = new HashMap<>();
-	private Map<String, String> parents = new HashMap<>();
+	private Map<String, String> parents = new HashMap<>(), userLangs = new HashMap<>();
 
 	private I18n() {
 	}
@@ -36,6 +41,19 @@ public class I18n {
 		getParenting().put(locale, parent);
 	}
 
+	public static void setLang(User user, String lang) {
+		String userid = Permissions.processID(user.getId());
+		if (lang.isEmpty()) {
+			instance.userLangs.remove(userid);
+		} else {
+			instance.userLangs.put(userid, lang);
+		}
+	}
+
+	public static String getLang(MessageReceivedEvent event) {
+		return instance.userLangs.getOrDefault(Permissions.processID(event.getAuthor().getId()), EventHandler.getGuild(event).defaultLanguage);
+	}
+
 	public static String getLocalized(String unlocalized, String locale) {
 		String localized = unlocalized;
 		while (unlocalized.equals(localized) && locale != null) {
@@ -44,6 +62,10 @@ public class I18n {
 			if (unlocalized.equals(localized)) locale = getParenting().get(locale);
 		}
 		return localized;
+	}
+
+	public static String getLocalized(String unlocalized, MessageReceivedEvent event) {
+		return getLocalized(unlocalized, getLang(event));
 	}
 
 	public static void localize(String target, String unlocalized, String localized) {

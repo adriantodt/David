@@ -16,12 +16,15 @@ import cf.adriantodt.bot.Bot;
 import cf.adriantodt.bot.Statistics;
 import cf.adriantodt.bot.Utils;
 import cf.adriantodt.bot.base.cmd.*;
+import cf.adriantodt.bot.base.guild.DiscordGuild;
 import cf.adriantodt.bot.base.perm.Permissions;
-import cf.adriantodt.bot.impl.oldpers.DataManager;
+import cf.adriantodt.bot.impl.i18n.I18n;
+import cf.adriantodt.bot.impl.persistence.DataManager;
 import cf.brforgers.core.lib.IOHelper;
 import net.dv8tion.jda.entities.Guild;
 import net.dv8tion.jda.entities.Role;
 import net.dv8tion.jda.entities.User;
+import net.dv8tion.jda.events.message.MessageReceivedEvent;
 
 import java.text.Collator;
 import java.time.format.DateTimeFormatter;
@@ -54,8 +57,8 @@ public class Commands {
 
 		//implPlaying
 		addCommand("playing", new CommandBuilder().setAction((arg, event) -> {
-			if (arg.isEmpty()) announce(event, getLocalized("playing.notPlaying", "en_US"));
-			else announce(event, String.format(getLocalized("playing.nowPlaying", "en_US"), arg));
+			if (arg.isEmpty()) announce(event, getLocalized("playing.notPlaying", event));
+			else announce(event, String.format(getLocalized("playing.nowPlaying", event), arg));
 			Bot.GAME = arg;
 		}).setPermRequired(Permissions.PLAYING).build());
 
@@ -66,15 +69,15 @@ public class Commands {
 		addCommand("user", (g, a, e) -> {
 			User user = (e.getMessage().getMentionedUsers().isEmpty() ? e.getAuthor() : e.getMessage().getMentionedUsers().get(0));
 			send(e,
-				user.getAsMention() + ": \n" + getLocalized("user.avatar", "en_US") + ": " + user.getAvatarUrl() + "\n```" +
-					getLocalized("user.name", "en_US") + ": " + user.getUsername() + "\n" +
-					getLocalized("user.nick", "en_US") + ": " + (e.getGuild().getNicknameForUser(user) == null ? "(" + getLocalized("user.none", "en_US") + ")" : e.getGuild().getNicknameForUser(user)) + "\n" +
-					getLocalized("user.roles", "en_US") + ": " + nnOrD(String.join(", ", e.getGuild().getRolesForUser(user).stream().map(Role::getName).toArray(String[]::new)), "(" + getLocalized("user.none", "en_US") + ")") + "\n" +
-					(g.guild == null ? "" : getLocalized("user.memberSince", "en_US") + ": " + g.guild.getJoinDateForUser(user).format(DateTimeFormatter.RFC_1123_DATE_TIME) + "\n") +
-					getLocalized("user.commonGuilds", "en_US") + ": " + nnOrD(String.join(", ", e.getJDA().getGuilds().stream().filter(guild -> guild.isMember(user)).map(Guild::getName).toArray(String[]::new)), "(" + getLocalized("user.none", "en_US") + ")") + "\n" +
+				user.getAsMention() + ": \n" + getLocalized("user.avatar", e) + ": " + user.getAvatarUrl() + "\n```" +
+					getLocalized("user.name", e) + ": " + user.getUsername() + "\n" +
+					getLocalized("user.nick", e) + ": " + (e.getGuild().getNicknameForUser(user) == null ? "(" + getLocalized("user.none", e) + ")" : e.getGuild().getNicknameForUser(user)) + "\n" +
+					getLocalized("user.roles", e) + ": " + nnOrD(String.join(", ", e.getGuild().getRolesForUser(user).stream().map(Role::getName).toArray(String[]::new)), "(" + getLocalized("user.none", e) + ")") + "\n" +
+					(g.guild == null ? "" : getLocalized("user.memberSince", e) + ": " + g.guild.getJoinDateForUser(user).format(DateTimeFormatter.RFC_1123_DATE_TIME) + "\n") +
+					getLocalized("user.commonGuilds", e) + ": " + nnOrD(String.join(", ", e.getJDA().getGuilds().stream().filter(guild -> guild.isMember(user)).map(Guild::getName).toArray(String[]::new)), "(" + getLocalized("user.none", e) + ")") + "\n" +
 					"ID: " + user.getId() + "\n" +
-					getLocalized("user.status", "en_US") + ": " + user.getOnlineStatus() + "\n" +
-					getLocalized("user.playing", "en_US") + ": " + (user.getCurrentGame() == null ? "(" + getLocalized("user.none", "en_US") + ")" : user.getCurrentGame().toString()) + "\n```"
+					getLocalized("user.status", e) + ": " + user.getOnlineStatus() + "\n" +
+					getLocalized("user.playing", e) + ": " + (user.getCurrentGame() == null ? "(" + getLocalized("user.none", e) + ")" : user.getCurrentGame().toString()) + "\n```"
 			);
 		});
 
@@ -89,12 +92,12 @@ public class Commands {
 		//implQueue
 		addCommand("queue", (guild, arguments, event) -> {
 			if (event.getGuild() == null) {
-				prezado(event, getLocalized("audio.notInGuild", "en_US"));
+				dear(event, getLocalized("audio.notInGuild", event));
 				return;
 			}
 
 			send(event,
-				limit("**" + getLocalized("queue.queue", "en_US") + ":** \n" + (Audio.getQueue(event.getGuild()).length == 0 ? "(" + getLocalized("queue.noMusics", "en_US") + ")" : " > " + String.join("\n > ", Audio.getQueue(event.getGuild()))), 1990)
+				limit("**" + getLocalized("queue.queue", event) + ":** \n" + (Audio.getQueue(event.getGuild()).length == 0 ? "(" + getLocalized("queue.noMusics", event) + ")" : " > " + String.join("\n > ", Audio.getQueue(event.getGuild()))), 1990)
 			);
 		});
 
@@ -108,7 +111,16 @@ public class Commands {
 
 		//implInviteMe
 		addCommand("inviteme",
-			(guild, arguments, event) -> send(event, "**" + getLocalized("skip.usage", "en_US") + ":**\nhttps://discordapp.com/oauth2/authorize?client_id=" + Bot.BOTID + "&scope=bot")
+			(guild, arguments, event) -> send(event, "**" + getLocalized("inviteme.link", event) + ":**\nhttps://discordapp.com/oauth2/authorize?client_id=" + Bot.BOTID + "&scope=bot")
+		);
+
+		//implLang
+		addCommand("lang",
+			(guild, arg, event) -> {
+				I18n.setLang(event.getAuthor(), arg);
+				if (arg.isEmpty()) announce(event, getLocalized("lang.setNone", event));
+				else announce(event, String.format(getLocalized("lang.set", event), arg));
+			}
 		);
 	}
 
@@ -116,14 +128,20 @@ public class Commands {
 		addCommand("guild", new TreeCommandBuilder()
 			.setPermRequired(Permissions.RUN_BASECMD)
 			.addCommand("info",
-				addUsage((guild, arguments, event) -> sendCased(event, guild.toString(), ""), "Mostre informações sobre a Guild.")
+				new CommandBuilder()
+					.setAction((guild, arguments, event) -> sendCased(event, guild.toString()))
+					.setUsage((lang) -> getLocalized("guild.info.usage", lang)).build()
 			)
 			.addDefault("info")
-			.addCommand("channels",
-				new TreeCommandBuilder().setPermRequired(GUILD)
-					.addCommand("list", addUsage((guild, arguments, event) -> Spy.listChannelsKnown(guild, event), "Liste os Canais conhecidos."))
-					.addCommand("broadcast", addUsage(Spy::broadcast, "Envie uma mensagem para todos os canais (conhecidos) da Guild"))
-					.build()
+			.addCommand("list",
+				new CommandBuilder()
+					.setAction((guild, arguments, event) -> Spy.listChannels(guild, event))
+					.setUsage((lang) -> getLocalized("guild.list.usage", lang)).build()
+			)
+			.addCommand("broadcast",
+				new CommandBuilder()
+					.setAction(Spy::broadcast)
+					.setUsage((lang) -> getLocalized("guild.broadcast.usage", lang)).build()
 			)
 			.build()
 		);
@@ -189,7 +207,7 @@ public class Commands {
 				.build()
 			)
 			.addCommand("list", addUsage((guild, arguments, event) -> {
-				Collection<String> perms = Permissions.toCollection(getSenderPerm(guild, event));
+				Collection<String> perms = Permissions.toCollection(BOT_OWNER);
 
 				Holder<StringBuilder> b = new Holder<>();
 				Holder<Boolean> first = new Holder<>();
@@ -255,6 +273,7 @@ public class Commands {
 						.setAction(event -> {
 							announce(event, "Salvando...");
 							DataManager.saveData();
+							DataManager.saveI18n();
 							bool(event, true);
 						})
 						.build()
@@ -273,6 +292,7 @@ public class Commands {
 						.setAction(event -> {
 							announce(event, "Carregando...");
 							DataManager.loadData();
+							DataManager.loadI18n();
 							bool(event, true);
 						})
 						.build()
@@ -437,5 +457,24 @@ public class Commands {
 
 	public static void addCommand(String name, ICommand command) {
 		COMMANDS.put(name, command);
+	}
+
+	public static ICommand addUsage(ICommand command, String usage) {
+		return new ICommand() {
+			@Override
+			public void run(DiscordGuild guild, String arguments, MessageReceivedEvent event) {
+				command.run(guild, arguments, event);
+			}
+
+			@Override
+			public long retrievePerm() {
+				return command.retrievePerm();
+			}
+
+			@Override
+			public String retrieveUsage(String lang) {
+				return usage;
+			}
+		};
 	}
 }

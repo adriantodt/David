@@ -14,16 +14,13 @@ package cf.adriantodt.bot.base.perm;
 
 import cf.adriantodt.bot.base.cmd.ICommand;
 import cf.adriantodt.bot.base.guild.DiscordGuild;
-import cf.adriantodt.bot.impl.oldpers.DataManager;
+import cf.adriantodt.bot.impl.persistence.DataManager;
 import net.dv8tion.jda.events.message.MessageReceivedEvent;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.text.Collator;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.TreeSet;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import static cf.brforgers.core.lib.MathHelper.previousPowerOfTwo;
 import static cf.brforgers.core.lib.MathHelper.roundToPowerOf2;
@@ -93,12 +90,14 @@ public class Permissions {
 		BOT_OWNER = GUILD_OWNER | PLAYING | LUAENV_FULL | SPY | SAVE_LOAD | STOP_RESET | PERMSYS_BO;
 
 	public static Map<String, Long> perms = new HashMap<String, Long>() {{
-		for (Field field : Permissions.class.getDeclaredFields()) //This Reflection is used to HashMap-fy all the Fields above.
-			if (Modifier.isStatic(field.getModifiers()) && Modifier.isFinal(field.getModifiers()) && Modifier.isPublic(field.getModifiers())) //public static final fields only
+		Arrays.stream(Permissions.class.getDeclaredFields()) //This Reflection is used to HashMap-fy all the Fields above.
+			.filter(field -> Modifier.isStatic(field.getModifiers()) && Modifier.isFinal(field.getModifiers()) && Modifier.isPublic(field.getModifiers())) //public static final fields only
+			.forEach(field -> {
 				try {
 					put(field.getName(), field.getLong(null));
 				} catch (Exception ignored) {
 				}
+			});
 	}};
 
 	private static long bits(long... bits) {
@@ -158,13 +157,12 @@ public class Permissions {
 		return string.toLowerCase();
 	}
 
-	public static Collection<String> toCollection(long perms) {
-		Collection<String> collection = new TreeSet<>(Collator.getInstance());
-
-		Permissions.perms.forEach((pName, pBits) -> {
-			if ((pBits & perms) == pBits) collection.add(pName);
-		});
-
-		return collection;
+	public static Collection<String> toCollection(long userPerms) {
+		return perms
+			.entrySet()
+			.stream()
+			.filter(entry -> (entry.getValue() & userPerms) == entry.getValue())
+			.map(Map.Entry::getKey)
+			.collect(Collectors.toCollection(() -> new TreeSet<>(Collator.getInstance())));
 	}
 }
