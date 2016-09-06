@@ -16,6 +16,8 @@ import cf.adriantodt.bot.base.guild.DiscordGuild;
 import cf.adriantodt.bot.base.perm.Permissions;
 import net.dv8tion.jda.events.message.MessageReceivedEvent;
 
+import java.util.function.Function;
+
 public interface ICommand {
 	void run(DiscordGuild guild, String arguments, MessageReceivedEvent event);
 
@@ -36,8 +38,29 @@ public interface ICommand {
 	 * Not-Empty = Shows the String as message<br>
 	 *
 	 * @return the Usage
+	 * @param language
 	 */
-	default String retrieveUsage() {
+	default String retrieveUsage(String language) {
 		return null;
+	}
+
+	default ICommand addUsage(Function<String, String> usageProvider) {
+		ICommand base = this;
+		return new ICommand() {
+			@Override
+			public void run(DiscordGuild guild, String arguments, MessageReceivedEvent event) {
+				base.run(guild, arguments, event);
+			}
+
+			@Override
+			public long retrievePerm() {
+				return base.retrievePerm();
+			}
+
+			@Override
+			public String retrieveUsage(String language) {
+				return usageProvider.apply(language);
+			}
+		};
 	}
 }

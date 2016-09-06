@@ -21,6 +21,7 @@ import net.dv8tion.jda.events.message.MessageReceivedEvent;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 import static cf.adriantodt.bot.Answers.invalidargs;
@@ -29,26 +30,26 @@ import static cf.adriantodt.bot.Utils.splitArgs;
 public class TreeCommandBuilder {
 	private static final ICommand DEFAULT_IMPL = new CommandBuilder().setAction(Answers::invalidargs).setPermRequired(Permissions.RUN_BASECMD).build();
 	private final Map<String, ICommand> SUBCMDS = new HashMap<>();
-	private final Supplier<String> USAGE_IMPL = () -> {
+	private final Function<String, String> USAGE_IMPL = (lang) -> {
 		Holder<StringBuilder> b = new Holder<>();
 		Holder<Boolean> first = new Holder<>();
 
-		b.var = new StringBuilder(I18n.getLocalized("tree.subcmds", "en_US") + ":");
+		b.var = new StringBuilder(I18n.getLocalized("tree.subcmds", lang) + ":");
 		first.var = true;
 		SUBCMDS.forEach((cmdName, cmd) -> {
-			String usage = cmd.retrieveUsage();
+			String usage = cmd.retrieveUsage(lang);
 			if (usage == null || usage.isEmpty()) return;
 			if (first.var) {
 				first.var = false;
 			}
-			String a = "\n - " + (cmdName.isEmpty() ? "(" + I18n.getLocalized("tree.default", "en_US") + ")" : cmdName) + ": " + usage.replace("\n", "\n    ");
+			String a = "\n - " + (cmdName.isEmpty() ? "(" + I18n.getLocalized("tree.default", lang) + ")" : cmdName) + ": " + usage.replace("\n", "\n    ");
 			b.var.append(a);
 		});
 		if (first.var) return null;
 		return b.var.toString();
 	};
 	private Supplier<Long> permProvider = () -> 0L;
-	private Supplier<String> usageProvider = USAGE_IMPL;
+	private Function<String, String> usageProvider = USAGE_IMPL;
 
 	public TreeCommandBuilder() {
 		addDefault(DEFAULT_IMPL);
@@ -77,7 +78,7 @@ public class TreeCommandBuilder {
 	}
 
 	public TreeCommandBuilder setUsage(String usage) {
-		return setUsage(() -> usage);
+		return setUsage((s) -> usage);
 	}
 
 	public TreeCommandBuilder setPermRequired(Supplier<Long> provider) {
@@ -85,7 +86,7 @@ public class TreeCommandBuilder {
 		return this;
 	}
 
-	public TreeCommandBuilder setUsage(Supplier<String> provider) {
+	public TreeCommandBuilder setUsage(Function<String, String> provider) {
 		if (provider == null) usageProvider = USAGE_IMPL;
 		else usageProvider = provider;
 		return this;
@@ -107,8 +108,8 @@ public class TreeCommandBuilder {
 			}
 
 			@Override
-			public String retrieveUsage() {
-				return usageProvider == null ? null : usageProvider.get();
+			public String retrieveUsage(String language) {
+				return usageProvider == null ? null : usageProvider.apply(language);
 			}
 		};
 	}

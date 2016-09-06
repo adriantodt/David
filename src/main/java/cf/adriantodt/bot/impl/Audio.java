@@ -148,10 +148,7 @@ public class Audio {
 
 	public static String[] getQueue(Guild guild) {
 		if (!guildQueues.containsKey(guild)) guildQueues.put(guild, new ArrayList<>());
-		List<Queue> list = guildQueues.get(guild);
-		List<String> r = new ArrayList<>();
-		list.forEach(q -> r.add(q.toString()));
-		return r.toArray(new String[r.size()]);
+		return guildQueues.get(guild).stream().map(Queue::toString).toArray(String[]::new);
 	}
 
 	private static class Queue {

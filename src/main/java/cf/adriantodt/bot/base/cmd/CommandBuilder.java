@@ -17,12 +17,13 @@ import net.dv8tion.jda.events.message.MessageReceivedEvent;
 
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 public class CommandBuilder {
 	private TriConsumer<DiscordGuild, String, MessageReceivedEvent> action = null;
 	private Supplier<Long> permProvider = () -> 0L;
-	private Supplier<String> usageProvider = () -> null;
+	private Function<String, String> usageProvider = (s) -> null;
 
 	public CommandBuilder setAction(TriConsumer<DiscordGuild, String, MessageReceivedEvent> consumer) {
 		action = consumer;
@@ -50,7 +51,7 @@ public class CommandBuilder {
 	}
 
 	public CommandBuilder setUsage(String usage) {
-		usageProvider = () -> usage;
+		usageProvider = (s) -> usage;
 		return this;
 	}
 
@@ -59,7 +60,7 @@ public class CommandBuilder {
 		return this;
 	}
 
-	public CommandBuilder setUsage(Supplier<String> provider) {
+	public CommandBuilder setUsage(Function<String, String> provider) {
 		usageProvider = provider;
 		return this;
 	}
@@ -77,8 +78,8 @@ public class CommandBuilder {
 			}
 
 			@Override
-			public String retrieveUsage() {
-				return usageProvider.get();
+			public String retrieveUsage(String language) {
+				return usageProvider.apply(language);
 			}
 		};
 	}

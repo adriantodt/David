@@ -16,14 +16,12 @@ import cf.adriantodt.bot.Bot;
 import cf.adriantodt.bot.Statistics;
 import cf.adriantodt.bot.Utils;
 import cf.adriantodt.bot.base.cmd.*;
-import cf.adriantodt.bot.base.guild.DiscordGuild;
 import cf.adriantodt.bot.base.perm.Permissions;
 import cf.adriantodt.bot.impl.oldpers.DataManager;
 import cf.brforgers.core.lib.IOHelper;
 import net.dv8tion.jda.entities.Guild;
 import net.dv8tion.jda.entities.Role;
 import net.dv8tion.jda.entities.User;
-import net.dv8tion.jda.events.message.MessageReceivedEvent;
 
 import java.text.Collator;
 import java.time.format.DateTimeFormatter;
@@ -80,27 +78,38 @@ public class Commands {
 			);
 		});
 
-		//implQueue
-		addCommand("play", addUsage((guild, arguments, event) ->
-			Audio.queue(IOHelper.newURL(arguments), event)
-			, getLocalized("play.usage", "en_US")));
+		//implPlay
+		addCommand("play",
+			new CommandBuilder()
+				.setAction((guild, arguments, event) -> Audio.queue(IOHelper.newURL(arguments), event))
+				.setUsage((lang) -> getLocalized("play.usage", lang))
+				.build()
+		);
 
+		//implQueue
 		addCommand("queue", (guild, arguments, event) -> {
 			if (event.getGuild() == null) {
-				prezado(event, "você tem que estar em uma Guild para ver a queue do canal.");
+				prezado(event, getLocalized("audio.notInGuild", "en_US"));
 				return;
 			}
 
 			send(event,
-				limit("**Queue:** \n" + (Audio.getQueue(event.getGuild()).length == 0 ? "(nenhuma música atualmente)" : " > " + String.join("\n > ", (CharSequence[]) Audio.getQueue(event.getGuild()))), 1990)
+				limit("**" + getLocalized("queue.queue", "en_US") + ":** \n" + (Audio.getQueue(event.getGuild()).length == 0 ? "(" + getLocalized("queue.noMusics", "en_US") + ")" : " > " + String.join("\n > ", Audio.getQueue(event.getGuild()))), 1990)
 			);
 		});
 
-		addCommand("skip", addUsage((guild, arguments, event) ->
-				Audio.skip(event)
-			, "Pula a faixa de áudio atual."));
+		//implSkip
+		addCommand("skip",
+			new CommandBuilder()
+				.setAction(Audio::skip)
+				.setUsage((lang) -> getLocalized("skip.usage", lang))
+				.build()
+		);
 
-		addCommand("inviteme", ((guild, arguments, event) -> send(event, "**Clique no Link para convidar o Bot para a sua Guild:**\nhttps://discordapp.com/oauth2/authorize?client_id=" + Bot.BOTID + "&scope=bot")));
+		//implInviteMe
+		addCommand("inviteme",
+			(guild, arguments, event) -> send(event, "**" + getLocalized("skip.usage", "en_US") + ":**\nhttps://discordapp.com/oauth2/authorize?client_id=" + Bot.BOTID + "&scope=bot")
+		);
 	}
 
 	private static void implGuild() {
@@ -428,24 +437,5 @@ public class Commands {
 
 	public static void addCommand(String name, ICommand command) {
 		COMMANDS.put(name, command);
-	}
-
-	public static ICommand addUsage(ICommand command, String usage) {
-		return new ICommand() {
-			@Override
-			public void run(DiscordGuild guild, String arguments, MessageReceivedEvent event) {
-				command.run(guild, arguments, event);
-			}
-
-			@Override
-			public long retrievePerm() {
-				return command.retrievePerm();
-			}
-
-			@Override
-			public String retrieveUsage() {
-				return usage;
-			}
-		};
 	}
 }

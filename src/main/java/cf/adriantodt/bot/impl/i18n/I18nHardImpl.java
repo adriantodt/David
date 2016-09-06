@@ -46,10 +46,10 @@ public class I18nHardImpl {
 
 		localize("en_US", "audio.queue", "added by %s for channel &s");
 		localize("pt_BR", "audio.queue", "adicionado por %s para o canal %s");
-		localize("en_US", "audio.notInGuild", "you need to be in a Guild to queue a music.");
-		localize("pt_BR", "audio.notInGuild", "você tem que estar em uma Guild para pedir uma música.");
-		localize("en_US", "audio.notInChannel", "you need to be connected to queue a music.");
-		localize("pt_BR", "audio.notInChannel", "você tem que estar em conectado em um canal para pedir uma música.");
+		localize("en_US", "audio.notInGuild", "you need to be in a Guild to use audio commands.");
+		localize("pt_BR", "audio.notInGuild", "você tem que estar em uma Guild para usar comandos de áudio.");
+		localize("en_US", "audio.notInChannel", "you need to be connected to a channel to use audio commands.");
+		localize("pt_BR", "audio.notInChannel", "você tem que estar em conectado em um canal para usar comandos de áudio.");
 		localize("en_US", "audio.notInSameChannel", "you need to be connected to the same channel as the Bot to skip a music.");
 		localize("pt_BR", "audio.notInSameChannel", "você tem que estar em conectado no mesmo canal do Bot para pular uma música.");
 
@@ -79,5 +79,16 @@ public class I18nHardImpl {
 
 		localize("en_US", "play.usage", "Play an audio track from internet.\nOnly direct link are accepted (Youtube is not supported.)");
 		localize("pt_BR", "play.usage", "Toca uma faixa de áudio da internet.\nSó são aceitos links diretos (YouTube não é suportado.)");
+
+		localize("en_US", "queue.queue", "Queue");
+		localize("pt_BR", "queue.queue", "Fila");
+		localize("en_US", "queue.noMusics", "no musics added");
+		localize("pt_BR", "queue.noMusics", "nenhuma música atualmente");
+
+		localize("en_US", "skip.usage", "Skip current audio track.");
+		localize("pt_BR", "skip.usage", "Pula a faixa de áudio atual.");
+
+		localize("en_US", "inviteme.link", "Click the Link to invite the Bot to your Guild");
+		localize("pt_BR", "inviteme.link", "Clique no Link para convidar o Bot para a sua Guild");
 	}
 }
