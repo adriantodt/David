@@ -23,7 +23,10 @@ import net.dv8tion.jda.entities.VoiceChannel;
 import net.dv8tion.jda.events.message.MessageReceivedEvent;
 
 import java.net.URL;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static cf.adriantodt.bot.Answers.*;
 import static cf.adriantodt.bot.Utils.name;
@@ -57,14 +60,14 @@ public class Audio {
 		}
 
 		if (event.getGuild() == null) {
-			prezado(event, I18n.getLocalized("audio.notInGuild", Locale.ENGLISH));
+			prezado(event, I18n.getLocalized("audio.notInGuild", "en_US"));
 			return;
 		}
 		VoiceChannel channel = event.getGuild().getVoiceChannels().stream().filter(vch -> vch.getUsers().contains(event.getAuthor())
 		).findFirst().orElse(null);
 
 		if (channel == null) {
-			prezado(event, I18n.getLocalized("audio.notInChannel", Locale.ENGLISH));
+			prezado(event, I18n.getLocalized("audio.notInChannel", "en_US"));
 			return;
 		}
 
@@ -79,7 +82,7 @@ public class Audio {
 
 	public static void skip(MessageReceivedEvent event) {
 		if (event.getGuild() == null) {
-			prezado(event, I18n.getLocalized("audio.notInGuild", Locale.ENGLISH));
+			prezado(event, I18n.getLocalized("audio.notInGuild", "en_US"));
 			return;
 		}
 
@@ -87,12 +90,12 @@ public class Audio {
 		).findFirst().orElse(null);
 
 		if (channel == null) {
-			prezado(event, I18n.getLocalized("audio.notInChannel", Locale.ENGLISH));
+			prezado(event, I18n.getLocalized("audio.notInChannel", "en_US"));
 			return;
 		}
 
 		if (event.getGuild().getAudioManager().getConnectedChannel() != channel) {
-			prezado(event, I18n.getLocalized("audio.notInSameChannel", Locale.ENGLISH));
+			prezado(event, I18n.getLocalized("audio.notInSameChannel", "en_US"));
 			return;
 		}
 
@@ -159,7 +162,7 @@ public class Audio {
 
 		@Override
 		public String toString() {
-			return (player != null ? player.isPlaying() ? ":play_pause: - " : ":stop_button: - " : "") + url.toString() + " (" + String.format(I18n.getLocalized("audio.queue", Locale.ENGLISH), "*" + name(sourceOfAllEvil.getAuthor(), sourceOfAllEvil.getGuild()) + "*", "*" + channel.getName() + "*") + ")";
+			return (player != null ? player.isPlaying() ? ":play_pause: - " : ":stop_button: - " : "") + url.toString() + " (" + String.format(I18n.getLocalized("audio.queue", "en_US"), "*" + name(sourceOfAllEvil.getAuthor(), sourceOfAllEvil.getGuild()) + "*", "*" + channel.getName() + "*") + ")";
 		}
 	}
 }

@@ -13,40 +13,30 @@
 package cf.adriantodt.bot.impl.i18n;
 
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 
 public class I18n {
-	/**
-	 * Dummy instance. Uses = DataManager
-	 */
 	public static I18n instance = new I18n();
 
-	static {
-		getParenting().put(Locale.ROOT, null);
-	}
-
-	private Map<Locale, Map<String, String>> locales = new HashMap<>();
-	private Map<Locale, Locale> parents = new HashMap<>();
+	private Map<String, Map<String, String>> locales = new HashMap<>();
+	private Map<String, String> parents = new HashMap<>();
 
 	private I18n() {
 	}
 
-	private static Map<Locale, Map<String, String>> getLocales() {
+	private static Map<String, Map<String, String>> getLocales() {
 		return instance.locales;
 	}
 
-	private static Map<Locale, Locale> getParenting() {
+	private static Map<String, String> getParenting() {
 		return instance.parents;
 	}
 
-	public static void setParent(Locale locale, Locale parent) {
-		if (locale == Locale.ROOT) return;
-		if (parent == null) parent = Locale.ROOT;
+	public static void setParent(String locale, String parent) {
 		getParenting().put(locale, parent);
 	}
 
-	public static String getLocalized(String unlocalized, Locale locale) {
+	public static String getLocalized(String unlocalized, String locale) {
 		String localized = unlocalized;
 		while (unlocalized.equals(localized) && locale != null) {
 			Map<String, String> locales = I18n.getLocales().get(locale);
@@ -56,7 +46,7 @@ public class I18n {
 		return localized;
 	}
 
-	public static void localize(Locale target, String unlocalized, String localized) {
+	public static void localize(String target, String unlocalized, String localized) {
 		if (!getLocales().containsKey(target)) getLocales().put(target, new HashMap<>());
 		getLocales().get(target).put(unlocalized, localized);
 	}

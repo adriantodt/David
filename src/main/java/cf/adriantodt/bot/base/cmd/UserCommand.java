@@ -21,7 +21,6 @@ import net.dv8tion.jda.events.message.MessageReceivedEvent;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 import static cf.adriantodt.bot.Answers.noperm;
 import static cf.adriantodt.bot.Answers.send;
@@ -38,7 +37,7 @@ public class UserCommand implements ICommand {
 				send(event, IOHelper.toString(response.substring(6)));
 				return;
 			} else if (response.substring(0, 6).equals("loc://")) {
-				send(event, I18n.getLocalized(response.substring(6), Locale.ENGLISH));
+				send(event, I18n.getLocalized(response.substring(6), "en_US"));
 				return;
 			} else if (response.substring(0, 6).equals("aud://")) {
 				Audio.queue(IOHelper.newURL(response.substring(6)), event);

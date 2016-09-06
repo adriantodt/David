@@ -20,18 +20,21 @@ import cf.adriantodt.bot.base.guild.DiscordGuild;
 import cf.adriantodt.bot.base.perm.Permissions;
 import cf.adriantodt.bot.impl.oldpers.DataManager;
 import cf.brforgers.core.lib.IOHelper;
+import net.dv8tion.jda.entities.Guild;
+import net.dv8tion.jda.entities.Role;
 import net.dv8tion.jda.entities.User;
 import net.dv8tion.jda.events.message.MessageReceivedEvent;
 
 import java.text.Collator;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import static cf.adriantodt.bot.Answers.*;
 import static cf.adriantodt.bot.Statistics.parseInt;
-import static cf.adriantodt.bot.Utils.splitArgs;
-import static cf.adriantodt.bot.Utils.startAsyncDramaProvider;
+import static cf.adriantodt.bot.Utils.*;
 import static cf.adriantodt.bot.base.perm.Permissions.*;
 import static cf.adriantodt.bot.impl.EventHandler.*;
+import static cf.adriantodt.bot.impl.i18n.I18n.getLocalized;
 
 public class Commands {
 	public static final Map<String, ICommand> COMMANDS = new HashMap<>();
@@ -51,10 +54,10 @@ public class Commands {
 		//implOkay
 		addCommand("okay", (guild, arguments, event) -> bool(event, (arguments.isEmpty() || Boolean.parseBoolean(arguments))));
 
-		//implJogando
-		addCommand("jogando", new CommandBuilder().setAction((arg, event) -> {
-			if (arg.isEmpty()) send(event, "***Agora não estou jogando!***");
-			else send(event, "***Agora estou jogando " + arg + "***");
+		//implPlaying
+		addCommand("playing", new CommandBuilder().setAction((arg, event) -> {
+			if (arg.isEmpty()) announce(event, getLocalized("playing.notPlaying", "en_US"));
+			else announce(event, String.format(getLocalized("playing.nowPlaying", "en_US"), arg));
 			Bot.GAME = arg;
 		}).setPermRequired(Permissions.PLAYING).build());
 
@@ -65,24 +68,22 @@ public class Commands {
 		addCommand("user", (g, a, e) -> {
 			User user = (e.getMessage().getMentionedUsers().isEmpty() ? e.getAuthor() : e.getMessage().getMentionedUsers().get(0));
 			send(e,
-				user.getAsMention() + ": \nAvatar: " + user.getAvatarUrl() + "\n```" +
-					"Nome: " + user.getUsername() + "\n" +
-					"Apelido: " + (e.getGuild().getNicknameForUser(user) == null ? "(nenhum)" : e.getGuild().getNicknameForUser(user)) + "\n" +
-					"Cargos: " + e.getGuild().getRolesForUser(user).size() + "\n" +
-					(g.guild == null ? "" : "Membro desde: " + g.guild.getJoinDateForUser(user).getDayOfMonth() + "-"
-						+ g.guild.getJoinDateForUser(user).getMonth() + "-"
-						+ g.guild.getJoinDateForUser(user).getYear() + "\n") +
-					"Guilds em Comum: " + Utils.getCommonGuilds(user, e) + "\n" +
+				user.getAsMention() + ": \n" + getLocalized("user.avatar", "en_US") + ": " + user.getAvatarUrl() + "\n```" +
+					getLocalized("user.name", "en_US") + ": " + user.getUsername() + "\n" +
+					getLocalized("user.nick", "en_US") + ": " + (e.getGuild().getNicknameForUser(user) == null ? "(" + getLocalized("user.none", "en_US") + ")" : e.getGuild().getNicknameForUser(user)) + "\n" +
+					getLocalized("user.roles", "en_US") + ": " + nnOrD(String.join(", ", e.getGuild().getRolesForUser(user).stream().map(Role::getName).toArray(String[]::new)), "(" + getLocalized("user.none", "en_US") + ")") + "\n" +
+					(g.guild == null ? "" : getLocalized("user.memberSince", "en_US") + ": " + g.guild.getJoinDateForUser(user).format(DateTimeFormatter.RFC_1123_DATE_TIME) + "\n") +
+					getLocalized("user.commonGuilds", "en_US") + ": " + nnOrD(String.join(", ", e.getJDA().getGuilds().stream().filter(guild -> guild.isMember(user)).map(Guild::getName).toArray(String[]::new)), "(" + getLocalized("user.none", "en_US") + ")") + "\n" +
 					"ID: " + user.getId() + "\n" +
-					"Status: " + user.getOnlineStatus() + "\n" +
-					"Jogando: " + (user.getCurrentGame() == null ? "(nada)" : user.getCurrentGame().toString()) + "\n```"
+					getLocalized("user.status", "en_US") + ": " + user.getOnlineStatus() + "\n" +
+					getLocalized("user.playing", "en_US") + ": " + (user.getCurrentGame() == null ? "(" + getLocalized("user.none", "en_US") + ")" : user.getCurrentGame().toString()) + "\n```"
 			);
 		});
 
 		//implQueue
 		addCommand("play", addUsage((guild, arguments, event) ->
 			Audio.queue(IOHelper.newURL(arguments), event)
-			, "Toca uma faixa de áudio da internet.\nSó são aceitos links diretos (YouTube não é suportado.)"));
+			, getLocalized("play.usage", "en_US")));
 
 		addCommand("queue", (guild, arguments, event) -> {
 			if (event.getGuild() == null) {

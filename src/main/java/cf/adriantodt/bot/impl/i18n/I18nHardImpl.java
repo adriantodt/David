@@ -12,49 +12,72 @@
 
 package cf.adriantodt.bot.impl.i18n;
 
-import java.util.Locale;
-
 import static cf.adriantodt.bot.impl.i18n.I18n.localize;
-import static java.util.Locale.ENGLISH;
 
 /**
  * Hardcoded Impl goes here. Shouldn't be used too much.
  * It's here for Anti Data Loss regeneration.
  */
 public class I18nHardImpl {
-	public static final Locale PORTUGUESE = new Locale("pt-BR");
 
 	public static void impl() {
-		localize(ENGLISH, "bot.hello1", "Hello! I'm David. Someone dropped me here!");
-		localize(ENGLISH, "bot.hello2", "Someone call %s to set my Default Language! (By default is English)");
-		localize(ENGLISH, "bot.stop", "Stopping...");
-		localize(PORTUGUESE, "bot.stop", "Saindo...");
-		localize(ENGLISH, "bot.restart", "Restarting...");
-		localize(PORTUGUESE, "bot.restart", "Reiniciando...");
+		localize("en_US", "bot.hello1", "Hello! I'm David. Someone dropped me here!");
+		localize("en_US", "bot.hello2", "Someone call %s to set my Default Language! (By default is English)");
+		localize("en_US", "bot.stop", "Stopping...");
+		localize("pt_BR", "bot.stop", "Saindo...");
+		localize("en_US", "bot.restart", "Restarting...");
+		localize("pt_BR", "bot.restart", "Reiniciando...");
 
-		localize(ENGLISH, "tree.subcmds", "Sub-Commands");
-		localize(PORTUGUESE, "tree.subcmds", "Sub-Comandos");
-		localize(ENGLISH, "tree.default", "default");
-		localize(PORTUGUESE, "tree.default", "padrão");
+		localize("en_US", "tree.subcmds", "Sub-Commands");
+		localize("pt_BR", "tree.subcmds", "Sub-Comandos");
+		localize("en_US", "tree.default", "default");
+		localize("pt_BR", "tree.default", "padrão");
 
-		localize(ENGLISH, "guild.guild", "Guild");
-		localize(PORTUGUESE, "guild.guild", "Guild");
-		localize(ENGLISH, "guild.admin", "Admin");
-		localize(PORTUGUESE, "guild.admin", "Admin");
-		localize(ENGLISH, "guild.cmds", "Commands");
-		localize(PORTUGUESE, "guild.cmds", "Comandos");
-		localize(ENGLISH, "guild.channels", "Channels");
-		localize(PORTUGUESE, "guild.channels", "Canais");
-		localize(ENGLISH, "guild.users", "Users");
-		localize(PORTUGUESE, "guild.users", "Usuários");
+		localize("en_US", "guild.guild", "Guild");
+		localize("pt_BR", "guild.guild", "Guild");
+		localize("en_US", "guild.admin", "Admin");
+		localize("pt_BR", "guild.admin", "Admin");
+		localize("en_US", "guild.cmds", "Commands");
+		localize("pt_BR", "guild.cmds", "Comandos");
+		localize("en_US", "guild.channels", "Channels");
+		localize("pt_BR", "guild.channels", "Canais");
+		localize("en_US", "guild.users", "Users");
+		localize("pt_BR", "guild.users", "Usuários");
 
-		localize(ENGLISH, "audio.queue", "added by %s for channel &s");
-		localize(PORTUGUESE, "audio.queue", "adicionado por %s para o canal %s");
-		localize(ENGLISH, "audio.notInGuild", "you need to be in a Guild to queue a music.");
-		localize(PORTUGUESE, "audio.notInGuild", "você tem que estar em uma Guild para pedir uma música.");
-		localize(ENGLISH, "audio.notInChannel", "you need to be connected to queue a music.");
-		localize(PORTUGUESE, "audio.notInChannel", "você tem que estar em conectado em um canal para pedir uma música.");
-		localize(ENGLISH, "audio.notInSameChannel", "you need to be connected to the same channel as the Bot to skip a music.");
-		localize(PORTUGUESE, "audio.notInSameChannel", "você tem que estar em conectado no mesmo canal do Bot para pular uma música.");
+		localize("en_US", "audio.queue", "added by %s for channel &s");
+		localize("pt_BR", "audio.queue", "adicionado por %s para o canal %s");
+		localize("en_US", "audio.notInGuild", "you need to be in a Guild to queue a music.");
+		localize("pt_BR", "audio.notInGuild", "você tem que estar em uma Guild para pedir uma música.");
+		localize("en_US", "audio.notInChannel", "you need to be connected to queue a music.");
+		localize("pt_BR", "audio.notInChannel", "você tem que estar em conectado em um canal para pedir uma música.");
+		localize("en_US", "audio.notInSameChannel", "you need to be connected to the same channel as the Bot to skip a music.");
+		localize("pt_BR", "audio.notInSameChannel", "você tem que estar em conectado no mesmo canal do Bot para pular uma música.");
+
+		localize("en_US", "playing.notPlaying", "Now I'm playing %s!");
+		localize("pt_BR", "playing.notPlaying", "Agora estou jogando %s!");
+		localize("en_US", "playing.nowPlaying", "Now I'm not playing!");
+		localize("pt_BR", "playing.nowPlaying", "Agora não estou jogando!");
+
+		localize("en_US", "user.none", "none");
+		localize("pt_BR", "user.none", "nenhum");
+		localize("en_US", "user.avatar", "Avatar");
+		localize("pt_BR", "user.avatar", "Avatar");
+		localize("en_US", "user.name", "Name");
+		localize("pt_BR", "user.name", "Nome");
+		localize("en_US", "user.nick", "Nick");
+		localize("pt_BR", "user.nick", "Apelido");
+		localize("en_US", "user.roles", "Roles");
+		localize("pt_BR", "user.roles", "Cargos");
+		localize("en_US", "user.memberSince", "Member Since");
+		localize("pt_BR", "user.memberSince", "Membro Desde");
+		localize("en_US", "user.commonGuilds", "Common Guilds");
+		localize("pt_BR", "user.commonGuilds", "Guilds em Comum");
+		localize("en_US", "user.status", "Status");
+		localize("pt_BR", "user.status", "Status");
+		localize("en_US", "user.playing", "Playing");
+		localize("pt_BR", "user.playing", "Jogando");
+
+		localize("en_US", "play.usage", "Play an audio track from internet.\nOnly direct link are accepted (Youtube is not supported.)");
+		localize("pt_BR", "play.usage", "Toca uma faixa de áudio da internet.\nSó são aceitos links diretos (YouTube não é suportado.)");
 	}
 }

@@ -20,7 +20,6 @@ import cf.adriantodt.bot.impl.i18n.I18n;
 import net.dv8tion.jda.events.message.MessageReceivedEvent;
 
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 import java.util.function.Supplier;
 
@@ -34,7 +33,7 @@ public class TreeCommandBuilder {
 		Holder<StringBuilder> b = new Holder<>();
 		Holder<Boolean> first = new Holder<>();
 
-		b.var = new StringBuilder(I18n.getLocalized("tree.subcmds", Locale.ENGLISH) + ":");
+		b.var = new StringBuilder(I18n.getLocalized("tree.subcmds", "en_US") + ":");
 		first.var = true;
 		SUBCMDS.forEach((cmdName, cmd) -> {
 			String usage = cmd.retrieveUsage();
@@ -42,7 +41,7 @@ public class TreeCommandBuilder {
 			if (first.var) {
 				first.var = false;
 			}
-			String a = "\n - " + (cmdName.isEmpty() ? "(" + I18n.getLocalized("tree.default", Locale.ENGLISH) + ")" : cmdName) + ": " + usage.replace("\n", "\n    ");
+			String a = "\n - " + (cmdName.isEmpty() ? "(" + I18n.getLocalized("tree.default", "en_US") + ")" : cmdName) + ": " + usage.replace("\n", "\n    ");
 			b.var.append(a);
 		});
 		if (first.var) return null;

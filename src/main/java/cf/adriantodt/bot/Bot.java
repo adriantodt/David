@@ -17,6 +17,7 @@ import cf.adriantodt.bot.impl.Commands;
 import cf.adriantodt.bot.impl.EventHandler;
 import cf.adriantodt.bot.impl.Spy;
 import cf.adriantodt.bot.impl.i18n.I18n;
+import cf.adriantodt.bot.impl.i18n.I18nHardImpl;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import net.dv8tion.jda.JDA;
@@ -31,7 +32,10 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
 
 import static cf.adriantodt.bot.impl.oldpers.DataManager.*;
 
@@ -61,6 +65,7 @@ public class Bot extends ListenerAdapter {
 			Audio.setup();
 			Commands.impl();
 			loadData();
+			I18nHardImpl.impl();
 			Statistics.startDate = new Date();
 		} catch (Exception e) {
 			LOGGER.error("An exception was caught during Initialization: ", e);
@@ -115,7 +120,7 @@ public class Bot extends ListenerAdapter {
 
 	public static void stopBot() {
 		API.getAccountManager().setIdle(true);
-		API.getAccountManager().setGame(I18n.getLocalized("bot.stop", Locale.ENGLISH));
+		API.getAccountManager().setGame(I18n.getLocalized("bot.stop", "en_US"));
 		API.getAccountManager().update();
 		LOGGER.info("Bot exiting...");
 		try {
@@ -127,7 +132,7 @@ public class Bot extends ListenerAdapter {
 
 	public static void restartBot() {
 		API.getAccountManager().setIdle(true);
-		API.getAccountManager().setGame(I18n.getLocalized("bot.restart", Locale.ENGLISH));
+		API.getAccountManager().setGame(I18n.getLocalized("bot.restart", "en_US"));
 		API.getAccountManager().update();
 		LOGGER.info("Bot restarting...");
 		try {
@@ -152,8 +157,8 @@ public class Bot extends ListenerAdapter {
 	public void onGuildJoin(GuildJoinEvent event) {
 		try {
 			Spy.spy(event);
-			event.getGuild().getPublicChannel().sendMessage(I18n.getLocalized("bot.hello1", Locale.ENGLISH));
-			event.getGuild().getPublicChannel().sendMessage(String.format(I18n.getLocalized("bot.hello2", Locale.ENGLISH), event.getGuild().getOwner().getAsMention()));
+			event.getGuild().getPublicChannel().sendMessage(I18n.getLocalized("bot.hello1", "en_US"));
+			event.getGuild().getPublicChannel().sendMessage(String.format(I18n.getLocalized("bot.hello2", "en_US"), event.getGuild().getOwner().getAsMention()));
 		} catch (Exception e) {
 			event.getGuild().getManager().leave();
 		}

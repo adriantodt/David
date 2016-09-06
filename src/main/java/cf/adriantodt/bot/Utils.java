@@ -80,13 +80,13 @@ public class Utils {
 		return normalized;
 	}
 
-	public static int getCommonGuilds(User user, MessageReceivedEvent e) {
-		int count = 0;
-		for (Guild guild : e.getJDA().getGuilds()) if (guild.isMember(user)) count++;
-		return count;
-	}
-
 	public static String name(User user, Guild guild) {
 		return (guild.getNicknameForUser(user) == null ? user.getUsername() : guild.getNicknameForUser(user));
 	}
+
+	public static String nnOrD(String str, String defaultStr) {
+		if (str == null || str.trim().isEmpty()) return defaultStr;
+		return str;
+	}
+
 }
