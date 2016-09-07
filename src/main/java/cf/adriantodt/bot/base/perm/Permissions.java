@@ -40,15 +40,15 @@ Guia de Referência:
 Permissões:
 	RUN_BASECMD (0) -> Permissão básica. Sem ela o Bot ignora seus comandos.
 	RUN_USR_CMD (1) -> Executar Comandos de Usuário.
-	RUN_LUA_CMD (2) -> TO BE IMPL. Executar Comandos de Usuário em Lua.
+	RUN_SCT_CMD (2) -> TO BE IMPL. Executar Comandos de Usuário em Lua.
 	PERMSYSTEM  (3) -> Sistema de Permissões.
 	GUILD_PASS  (4) -> Permite o acesso a comandos dessa Guild por meio de &GUILD:<command>
 	MANAGE_CMDS (5) -> Criação e Exclusão de comandos na Guild.
-	MANAGE_SPCS (6) -> Permite a criação de comandos WEB:// ou LUA://
+	MANAGE_SPCS (6) -> Permite a criação de comandos WEB:// ou SCRIPTS://
 	PERMSYSTEM_ASSIST_PERMS (7-9)
 	                -> Protege pessoas de nível maior de serem afetadas por pessoas com nível maior.
 	PLAYING     (a) -> Comando &jogando
-	LUA         (b) -> Comando &lua
+	SCRIPTS         (b) -> Comando &scripting
 	GUILD       (c) -> Comando &guild
 	SPY         (d) -> Comando &spy
 	GLOBALS_IMP (e) -> Comando &globals e subcomando import
@@ -64,7 +64,7 @@ public class Permissions {
 	public static final long
 		RUN_BASECMD = bits(0),
 		RUN_USR_CMD = bits(1),
-		RUN_LUA_CMD = bits(2),
+		RUN_SCT_CMD = bits(2), //SCripT
 		PERMSYSTEM = bits(3),
 		GUILD_PASS = bits(4),
 		MANAGE_USR = bits(5),
@@ -73,7 +73,7 @@ public class Permissions {
 		PERMSYS_GO = bits(8),
 		PERMSYS_BO = bits(9),
 		PLAYING = bits(10),
-		LUA = bits(11),
+		SCRIPTS = bits(11),
 		GUILD = bits(12),
 		SPY = bits(13),
 		GLOBALS_IMP = bits(14),
@@ -84,9 +84,9 @@ public class Permissions {
 		STOP_RESET = bits(62);
 
 	public static final long
-		BASE_USER = RUN_BASECMD | RUN_USR_CMD | RUN_LUA_CMD | GUILD_PASS | INTERFACES,
+		BASE_USER = RUN_BASECMD | RUN_USR_CMD | RUN_SCT_CMD | GUILD_PASS | INTERFACES,
 		GUILD_MOD = BASE_USER | MANAGE_USR | MANAGE_SPCS | PERMSYSTEM | PERMSYS_GM | GLOBALS_IMP,
-		GUILD_OWNER = GUILD_MOD | GLOBALS_EXP | LUA | GUILD | PERMSYS_GO,
+		GUILD_OWNER = GUILD_MOD | GLOBALS_EXP | SCRIPTS | GUILD | PERMSYS_GO,
 		BOT_OWNER = GUILD_OWNER | PLAYING | LUAENV_FULL | SPY | SAVE_LOAD | STOP_RESET | PERMSYS_BO;
 
 	public static Map<String, Long> perms = new HashMap<String, Long>() {{

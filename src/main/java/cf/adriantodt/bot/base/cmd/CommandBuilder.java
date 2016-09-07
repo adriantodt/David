@@ -20,6 +20,8 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import static cf.adriantodt.bot.impl.i18n.I18n.getLocalized;
+
 public class CommandBuilder {
 	private TriConsumer<DiscordGuild, String, MessageReceivedEvent> action = null;
 	private Supplier<Long> permProvider = () -> 0L;
@@ -52,6 +54,11 @@ public class CommandBuilder {
 
 	public CommandBuilder setUsage(String usage) {
 		usageProvider = (s) -> usage;
+		return this;
+	}
+
+	public CommandBuilder setTranslableUsage(String usage) {
+		usageProvider = (lang) -> getLocalized(usage, lang);
 		return this;
 	}
 

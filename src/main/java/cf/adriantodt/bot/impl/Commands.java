@@ -20,6 +20,7 @@ import cf.adriantodt.bot.base.guild.DiscordGuild;
 import cf.adriantodt.bot.base.perm.Permissions;
 import cf.adriantodt.bot.impl.i18n.I18n;
 import cf.adriantodt.bot.impl.persistence.DataManager;
+import cf.adriantodt.bot.impl.scripting.JS;
 import cf.brforgers.core.lib.IOHelper;
 import net.dv8tion.jda.entities.Guild;
 import net.dv8tion.jda.entities.Role;
@@ -85,7 +86,7 @@ public class Commands {
 		addCommand("play",
 			new CommandBuilder()
 				.setAction((guild, arguments, event) -> Audio.queue(IOHelper.newURL(arguments), event))
-				.setUsage((lang) -> getLocalized("play.usage", lang))
+				.setTranslableUsage("play.usage")
 				.build()
 		);
 
@@ -105,7 +106,7 @@ public class Commands {
 		addCommand("skip",
 			new CommandBuilder()
 				.setAction(Audio::skip)
-				.setUsage((lang) -> getLocalized("skip.usage", lang))
+				.setTranslableUsage("skip.usage")
 				.build()
 		);
 
@@ -122,6 +123,14 @@ public class Commands {
 				else announce(event, String.format(getLocalized("lang.set", event), arg));
 			}
 		);
+
+		//implEval
+		addCommand("eval",
+			new CommandBuilder()
+				.setAction(JS::eval)
+				.setPermRequired(SCRIPTS | RUN_SCT_CMD)
+				.build()
+		);
 	}
 
 	private static void implGuild() {
@@ -130,13 +139,13 @@ public class Commands {
 			.addCommand("info",
 				new CommandBuilder()
 					.setAction((guild, arguments, event) -> sendCased(event, guild.toString()))
-					.setUsage((lang) -> getLocalized("guild.info.usage", lang)).build()
+					.setTranslableUsage("guild.info.usage").build()
 			)
 			.addDefault("info")
 			.addCommand("list",
 				new CommandBuilder()
 					.setAction((guild, arguments, event) -> Spy.listChannels(guild, event))
-					.setUsage((lang) -> getLocalized("guild.list.usage", lang)).build()
+					.setTranslableUsage("guild.list.usage").build()
 			)
 			.addCommand("lang",
 				(guild, arg, event) -> {
@@ -148,7 +157,7 @@ public class Commands {
 			.addCommand("broadcast",
 				new CommandBuilder()
 					.setAction(Spy::broadcast)
-					.setUsage((lang) -> getLocalized("guild.broadcast.usage", lang)).build()
+					.setTranslableUsage("guild.broadcast.usage").build()
 			)
 			.build()
 		);
@@ -157,38 +166,14 @@ public class Commands {
 	private static void implPerms() {
 		addCommand("perms", new TreeCommandBuilder()
 			.addCommand("get", new CommandBuilder()
-				.setUsage("Mostrar as Permissões.\n(Parâmetros: [user])\nSe executado sem argumentos, retorna as suas permissões.\nSe um usuário for suprido, retorna as permissões do usuário.")
+				.setTranslableUsage("perms.get.usage")
 				.setAction((guild, arguments, event) -> {
 					String arg = splitArgs(arguments, 1)[0]; //!getlevel USER
 					if (arg.isEmpty()) arg = event.getAuthor().getId();
-					Collection<String> perms = Permissions.toCollection(getPermFor(guild, arg));
-
-					Holder<StringBuilder> b = new Holder<>();
-					Holder<Boolean> first = new Holder<>();
-
-					b.var = new StringBuilder("**Permissões do Usuário:**\n *");
-					first.var = true;
-					perms.forEach(s -> {
-						if (first.var) {
-							first.var = false;
-							b.var.append(s);
-						} else {
-							String a = " " + s;
-							if (b.var.length() + a.length() >= 1999) {
-								b.var.append("*");
-								send(event, b.var.toString());
-								b.var = new StringBuilder("*");
-							}
-							b.var.append(a);
-						}
-
-					});
-					if (first.var) b.var.append("(nenhuma)");
-					b.var.append("*");
-					send(event, b.var.toString());
+					send(event, "**" + getLocalized("perms.get.userPerms", event) + ":**\n *" + String.join(", ", Permissions.toCollection(getPermFor(guild, arg)).stream().toArray(String[]::new)) + "*");
 				}).build())
 			.addCommand("set", new CommandBuilder().setPermRequired(Permissions.PERMSYSTEM)
-				.setUsage("Define as Permissões.\n(Parâmetros: <user>)\nDefine as permissões do usuário suprido pelo parâmetro.")
+				.setTranslableUsage("perms.set.usage")
 				.setAction((guild, arguments, event) -> {
 					String[] args = splitArgs(arguments, 2); //!setlevel USER LEVEL
 					if (args[0].isEmpty() || args[1].isEmpty()) invalidargs(event);
@@ -213,33 +198,7 @@ public class Commands {
 				})
 				.build()
 			)
-			.addCommand("list", addUsage((guild, arguments, event) -> {
-				Collection<String> perms = Permissions.toCollection(BOT_OWNER);
-
-				Holder<StringBuilder> b = new Holder<>();
-				Holder<Boolean> first = new Holder<>();
-
-				b.var = new StringBuilder("**Permissões Disponíveis:**\n *");
-				first.var = true;
-				perms.forEach(s -> {
-					if (first.var) {
-						first.var = false;
-						b.var.append(s);
-					} else {
-						String a = " " + s;
-						if (b.var.length() + a.length() >= 1999) {
-							b.var.append("*");
-							send(event, b.var.toString());
-							b.var = new StringBuilder("*");
-						}
-						b.var.append(a);
-					}
-
-				});
-				if (first.var) b.var.append("(nenhuma permissão disponível)");
-				b.var.append("*");
-				send(event, b.var.toString());
-			}, "Lista as permissões disponíveis."))
+			.addCommand("list", (guild, arguments, event) -> send(event, "**" + getLocalized("perms.get.userPerms", event) + ":**\n *" + String.join(", ", Permissions.toCollection(BOT_OWNER).stream().toArray(String[]::new)) + "*"))
 			.build()
 		);
 	}

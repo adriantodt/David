@@ -105,7 +105,19 @@ public class I18nHardImpl {
 		localize("en_US", "guild.broadcast.usage", "Send a message to all channels of the Guild.");
 		localize("pt_BR", "guild.broadcast.usage", "Envie uma mensagem para todos os canais da Guild.");
 
+		localize("en_US", "perms.get.usage", "Show the current User Permissions.\n(Parameters: [user])\nIf executed without arguments, return the sender's permissions.\nIf a user is specified, the user's permissions is returned instead.");
+		localize("pt_BR", "perms.get.usage", "Mostrar as Permissões que o Usuário tem.\n(Parâmetros: [user])\nSe executado sem argumentos, retorna as suas permissões.\nSe um usuário for suprido, retorna as permissões do usuário.");
+		localize("en_US", "perms.get.userPerms", "User Permissions");
+		localize("pt_BR", "perms.get.userPerms", "Permissões do Usuário");
+		localize("en_US", "perms.get.none", "none");
+		localize("pt_BR", "perms.get.none", "nenhuma");
+		localize("en_US", "perms.set.usage", "Define the User Permissions.\n(Parameters: <user>)\nDefine the permissions of a user specified by the parameter.");
+		localize("pt_BR", "perms.set.usage", "Define as Permissões de um Usuário.\n(Parâmetros: <user>)\nDefine as permissões do usuário suprido pelo parâmetro.");
+
 		localize("en_US", "answers.dear", "Dear");
 		localize("pt_BR", "answers.dear", "Prezado");
+
+		localize("en_US", "eval.noOut", "Executed successfully (No output was provided)");
+		localize("pt_BR", "eval.noOut", "Executou com sucesso (Nenhum objeto foi retornado)");
 	}
 }

@@ -42,10 +42,10 @@ public class UserCommand implements ICommand {
 			} else if (response.substring(0, 6).equals("aud://")) {
 				Audio.queue(IOHelper.newURL(response.substring(6)), event);
 				return;
-			} else if (response.substring(0, 6).equals("lua://")) {
-				if (Permissions.havePermsRequired(guild, event, Permissions.RUN_LUA_CMD)) {
+			} else if (response.substring(0, 6).equals("scripting://")) {
+				if (Permissions.havePermsRequired(guild, event, Permissions.RUN_SCT_CMD)) {
 					send(event, "TODO Lua Impl");
-					//lua command
+					//scripting command
 				} else {
 					noperm(event);
 				}

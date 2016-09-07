@@ -74,7 +74,7 @@ public class Audio {
 		if (!guildQueues.containsKey(channel.getGuild())) guildQueues.put(channel.getGuild(), new ArrayList<>());
 		Queue queue = new Queue();
 		queue.channel = channel;
-		queue.sourceOfAllEvil = event;
+		queue.triggerEvent = event;
 		queue.url = url;
 		guildQueues.get(channel.getGuild()).add(queue);
 		bool(event, true);
@@ -112,7 +112,7 @@ public class Audio {
 			if (guild.getAudioManager().isConnected() && !guild.getAudioManager().isAttemptingToConnect())
 				guild.getAudioManager().closeAudioConnection();
 			if (queue.size() == 1) {
-				send(queue.get(0).sourceOfAllEvil, ":stop_button:");
+				send(queue.get(0).triggerEvent, ":stop_button:");
 				queue.remove(0);
 
 			}
@@ -136,10 +136,10 @@ public class Audio {
 					guild.getAudioManager().setSendingHandler(q.player);
 					q.player.play();
 					Statistics.musics++;
-					send(q.sourceOfAllEvil, q.toString());
+					send(q.triggerEvent, q.toString());
 					setup = true;
 				} catch (Exception e) {
-					Answers.exception(q.sourceOfAllEvil, e);
+					Answers.exception(q.triggerEvent, e);
 					queue.remove(q);
 				}
 			}
@@ -154,12 +154,12 @@ public class Audio {
 	private static class Queue {
 		public VoiceChannel channel;
 		public URL url;
-		public MessageReceivedEvent sourceOfAllEvil;
+		public MessageReceivedEvent triggerEvent;
 		private Player player;
 
 		@Override
 		public String toString() {
-			return (player != null ? player.isPlaying() ? ":play_pause: - " : ":stop_button: - " : "") + url.toString() + " (" + String.format(I18n.getLocalized("audio.queue", sourceOfAllEvil), "*" + name(sourceOfAllEvil.getAuthor(), sourceOfAllEvil.getGuild()) + "*", "*" + channel.getName() + "*") + ")";
+			return (player != null ? player.isPlaying() ? ":play_pause: - " : ":stop_button: - " : "") + url.toString() + " (" + String.format(I18n.getLocalized("audio.queue", triggerEvent), "*" + name(triggerEvent.getAuthor(), triggerEvent.getGuild()) + "*", "*" + channel.getName() + "*") + ")";
 		}
 	}
 }
