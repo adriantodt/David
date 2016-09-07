@@ -40,6 +40,7 @@ public class DataManager {
 			data.name = guild.name;
 			data.userPerms = guild.userPerms;
 			data.flags = guild.flags;
+			data.lang = guild.defaultLanguage;
 			guild.commands.forEach((cmdName, cmd) -> {
 				if (cmd != null) data.commands.put(cmdName, cmd.responses);
 			});
@@ -72,6 +73,7 @@ public class DataManager {
 			guild.name = data.name;
 			guild.userPerms = data.userPerms;
 			guild.flags = data.flags;
+			guild.defaultLanguage = data.lang;
 			data.commands.forEach((cmdName, responses) -> {
 				UserCommand cmd = guild.commands.get(cmdName);
 				if (cmd == null) {

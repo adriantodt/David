@@ -138,6 +138,13 @@ public class Commands {
 					.setAction((guild, arguments, event) -> Spy.listChannels(guild, event))
 					.setUsage((lang) -> getLocalized("guild.list.usage", lang)).build()
 			)
+			.addCommand("lang",
+				(guild, arg, event) -> {
+					arg = (arg.isEmpty() ? "en_US" : arg);
+					guild.defaultLanguage = arg;
+					announce(event, String.format(getLocalized("guild.lang.set", event), arg));
+				}
+			)
 			.addCommand("broadcast",
 				new CommandBuilder()
 					.setAction(Spy::broadcast)

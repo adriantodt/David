@@ -22,7 +22,7 @@ public class I18nHardImpl {
 
 	public static void impl() {
 		localize("en_US", "bot.hello1", "Hello! I'm David. Someone dropped me here!");
-		localize("en_US", "bot.hello2", "Someone call %s to set my Default Language! (By default is English)");
+		localize("en_US", "bot.hello2", "Someone call %s to set my Default Language! (By default is English <en_US>, and the Owner can set it by sending `&guild lang <en_US|pt_BR|etc>`)");
 		localize("en_US", "bot.stop", "Stopping...");
 		localize("pt_BR", "bot.stop", "Saindo...");
 		localize("en_US", "bot.restart", "Restarting...");
@@ -100,6 +100,8 @@ public class I18nHardImpl {
 		localize("pt_BR", "guild.info.usage", "Mostre informações sobre a Guild.");
 		localize("en_US", "guild.list.usage", "List the Guild channels.");
 		localize("pt_BR", "guild.list.usage", "Mostre os canais da Guild.");
+		localize("en_US", "guild.lang.set", "Now I'll speak %s in this Guild!");
+		localize("pt_BR", "guild.lang.set", "Agora eu vou falar em %s nessa Guild!");
 		localize("en_US", "guild.broadcast.usage", "Send a message to all channels of the Guild.");
 		localize("pt_BR", "guild.broadcast.usage", "Envie uma mensagem para todos os canais da Guild.");
 

@@ -20,5 +20,5 @@ public class DiscordGuildData {
 	public Map<String, List<String>> commands = new HashMap<>();
 	public Map<String, Long> userPerms = new HashMap<>();
 	public Map<String, Boolean> flags = new HashMap<>();
-	public String id, name;
+	public String id, name, lang;
 }
