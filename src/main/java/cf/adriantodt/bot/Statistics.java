@@ -30,7 +30,7 @@ public class Statistics {
 		long different = endDate.getTime() - startDate.getTime();
 
 		if (different <= 0) {
-			return "Já saiu! *Vai jogar!* **Agora!**";
+			return "<Diferença negativa de tempo>";
 		}
 
 		different = different / 1000;

@@ -12,6 +12,7 @@
 
 package cf.adriantodt.bot;
 
+import cf.adriantodt.bot.gui.BotGui;
 import cf.adriantodt.bot.impl.Audio;
 import cf.adriantodt.bot.impl.Commands;
 import cf.adriantodt.bot.impl.EventHandler;
@@ -32,10 +33,7 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 import static cf.adriantodt.bot.impl.persistence.DataManager.*;
 
@@ -47,15 +45,19 @@ public class Bot extends ListenerAdapter {
 	public static String BOTID = null, BOTNAME = null;
 	public static User SELF = null;
 	public static String GAME = "";
+	public static Bot INSTANCE = null;
 
 	public static void main(String[] args) {
 		LOGGER.info("Started!");
 		hackLog();
+		if (Arrays.stream(args).filter("nogui"::equals).findAny().orElse(null) == null) BotGui.createBotGui();
+		else LOGGER.info("UI Disabled");
 		Utils.startAsyncCpuUsage();
 		Utils.startAsyncUserTimeout();
 		try {
+			INSTANCE = new Bot();
 			loadConfig();
-			API = new JDABuilder().addListener(new Bot()).setBotToken(configs.token).setBulkDeleteSplittingEnabled(false).buildBlocking();
+			API = new JDABuilder().addListener(INSTANCE).setBotToken(configs.token).setBulkDeleteSplittingEnabled(false).buildBlocking();
 			BOTID = API.getSelfInfo().getId();
 			BOTNAME = API.getSelfInfo().getUsername();
 			SELF = API.getUserById(BOTID);

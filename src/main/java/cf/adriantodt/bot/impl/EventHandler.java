@@ -22,6 +22,7 @@ import net.dv8tion.jda.events.message.MessageReceivedEvent;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.WeakHashMap;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -32,9 +33,12 @@ import static cf.adriantodt.bot.Statistics.toofasts;
 import static cf.adriantodt.bot.Utils.splitArgs;
 
 public class EventHandler {
-	public static boolean cleanup = true;
-	private static Map<MessageReceivedEvent, ICommand> map = new HashMap<>();
-	private static Map<MessageReceivedEvent, DiscordGuild> map2 = new HashMap<>();
+	public static boolean cleanup = true, toofast = true;
+	private static Map<MessageReceivedEvent, ICommand> map = new WeakHashMap<>();
+	private static Map<MessageReceivedEvent, DiscordGuild> map2 = new WeakHashMap<>();
+
+	static {
+	}
 
 	public static void handle(MessageReceivedEvent event) {
 		if (BOTID.equals(event.getAuthor().getId())) { //Safer
@@ -76,7 +80,7 @@ public class EventHandler {
 				map.put(event, command);
 				map2.put(event, target);
 				if (!Permissions.canRunCommand(target, event, command)) noperm(event);
-				else if (!Utils.canExecuteCmd(event)) {
+				else if (toofast && !Utils.canExecuteCmd(event)) {
 					toofast(event);
 					toofasts++;
 					return;
@@ -89,8 +93,7 @@ public class EventHandler {
 						exception(event, e);
 					}
 				}
-				map.remove(event);
-				map2.remove(event);
+				//remove the map and map2 key removal because WeakHashMap does it now.
 			}
 		}
 		setDefault();

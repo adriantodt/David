@@ -113,10 +113,10 @@ public class Spy {
 	}
 
 	public static String getChannelName(DiscordGuild guild, MessageChannel channel) {
-		if (channel instanceof TextChannel) {
-			return ((TextChannel) channel).getGuild().getName() + ":" + ((TextChannel) channel).getName() + "(#" + getChannels(guild).indexOf(channel) + ")";
-		} else if (channel instanceof PrivateChannel) {
+		if (channel instanceof PrivateChannel) {
 			return ((PrivateChannel) channel).getUser().getUsername() + "'s PM" + "(#" + getChannels(guild).indexOf(channel) + ")";
+		} else if (channel instanceof TextChannel) {
+			return ((TextChannel) channel).getGuild().getName() + ":" + ((TextChannel) channel).getName() + "(#" + getChannels(guild).indexOf(channel) + ")";
 		}
 
 		return "Além";

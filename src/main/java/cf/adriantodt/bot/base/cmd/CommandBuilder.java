@@ -57,7 +57,7 @@ public class CommandBuilder {
 		return this;
 	}
 
-	public CommandBuilder setTranslableUsage(String usage) {
+	public CommandBuilder setTranslatableUsage(String usage) {
 		usageProvider = (lang) -> getLocalized(usage, lang);
 		return this;
 	}

@@ -36,6 +36,7 @@ import static cf.adriantodt.bot.Statistics.parseInt;
 import static cf.adriantodt.bot.Utils.*;
 import static cf.adriantodt.bot.base.perm.Permissions.*;
 import static cf.adriantodt.bot.impl.EventHandler.*;
+import static cf.adriantodt.bot.impl.EventHandler.toofast;
 import static cf.adriantodt.bot.impl.i18n.I18n.getLocalized;
 
 public class Commands {
@@ -72,9 +73,12 @@ public class Commands {
 			send(e,
 				user.getAsMention() + ": \n" + getLocalized("user.avatar", e) + ": " + user.getAvatarUrl() + "\n```" +
 					getLocalized("user.name", e) + ": " + user.getUsername() + "\n" +
-					getLocalized("user.nick", e) + ": " + (e.getGuild().getNicknameForUser(user) == null ? "(" + getLocalized("user.none", e) + ")" : e.getGuild().getNicknameForUser(user)) + "\n" +
-					getLocalized("user.roles", e) + ": " + nnOrD(String.join(", ", e.getGuild().getRolesForUser(user).stream().map(Role::getName).toArray(String[]::new)), "(" + getLocalized("user.none", e) + ")") + "\n" +
-					(g.guild == null ? "" : getLocalized("user.memberSince", e) + ": " + g.guild.getJoinDateForUser(user).format(DateTimeFormatter.RFC_1123_DATE_TIME) + "\n") +
+
+					(g.guild == null ? "" :
+						getLocalized("user.nick", e) + ": " + (e.getGuild().getNicknameForUser(user) == null ? "(" + getLocalized("user.none", e) + ")" : e.getGuild().getNicknameForUser(user)) + "\n" +
+							getLocalized("user.roles", e) + ": " + nnOrD(String.join(", ", e.getGuild().getRolesForUser(user).stream().map(Role::getName).toArray(String[]::new)), "(" + getLocalized("user.none", e) + ")") + "\n" +
+							getLocalized("user.memberSince", e) + ": " + g.guild.getJoinDateForUser(user).format(DateTimeFormatter.RFC_1123_DATE_TIME) + "\n"
+					) +
 					getLocalized("user.commonGuilds", e) + ": " + nnOrD(String.join(", ", e.getJDA().getGuilds().stream().filter(guild -> guild.isMember(user)).map(Guild::getName).toArray(String[]::new)), "(" + getLocalized("user.none", e) + ")") + "\n" +
 					"ID: " + user.getId() + "\n" +
 					getLocalized("user.status", e) + ": " + user.getOnlineStatus() + "\n" +
@@ -86,7 +90,7 @@ public class Commands {
 		addCommand("play",
 			new CommandBuilder()
 				.setAction((guild, arguments, event) -> Audio.queue(IOHelper.newURL(arguments), event))
-				.setTranslableUsage("play.usage")
+				.setTranslatableUsage("play.usage")
 				.build()
 		);
 
@@ -106,7 +110,7 @@ public class Commands {
 		addCommand("skip",
 			new CommandBuilder()
 				.setAction(Audio::skip)
-				.setTranslableUsage("skip.usage")
+				.setTranslatableUsage("skip.usage")
 				.build()
 		);
 
@@ -139,13 +143,13 @@ public class Commands {
 			.addCommand("info",
 				new CommandBuilder()
 					.setAction((guild, arguments, event) -> sendCased(event, guild.toString()))
-					.setTranslableUsage("guild.info.usage").build()
+					.setTranslatableUsage("guild.info.usage").build()
 			)
 			.addDefault("info")
 			.addCommand("list",
 				new CommandBuilder()
 					.setAction((guild, arguments, event) -> Spy.listChannels(guild, event))
-					.setTranslableUsage("guild.list.usage").build()
+					.setTranslatableUsage("guild.list.usage").build()
 			)
 			.addCommand("lang",
 				(guild, arg, event) -> {
@@ -157,7 +161,7 @@ public class Commands {
 			.addCommand("broadcast",
 				new CommandBuilder()
 					.setAction(Spy::broadcast)
-					.setTranslableUsage("guild.broadcast.usage").build()
+					.setTranslatableUsage("guild.broadcast.usage").build()
 			)
 			.build()
 		);
@@ -166,14 +170,14 @@ public class Commands {
 	private static void implPerms() {
 		addCommand("perms", new TreeCommandBuilder()
 			.addCommand("get", new CommandBuilder()
-				.setTranslableUsage("perms.get.usage")
+				.setTranslatableUsage("perms.get.usage")
 				.setAction((guild, arguments, event) -> {
 					String arg = splitArgs(arguments, 1)[0]; //!getlevel USER
 					if (arg.isEmpty()) arg = event.getAuthor().getId();
 					send(event, "**" + getLocalized("perms.get.userPerms", event) + ":**\n *" + String.join(", ", Permissions.toCollection(getPermFor(guild, arg)).stream().toArray(String[]::new)) + "*");
 				}).build())
 			.addCommand("set", new CommandBuilder().setPermRequired(Permissions.PERMSYSTEM)
-				.setTranslableUsage("perms.set.usage")
+				.setTranslatableUsage("perms.set.usage")
 				.setAction((guild, arguments, event) -> {
 					String[] args = splitArgs(arguments, 2); //!setlevel USER LEVEL
 					if (args[0].isEmpty() || args[1].isEmpty()) invalidargs(event);
@@ -217,7 +221,6 @@ public class Commands {
 				.addDefault("info")
 				.addCommand("stop",
 					new CommandBuilder().setPermRequired(STOP_RESET)
-						.setUsage("Para o Bot (Não salva as informações).")
 						.setAction(event -> {
 							announce(event, "Saindo...");
 							Bot.stopBot();
@@ -226,7 +229,6 @@ public class Commands {
 				)
 				.addCommand("restart",
 					new CommandBuilder().setPermRequired(STOP_RESET)
-						.setUsage("Reinicia o Bot (Requer que o Bot esteja executando em um Jar).")
 						.setAction(event -> {
 							announce(event, "Saindo...");
 							Bot.restartBot();
@@ -235,7 +237,6 @@ public class Commands {
 				)
 				.addCommand("save",
 					new CommandBuilder().setPermRequired(SAVE_LOAD)
-						.setUsage("Salva as informações no Disco.")
 						.setAction(event -> {
 							announce(event, "Salvando...");
 							DataManager.saveData();
@@ -252,9 +253,16 @@ public class Commands {
 							bool(event, cleanup);
 						}).build()
 				)
+				.addCommand("toofast",
+					new CommandBuilder().setPermRequired(Permissions.GUILD)
+						.setUsage("Ativa ou Desativa o \"Toofast\" de Mensagens do Bot.")
+						.setAction((event) -> {
+							toofast = !toofast;
+							bool(event, toofast);
+						}).build()
+				)
 				.addCommand("load",
 					new CommandBuilder().setPermRequired(SAVE_LOAD)
-						.setUsage("Carrega as informações do Disco.")
 						.setAction(event -> {
 							announce(event, "Carregando...");
 							DataManager.loadData();

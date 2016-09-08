@@ -134,7 +134,7 @@ public class Permissions {
 
 	public static long getPermFor(DiscordGuild guild, String target) {
 		target = processID(target);
-		long global = DiscordGuild.GLOBAL.userPerms.getOrDefault(target, 0L), unrevokeable = (target.equals(processID(DataManager.configs.owner)) ? BOT_OWNER : (guild.guild != null && guild.guild.getOwnerId().equals(target)) ? GUILD_OWNER : 0);
+		long global = DiscordGuild.GLOBAL.userPerms.getOrDefault(target, 0L), unrevokeable = (target.equals(processID(DataManager.configs.owner)) || target.equals("console") ? BOT_OWNER : (guild.guild != null && guild.guild.getOwnerId().equals(target)) ? GUILD_OWNER : 0);
 		return global | guild.userPerms.getOrDefault(target, (global == 0 ? guild.userPerms.getOrDefault("default", BASE_USER) : global)) | unrevokeable;
 		//this will merge the Global Perms, the Local Perms, and Unrevokeable Perms (BOT_OWNER or GUILD_OWNER)
 	}
@@ -148,12 +148,12 @@ public class Permissions {
 	}
 
 	public static boolean isMention(String string) {
-		return (string.charAt(0) == '<' && string.charAt(1) == '@' && string.charAt(string.length() - 1) == '>');
+		return string.length() > 2 && (string.charAt(0) == '<' && string.charAt(1) == '@' && string.charAt(string.length() - 1) == '>');
 	}
 
 	public static String processID(String string) {
 		if (isMention(string)) string = string.substring(2, string.length() - 1);
-		if (string.charAt(0) == '!') string = string.substring(1);
+		if (string.length() > 0 && string.charAt(0) == '!') string = string.substring(1);
 		return string.toLowerCase();
 	}
 
