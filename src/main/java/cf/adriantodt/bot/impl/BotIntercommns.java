@@ -13,50 +13,70 @@
 package cf.adriantodt.bot.impl;
 
 import cf.adriantodt.bot.Bot;
+import cf.adriantodt.bot.Utils;
+import cf.adriantodt.bot.base.guild.DiscordGuild;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonParser;
 import net.dv8tion.jda.OnlineStatus;
 import net.dv8tion.jda.entities.User;
 import net.dv8tion.jda.events.message.MessageReceivedEvent;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static cf.adriantodt.bot.Bot.JSON;
 
 public class BotIntercommns {
-	private static Map<User, List<Character>> bots = new HashMap<>();
+	private static final Logger log = LogManager.getLogger("BotIntercommns");
+	private static Map<User, List<String>> bots = new HashMap<>();
+	private static String cached = calcString();
 
 	public static void onEvent(MessageReceivedEvent event) {
-		if (!event.isPrivate() || !event.getAuthor().isBot()) onSubEvent(event);
+		if (!event.isPrivate() || !event.getAuthor().isBot() || event.getPrivateChannel().getUser() != event.getAuthor())
+			onSubEvent(event);
 		String msg = event.getMessage().getRawContent();
 		if (msg.charAt(0) != '§' || msg.charAt(1) != 'B' || msg.charAt(2) != 'I' || msg.charAt(3) != 'C') return;
 		msg = msg.substring(4);
 
 		if (!bots.containsKey(event.getAuthor())) {
 			bots.put(event.getAuthor(), new ArrayList<>());
-			event.getPrivateChannel().sendMessage("§BIC['&','?']".replace('\'', '"'));
+			pmBot(event.getAuthor());
 		}
 
-		List<Character> p = bots.get(event.getAuthor());
+		List<String> p = bots.get(event.getAuthor());
 		p.clear();
 		JsonArray arr = new JsonParser().parse(msg).getAsJsonArray();
 		for (int i = 0; i < arr.size(); i++) {
 			if (arr.get(i).getAsString() != null && !arr.get(i).getAsString().isEmpty())
-				p.add(arr.get(i).getAsString().charAt(0));
+				p.add(arr.get(i).getAsString());
 		}
+		log.info("Bot \"" + event.getAuthor().getUsername() + "\" answered: " + Arrays.toString(p.toArray()));
 	}
 
 	private static void onSubEvent(MessageReceivedEvent event) {
-		char c = event.getMessage().getRawContent().charAt(0);
-		List<User> botss = bots.entrySet().stream().filter(entry -> entry.getValue().stream().anyMatch(character -> character == c)).map(Map.Entry::getKey).collect(Collectors.toList());
-		if (!Character.isLetterOrDigit(c) && botss.size() != 0 && botss.stream().filter(user -> user.getOnlineStatus() != OnlineStatus.OFFLINE).count() == 0) {
+		String base = Utils.splitArgs(event.getMessage().getRawContent(), 2)[0];
+		List<User> botss = bots.entrySet().stream().filter(entry -> entry.getValue().stream().anyMatch(base::equals)).map(Map.Entry::getKey).collect(Collectors.toList());
+		if (botss.size() != 0 && botss.stream().filter(user -> user.getOnlineStatus() != OnlineStatus.OFFLINE).count() == 0) {
 			event.getChannel().sendMessageAsync("*Nenhum dos Bots responsáveis por esse comando está online. Tente mais tarde.*", null);
 		}
 	}
 
+	private static String calcString() {
+		return JSON.toJson(Stream.concat(EventHandler.getCommands(DiscordGuild.GLOBAL).keySet().stream().map(s -> "&" + s), EventHandler.getCommands(DiscordGuild.GLOBAL).keySet().stream().map(s -> "?" + s)));
+	}
+
+	public static void recalcString() {
+		cached = calcString();
+	}
+
+	public static void pmBot(User user) {
+		user.getPrivateChannel().sendMessageAsync(("§BIC" + cached).replace('\'', '"'), null);
+	}
+
 	public static void batchDoCommn() {
-		Bot.API.getUsers().stream().filter(User::isBot).filter(user -> !Bot.SELF.equals(user)).forEach(user -> user.getPrivateChannel().sendMessageAsync("§BIC['&','?']".replace('\'', '"'), null));
+		Bot.API.getUsers().stream().filter(User::isBot).filter(user -> !Bot.BOTID.equals(user.getId())).forEach(BotIntercommns::pmBot);
 	}
 }

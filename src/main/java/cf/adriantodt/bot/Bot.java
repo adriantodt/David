@@ -153,7 +153,7 @@ public class Bot extends ListenerAdapter {
 	@Override
 	public void onUserOnlineStatusUpdate(UserOnlineStatusUpdateEvent event) {
 		if (event.getUser().getOnlineStatus() != OnlineStatus.OFFLINE && event.getUser().isBot())
-			event.getUser().getPrivateChannel().sendMessageAsync("§BIC['&','?']".replace('\'', '"'), null);
+			BotIntercommns.pmBot(event.getUser());
 	}
 
 	@Override
