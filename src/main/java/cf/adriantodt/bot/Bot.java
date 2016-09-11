@@ -13,20 +13,19 @@
 package cf.adriantodt.bot;
 
 import cf.adriantodt.bot.gui.BotGui;
-import cf.adriantodt.bot.impl.Audio;
-import cf.adriantodt.bot.impl.Commands;
-import cf.adriantodt.bot.impl.EventHandler;
-import cf.adriantodt.bot.impl.Spy;
+import cf.adriantodt.bot.impl.*;
 import cf.adriantodt.bot.impl.i18n.I18n;
 import cf.adriantodt.bot.impl.i18n.I18nHardImpl;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.JDABuilder;
+import net.dv8tion.jda.OnlineStatus;
 import net.dv8tion.jda.entities.User;
 import net.dv8tion.jda.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.events.guild.GuildLeaveEvent;
 import net.dv8tion.jda.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.events.user.UserOnlineStatusUpdateEvent;
 import net.dv8tion.jda.hooks.ListenerAdapter;
 import net.dv8tion.jda.utils.SimpleLog;
 import org.apache.logging.log4j.Level;
@@ -70,6 +69,7 @@ public class Bot extends ListenerAdapter {
 			loadI18n();
 			I18nHardImpl.impl();
 			Statistics.startDate = new Date();
+			BotIntercommns.batchDoCommn();
 		} catch (Exception e) {
 			LOGGER.error("An exception was caught during Initialization: ", e);
 			Java.stopApp();
@@ -151,9 +151,16 @@ public class Bot extends ListenerAdapter {
 	}
 
 	@Override
+	public void onUserOnlineStatusUpdate(UserOnlineStatusUpdateEvent event) {
+		if (event.getUser().getOnlineStatus() != OnlineStatus.OFFLINE && event.getUser().isBot())
+			event.getUser().getPrivateChannel().sendMessageAsync("§BIC['&','?']".replace('\'', '"'), null);
+	}
+
+	@Override
 	public void onMessageReceived(final MessageReceivedEvent event) {
 		Spy.spy(event);
 		EventHandler.handle(event);
+		BotIntercommns.onEvent(event);
 	}
 
 	@Override

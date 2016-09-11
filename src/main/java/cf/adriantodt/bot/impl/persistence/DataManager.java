@@ -23,6 +23,8 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
+import java.util.Map;
 
 import static cf.adriantodt.bot.Bot.*;
 
@@ -31,8 +33,10 @@ public class DataManager {
 	public static Configs configs;
 
 	public static void saveData() {
+		Map<String, List<String>> persAnnoy = data.annoy;
 		data = new BotData();
 		data.game = Bot.GAME;
+		data.annoy = persAnnoy;
 
 		DiscordGuild.all.forEach(guild -> {
 			DiscordGuildData data = new DiscordGuildData();

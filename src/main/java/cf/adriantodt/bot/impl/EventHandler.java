@@ -18,17 +18,18 @@ import cf.adriantodt.bot.base.cmd.ICommand;
 import cf.adriantodt.bot.base.cmd.UserCommand;
 import cf.adriantodt.bot.base.guild.DiscordGuild;
 import cf.adriantodt.bot.base.perm.Permissions;
+import cf.adriantodt.bot.impl.persistence.DataManager;
 import net.dv8tion.jda.events.message.MessageReceivedEvent;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static cf.adriantodt.bot.Answers.*;
-import static cf.adriantodt.bot.Bot.BOTID;
-import static cf.adriantodt.bot.Bot.setDefault;
+import static cf.adriantodt.bot.Bot.*;
 import static cf.adriantodt.bot.Statistics.toofasts;
 import static cf.adriantodt.bot.Utils.splitArgs;
 
@@ -58,6 +59,7 @@ public class EventHandler {
 
 
 		String cmd = event.getMessage().getRawContent();
+		boolean exec = false;
 
 		String baseCmd = splitArgs(cmd, 2)[0];
 		if (!baseCmd.isEmpty() && (baseCmd.charAt(0) == '?' || baseCmd.charAt(0) == '&')) { //Is Command
@@ -86,7 +88,7 @@ public class EventHandler {
 					return;
 				} else {
 					Statistics.cmds++;
-
+					exec = true;
 					try {
 						execute(command, target, splitArgs(cmd, 2)[1], event);
 					} catch (Exception e) {
@@ -96,6 +98,17 @@ public class EventHandler {
 				//remove the map and map2 key removal because WeakHashMap does it now.
 			}
 		}
+
+		if (!exec) {
+			List<String> list = DataManager.data.annoy.get(Permissions.processID(event.getAuthor().getId()));
+			if (list != null) {
+				String r = list.get(RAND.nextInt(list.size()));
+				if (r != null && !r.isEmpty()) {
+					send(event, r);
+				}
+			}
+		}
+
 		setDefault();
 	}
 

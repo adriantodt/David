@@ -27,9 +27,9 @@ import net.dv8tion.jda.entities.Role;
 import net.dv8tion.jda.entities.User;
 import net.dv8tion.jda.events.message.MessageReceivedEvent;
 
-import java.text.Collator;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static cf.adriantodt.bot.Answers.*;
 import static cf.adriantodt.bot.Statistics.parseInt;
@@ -134,6 +134,30 @@ public class Commands {
 				.setAction(JS::eval)
 				.setPermRequired(SCRIPTS | RUN_SCT_CMD)
 				.build()
+		);
+
+		//implAnnoy
+		addCommand("annoy", new CommandBuilder()
+			.setPermRequired(ANNOY)
+			.setUsage("")
+			.setAction(((arguments, event) -> {
+				String[] args = splitArgs(arguments, 3); //!spysend CH MSG
+				if (args[0].isEmpty() || args[1].isEmpty()) invalidargs(event);
+				else {
+					args[0] = processID(args[0]);
+					if ("clear".equals(args[1])) {
+						DataManager.data.annoy.remove(args[0]);
+						bool(event, true);
+					}
+					if ("add".equals(args[1])) {
+						if (!DataManager.data.annoy.containsKey(args[0]))
+							DataManager.data.annoy.put(args[0], new ArrayList<>());
+						DataManager.data.annoy.get(args[0]).add(args[2]);
+						bool(event, true);
+					}
+				}
+			}))
+			.build()
 		);
 	}
 
@@ -327,14 +351,17 @@ public class Commands {
 			new TreeCommandBuilder()
 				.addCommand("list",
 					addUsage((guild, args, event) -> {
-							Collection<String> cmds = new TreeSet<>(Collator.getInstance()), userCmds = new TreeSet<>(Collator.getInstance());
+							List<String> cmds, userCmds, tmp = new ArrayList<>();
 
-							getCommands(guild).forEach((cmdName, cmd) -> {
-								if (Permissions.canRunCommand(guild, event, cmd)) {
-									if (cmd instanceof UserCommand) userCmds.add(cmdName);
-									else cmds.add(cmdName);
+							cmds = getCommands(guild).entrySet().stream().filter(entry -> Permissions.canRunCommand(guild, event, entry.getValue())).filter(entry -> {
+								if (entry.getValue() instanceof UserCommand) {
+									tmp.add(entry.getKey());
+									return false;
 								}
-							});
+								return true;
+							}).map(Map.Entry::getKey).sorted(String::compareTo).collect(Collectors.toList());
+
+							userCmds = tmp.stream().sorted(String::compareTo).collect(Collectors.toList());
 
 							Holder<StringBuilder> b = new Holder<>();
 							Holder<Boolean> first = new Holder<>();

@@ -18,8 +18,10 @@ import cf.adriantodt.bot.impl.persistence.DataManager;
 import net.dv8tion.jda.events.message.MessageReceivedEvent;
 
 import java.lang.reflect.Modifier;
-import java.text.Collator;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import static cf.brforgers.core.lib.MathHelper.previousPowerOfTwo;
@@ -53,7 +55,8 @@ Permissões:
 	SPY         (d) -> Comando &spy
 	GLOBALS_IMP (e) -> Comando &globals e subcomando import
 	GLOBALS_EXP (f) -> Subcomando export
-	(g-z) -> Free Slots
+	ANNOY       (g) -> Annoy command
+	(h-z) -> Free Slots
 	INTERFACES  (A) -> Usar as Interfaces
 	LUAENV_FULL (B) -> Lua pode ser executado/compilado no Ambiente Inseguro
 	(C-X) -> Free Slots
@@ -78,6 +81,7 @@ public class Permissions {
 		SPY = bits(13),
 		GLOBALS_IMP = bits(14),
 		GLOBALS_EXP = bits(15),
+		ANNOY = bits(16),
 		INTERFACES = bits(36),
 		LUAENV_FULL = bits(37),
 		SAVE_LOAD = bits(61),
@@ -87,7 +91,7 @@ public class Permissions {
 		BASE_USER = RUN_BASECMD | RUN_USR_CMD | RUN_SCT_CMD | GUILD_PASS | INTERFACES,
 		GUILD_MOD = BASE_USER | MANAGE_USR | MANAGE_SPCS | PERMSYSTEM | PERMSYS_GM | GLOBALS_IMP,
 		GUILD_OWNER = GUILD_MOD | GLOBALS_EXP | SCRIPTS | GUILD | PERMSYS_GO,
-		BOT_OWNER = GUILD_OWNER | PLAYING | LUAENV_FULL | SPY | SAVE_LOAD | STOP_RESET | PERMSYS_BO;
+		BOT_OWNER = GUILD_OWNER | PLAYING | LUAENV_FULL | SPY | SAVE_LOAD | STOP_RESET | PERMSYS_BO | ANNOY;
 
 	public static Map<String, Long> perms = new HashMap<String, Long>() {{
 		Arrays.stream(Permissions.class.getDeclaredFields()) //This Reflection is used to HashMap-fy all the Fields above.
@@ -157,12 +161,12 @@ public class Permissions {
 		return string.toLowerCase();
 	}
 
-	public static Collection<String> toCollection(long userPerms) {
+	public static List<String> toCollection(long userPerms) {
 		return perms
 			.entrySet()
 			.stream()
 			.filter(entry -> (entry.getValue() & userPerms) == entry.getValue())
 			.map(Map.Entry::getKey)
-			.collect(Collectors.toCollection(() -> new TreeSet<>(Collator.getInstance())));
+			.sorted(String::compareTo).collect(Collectors.toList());
 	}
 }

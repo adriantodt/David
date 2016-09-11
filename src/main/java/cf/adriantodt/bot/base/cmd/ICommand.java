@@ -37,7 +37,7 @@ public interface ICommand {
 	 * Empty = No invalidargs message<br>
 	 * Not-Empty = Shows the String as message<br>
 	 *
-	 * @param language tje Language the Usage must be
+	 * @param language the Language the Usage must be
 	 * @return the Usage
 	 */
 	default String retrieveUsage(String language) {
