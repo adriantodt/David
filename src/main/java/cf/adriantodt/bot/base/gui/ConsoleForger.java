@@ -10,7 +10,7 @@
  * File Created @ [07/09/16 17:49]
  */
 
-package cf.adriantodt.bot.gui;
+package cf.adriantodt.bot.base.gui;
 
 import cf.adriantodt.bot.Bot;
 import net.dv8tion.jda.JDA;

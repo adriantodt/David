@@ -14,7 +14,8 @@ package cf.adriantodt.bot.impl;
 
 import cf.adriantodt.bot.Bot;
 import cf.adriantodt.bot.Utils;
-import cf.adriantodt.bot.base.guild.DiscordGuild;
+import cf.adriantodt.bot.base.DiscordGuild;
+import cf.adriantodt.bot.base.EventHandler;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonParser;
 import net.dv8tion.jda.OnlineStatus;
@@ -27,7 +28,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static cf.adriantodt.bot.Bot.JSON;
+import static cf.adriantodt.bot.Bot.JSON_INTERNAL;
 
 public class BotIntercommns {
 	private static final Logger log = LogManager.getLogger("BotIntercommns");
@@ -35,8 +36,11 @@ public class BotIntercommns {
 	private static String cached = calcString();
 
 	public static void onEvent(MessageReceivedEvent event) {
-		if (!event.isPrivate() || !event.getAuthor().isBot() || event.getPrivateChannel().getUser() != event.getAuthor())
+		if (!event.isPrivate() || !event.getAuthor().isBot() || Bot.API.getSelfInfo().equals(event.getAuthor())) {
 			onSubEvent(event);
+			return;
+		}
+
 		String msg = event.getMessage().getRawContent();
 		if (msg.charAt(0) != '§' || msg.charAt(1) != 'B' || msg.charAt(2) != 'I' || msg.charAt(3) != 'C') return;
 		msg = msg.substring(4);
@@ -65,18 +69,18 @@ public class BotIntercommns {
 	}
 
 	private static String calcString() {
-		return JSON.toJson(Stream.concat(EventHandler.getCommands(DiscordGuild.GLOBAL).keySet().stream().map(s -> "&" + s), EventHandler.getCommands(DiscordGuild.GLOBAL).keySet().stream().map(s -> "?" + s)));
+		return "§BIC" + JSON_INTERNAL.toJson(Stream.concat(EventHandler.getCommands(DiscordGuild.GLOBAL).keySet().stream().map(s -> "&" + s), EventHandler.getCommands(DiscordGuild.GLOBAL).keySet().stream().map(s -> "?" + s)).toArray());
 	}
 
-	public static void recalcString() {
+	public static void redoCache() {
 		cached = calcString();
 	}
 
 	public static void pmBot(User user) {
-		user.getPrivateChannel().sendMessageAsync(("§BIC" + cached).replace('\'', '"'), null);
+		user.getPrivateChannel().sendMessageAsync(cached, null);
 	}
 
 	public static void batchDoCommn() {
-		Bot.API.getUsers().stream().filter(User::isBot).filter(user -> !Bot.BOTID.equals(user.getId())).forEach(BotIntercommns::pmBot);
+		Bot.API.getUsers().stream().filter(user -> user.isBot() && !Bot.API.getSelfInfo().equals(user) && user.getOnlineStatus() != OnlineStatus.OFFLINE).forEach(BotIntercommns::pmBot);
 	}
 }

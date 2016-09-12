@@ -10,14 +10,14 @@
  * File Created @ [02/09/16 08:18]
  */
 
-package cf.adriantodt.bot.impl.persistence;
+package cf.adriantodt.bot.base.persistence;
 
 import cf.adriantodt.bot.Bot;
 import cf.adriantodt.bot.Java;
 import cf.adriantodt.bot.Statistics;
+import cf.adriantodt.bot.base.DiscordGuild;
+import cf.adriantodt.bot.base.I18n;
 import cf.adriantodt.bot.base.cmd.UserCommand;
-import cf.adriantodt.bot.base.guild.DiscordGuild;
-import cf.adriantodt.bot.impl.i18n.I18n;
 
 import java.nio.charset.Charset;
 import java.nio.file.Files;

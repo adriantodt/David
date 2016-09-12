@@ -12,7 +12,7 @@
 
 package cf.adriantodt.bot.base.cmd;
 
-import cf.adriantodt.bot.base.guild.DiscordGuild;
+import cf.adriantodt.bot.base.DiscordGuild;
 import net.dv8tion.jda.events.message.MessageReceivedEvent;
 
 import java.util.function.BiConsumer;
@@ -20,7 +20,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import static cf.adriantodt.bot.impl.i18n.I18n.getLocalized;
+import static cf.adriantodt.bot.base.I18n.getLocalized;
 
 public class CommandBuilder {
 	private TriConsumer<DiscordGuild, String, MessageReceivedEvent> action = null;

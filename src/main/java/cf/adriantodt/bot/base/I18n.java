@@ -7,13 +7,11 @@
  * GNU Lesser General Public License v2.1:
  * https://github.com/adriantodt/David/blob/master/LICENSE
  *
- * File Created @ [02/09/16 08:18]
+ * File Created @ [12/09/16 07:39]
  */
 
-package cf.adriantodt.bot.impl.i18n;
+package cf.adriantodt.bot.base;
 
-import cf.adriantodt.bot.base.perm.Permissions;
-import cf.adriantodt.bot.impl.EventHandler;
 import net.dv8tion.jda.entities.User;
 import net.dv8tion.jda.events.message.MessageReceivedEvent;
 

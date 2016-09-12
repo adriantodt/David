@@ -12,9 +12,9 @@
 
 package cf.adriantodt.bot;
 
-import cf.adriantodt.bot.base.perm.Permissions;
-import cf.adriantodt.bot.impl.EventHandler;
-import cf.adriantodt.bot.impl.i18n.I18n;
+import cf.adriantodt.bot.base.EventHandler;
+import cf.adriantodt.bot.base.I18n;
+import cf.adriantodt.bot.base.Permissions;
 import net.dv8tion.jda.events.message.MessageReceivedEvent;
 
 

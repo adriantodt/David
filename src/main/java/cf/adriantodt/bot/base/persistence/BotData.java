@@ -10,7 +10,7 @@
  * File Created @ [02/09/16 08:18]
  */
 
-package cf.adriantodt.bot.impl.persistence;
+package cf.adriantodt.bot.base.persistence;
 
 import java.util.ArrayList;
 import java.util.HashMap;

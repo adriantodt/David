@@ -7,16 +7,14 @@
  * GNU Lesser General Public License v2.1:
  * https://github.com/adriantodt/David/blob/master/LICENSE
  *
- * File Created @ [02/09/16 08:18]
+ * File Created @ [12/09/16 07:38]
  */
 
-package cf.adriantodt.bot.base.guild;
+package cf.adriantodt.bot.base;
 
 import cf.adriantodt.bot.Bot;
 import cf.adriantodt.bot.base.cmd.UserCommand;
-import cf.adriantodt.bot.base.perm.Permissions;
-import cf.adriantodt.bot.impl.i18n.I18n;
-import cf.adriantodt.bot.impl.persistence.DataManager;
+import cf.adriantodt.bot.base.persistence.DataManager;
 import net.dv8tion.jda.entities.Guild;
 import net.dv8tion.jda.events.message.MessageReceivedEvent;
 
@@ -96,11 +94,13 @@ public class DiscordGuild {
 	}
 
 	public String toString() {
-		return I18n.getLocalized("guild.guild", "en_US") + ": " + name + (guild != null && !name.equals(guild.getName()) ? " (" + guild.getName() + ")" : "")
-			+ "\n - " + I18n.getLocalized("guild.admin", "en_US") + ": " + (guild == null ? Bot.API.getUserById(DataManager.configs.owner).getUsername() : guild.getOwner().getUsername())
-			+ "\n - " + I18n.getLocalized("guild.cmds", "en_US") + ": " + commands.size()
-			+ "\n - " + I18n.getLocalized("guild.channels", "en_US") + ": " + (guild == null ? (this == PM ? Bot.API.getPrivateChannels().size() : Bot.API.getTextChannels().size() + Bot.API.getPrivateChannels().size()) : guild.getTextChannels().size())
-			+ "\n - " + I18n.getLocalized("guild.users", "en_US") + ": " + (guild == null ? (this == PM ? Bot.API.getPrivateChannels().size() : Bot.API.getUsers().size()) : guild.getUsers().size())
+		MessageReceivedEvent event = EventHandler.getFromGuild(this);
+		String lang = (event == null ? this.defaultLanguage : I18n.getLang(event));
+		return I18n.getLocalized("guild.guild", lang) + ": " + name + (guild != null && !name.equals(guild.getName()) ? " (" + guild.getName() + ")" : "")
+			+ "\n - " + I18n.getLocalized("guild.admin", lang) + ": " + (guild == null ? Bot.API.getUserById(DataManager.configs.owner).getUsername() : guild.getOwner().getUsername())
+			+ "\n - " + I18n.getLocalized("guild.cmds", lang) + ": " + commands.size()
+			+ "\n - " + I18n.getLocalized("guild.channels", lang) + ": " + (guild == null ? (this == PM ? Bot.API.getPrivateChannels().size() : Bot.API.getTextChannels().size() + Bot.API.getPrivateChannels().size()) : guild.getTextChannels().size())
+			+ "\n - " + I18n.getLocalized("guild.users", lang) + ": " + (guild == null ? (this == PM ? Bot.API.getPrivateChannels().size() : Bot.API.getUsers().size()) : guild.getUsers().size())
 			+ "\n - ID: " + id
 			;
 	}

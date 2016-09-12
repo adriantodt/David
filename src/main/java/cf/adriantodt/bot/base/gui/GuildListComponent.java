@@ -5,7 +5,7 @@
  * to fit Java 8 and the Bot instead.
  */
 
-package cf.adriantodt.bot.gui;
+package cf.adriantodt.bot.base.gui;
 
 import cf.adriantodt.bot.Bot;
 import cf.adriantodt.bot.Utils;

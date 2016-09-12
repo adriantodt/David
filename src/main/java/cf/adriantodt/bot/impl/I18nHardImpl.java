@@ -7,12 +7,12 @@
  * GNU Lesser General Public License v2.1:
  * https://github.com/adriantodt/David/blob/master/LICENSE
  *
- * File Created @ [05/09/16 18:35]
+ * File Created @ [12/09/16 07:39]
  */
 
-package cf.adriantodt.bot.impl.i18n;
+package cf.adriantodt.bot.impl;
 
-import static cf.adriantodt.bot.impl.i18n.I18n.localize;
+import static cf.adriantodt.bot.base.I18n.localize;
 
 /**
  * Hardcoded Impl goes here. Shouldn't be used too much.

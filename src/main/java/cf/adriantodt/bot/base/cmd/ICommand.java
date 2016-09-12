@@ -12,8 +12,8 @@
 
 package cf.adriantodt.bot.base.cmd;
 
-import cf.adriantodt.bot.base.guild.DiscordGuild;
-import cf.adriantodt.bot.base.perm.Permissions;
+import cf.adriantodt.bot.base.DiscordGuild;
+import cf.adriantodt.bot.base.Permissions;
 import net.dv8tion.jda.events.message.MessageReceivedEvent;
 
 import java.util.function.Function;

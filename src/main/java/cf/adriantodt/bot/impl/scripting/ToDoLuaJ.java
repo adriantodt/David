@@ -18,14 +18,14 @@ import org.luaj.vm2.lib.jse.JseMathLib;
  * in a server environment.
  * <p>
  * <p>Although this sandboxing is done primarily in Java here, these
- * same techniques should all be possible directly from scripting using metatables,
- * and examples are shown in examples/scripting/samplesandboxed.scripting.
+ * same techniques should all be possible directly from lua using metatables,
+ * and examples are shown in examples/lua/samplesandboxed.lua.
  * <p>
  * <p> The main goals of this sandbox are:
  * <ul>
  * <li>Lightweight sandbox without using custom class loaders</li>
  * <li>use globals per-script and leave out dangerous libraries</li>
- * <li>use hook functions with Errors to limit scripting scripts</li>
+ * <li>use hook functions with Errors to limit lua scripts</li>
  * <li>use read-only tables to protect shared metatables</li>
  *
  * @see Globals
@@ -80,7 +80,7 @@ public class ToDoLuaJ {
 		runScriptInSandbox("return 5 + 6, 5 + true, false + 6");
 	}
 
-	// Run a script in a scripting thread and limit it to a certain number
+	// Run a script in a lua thread and limit it to a certain number
 	// of instructions by setting a hook function.
 	// Give each script its own copy of globals, but leave out libraries
 	// that contain functions that can be abused.
@@ -122,7 +122,7 @@ public class ToDoLuaJ {
 		LuaValue sethook = user_globals.get("debug").get("sethook");
 		user_globals.set("debug", LuaValue.NIL);
 
-		// Set up the script to run in its own scripting thread, which allows us
+		// Set up the script to run in its own lua thread, which allows us
 		// to set a hook function that limits the script to a specific number of cycles.
 		// Note that the environment is set to the userTimeout globals, even though the
 		// compiling is done with the server globals.
@@ -133,7 +133,7 @@ public class ToDoLuaJ {
 		// handled by any Lua code other than the coroutine.
 		LuaValue hookfunc = new ZeroArgFunction() {
 			public LuaValue call() {
-				// A simple scripting error may be caught by the script, but a
+				// A simple lua error may be caught by the script, but a
 				// Java Error will pass through to top and stop the script.
 				throw new Error("Script overran resource limits.");
 			}

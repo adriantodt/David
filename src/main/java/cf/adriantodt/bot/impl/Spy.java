@@ -14,7 +14,7 @@ package cf.adriantodt.bot.impl;
 
 import cf.adriantodt.bot.Answers;
 import cf.adriantodt.bot.Bot;
-import cf.adriantodt.bot.base.guild.DiscordGuild;
+import cf.adriantodt.bot.base.DiscordGuild;
 import net.dv8tion.jda.entities.Message;
 import net.dv8tion.jda.entities.MessageChannel;
 import net.dv8tion.jda.entities.PrivateChannel;

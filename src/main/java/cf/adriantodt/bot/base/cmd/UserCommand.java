@@ -12,10 +12,10 @@
 
 package cf.adriantodt.bot.base.cmd;
 
-import cf.adriantodt.bot.base.guild.DiscordGuild;
-import cf.adriantodt.bot.base.perm.Permissions;
-import cf.adriantodt.bot.impl.Audio;
-import cf.adriantodt.bot.impl.i18n.I18n;
+import cf.adriantodt.bot.base.Audio;
+import cf.adriantodt.bot.base.DiscordGuild;
+import cf.adriantodt.bot.base.I18n;
+import cf.adriantodt.bot.base.Permissions;
 import cf.brforgers.core.lib.IOHelper;
 import net.dv8tion.jda.events.message.MessageReceivedEvent;
 

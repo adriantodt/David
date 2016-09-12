@@ -7,20 +7,20 @@
  * GNU Lesser General Public License v2.1:
  * https://github.com/adriantodt/David/blob/master/LICENSE
  *
- * File Created @ [04/09/16 18:57]
+ * File Created @ [12/09/16 07:39]
  */
 
-package cf.adriantodt.bot.impl;
+package cf.adriantodt.bot.base;
 
 import cf.adriantodt.bot.Answers;
 import cf.adriantodt.bot.Bot;
 import cf.adriantodt.bot.Statistics;
-import cf.adriantodt.bot.impl.i18n.I18n;
 import net.dv8tion.jda.audio.player.Player;
 import net.dv8tion.jda.audio.player.URLPlayer;
 import net.dv8tion.jda.entities.Guild;
 import net.dv8tion.jda.entities.VoiceChannel;
 import net.dv8tion.jda.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.managers.AudioManager;
 
 import java.net.URL;
 import java.util.ArrayList;
@@ -40,7 +40,20 @@ public class Audio {
 			@Override
 			public void run() {
 				while (Bot.API.isAudioEnabled() && !this.isInterrupted()) {
-					guildQueues.forEach(Audio::doQueueing);
+					try {
+						guildQueues.forEach(Audio::doQueueing);
+					} catch (Exception e) {
+						Bot.LOGGER.error("Bot crashed while Queueing Audio. Restarting Queues...");
+						guildQueues.keySet().stream().map(Guild::getAudioManager).filter(AudioManager::isConnected).forEach((audioManager) -> {
+							try { //This is over needed but let's do this
+								guildQueues.remove(audioManager.getGuild()).get(0).player.stop();
+							} catch (Exception ignored) {
+							}
+							audioManager.closeAudioConnection();
+						});
+						Bot.LOGGER.error("Audio have been reset.");
+					}
+
 					try {
 						Thread.sleep(5000);
 					} catch (InterruptedException ignored) {

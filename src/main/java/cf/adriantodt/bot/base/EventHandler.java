@@ -7,18 +7,17 @@
  * GNU Lesser General Public License v2.1:
  * https://github.com/adriantodt/David/blob/master/LICENSE
  *
- * File Created @ [02/09/16 08:18]
+ * File Created @ [12/09/16 07:39]
  */
 
-package cf.adriantodt.bot.impl;
+package cf.adriantodt.bot.base;
 
 import cf.adriantodt.bot.Statistics;
 import cf.adriantodt.bot.Utils;
 import cf.adriantodt.bot.base.cmd.ICommand;
 import cf.adriantodt.bot.base.cmd.UserCommand;
-import cf.adriantodt.bot.base.guild.DiscordGuild;
-import cf.adriantodt.bot.base.perm.Permissions;
-import cf.adriantodt.bot.impl.persistence.DataManager;
+import cf.adriantodt.bot.base.persistence.DataManager;
+import cf.adriantodt.bot.impl.Commands;
 import net.dv8tion.jda.events.message.MessageReceivedEvent;
 
 import java.util.HashMap;
@@ -152,5 +151,9 @@ public class EventHandler {
 
 	public static DiscordGuild getGuild(MessageReceivedEvent event) {
 		return map2.get(event);
+	}
+
+	public static MessageReceivedEvent getFromGuild(DiscordGuild guild) {
+		return map2.entrySet().stream().filter(entry -> entry.getValue() == guild).map(Map.Entry::getKey).findFirst().orElse(null);
 	}
 }

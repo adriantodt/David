@@ -12,8 +12,8 @@
 
 package cf.adriantodt.bot.impl.scripting;
 
-import cf.adriantodt.bot.base.guild.DiscordGuild;
-import cf.adriantodt.bot.impl.i18n.I18n;
+import cf.adriantodt.bot.base.DiscordGuild;
+import cf.adriantodt.bot.base.I18n;
 import net.dv8tion.jda.events.message.MessageReceivedEvent;
 
 import javax.script.ScriptEngine;

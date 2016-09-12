@@ -5,7 +5,7 @@
  * Log4j update and the Bot instead.
  */
 
-package cf.adriantodt.bot.gui;
+package cf.adriantodt.bot.base.gui;
 
 import org.apache.logging.log4j.core.Filter;
 import org.apache.logging.log4j.core.Layout;

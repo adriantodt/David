@@ -15,11 +15,12 @@ package cf.adriantodt.bot.impl;
 import cf.adriantodt.bot.Bot;
 import cf.adriantodt.bot.Statistics;
 import cf.adriantodt.bot.Utils;
+import cf.adriantodt.bot.base.Audio;
+import cf.adriantodt.bot.base.DiscordGuild;
+import cf.adriantodt.bot.base.I18n;
+import cf.adriantodt.bot.base.Permissions;
 import cf.adriantodt.bot.base.cmd.*;
-import cf.adriantodt.bot.base.guild.DiscordGuild;
-import cf.adriantodt.bot.base.perm.Permissions;
-import cf.adriantodt.bot.impl.i18n.I18n;
-import cf.adriantodt.bot.impl.persistence.DataManager;
+import cf.adriantodt.bot.base.persistence.DataManager;
 import cf.adriantodt.bot.impl.scripting.JS;
 import cf.brforgers.core.lib.IOHelper;
 import net.dv8tion.jda.entities.Guild;
@@ -34,10 +35,10 @@ import java.util.stream.Collectors;
 import static cf.adriantodt.bot.Answers.*;
 import static cf.adriantodt.bot.Statistics.parseInt;
 import static cf.adriantodt.bot.Utils.*;
-import static cf.adriantodt.bot.base.perm.Permissions.*;
-import static cf.adriantodt.bot.impl.EventHandler.*;
-import static cf.adriantodt.bot.impl.EventHandler.toofast;
-import static cf.adriantodt.bot.impl.i18n.I18n.getLocalized;
+import static cf.adriantodt.bot.base.EventHandler.*;
+import static cf.adriantodt.bot.base.EventHandler.toofast;
+import static cf.adriantodt.bot.base.I18n.getLocalized;
+import static cf.adriantodt.bot.base.Permissions.*;
 
 public class Commands {
 	public static final Map<String, ICommand> COMMANDS = new HashMap<>();
@@ -427,6 +428,7 @@ public class Commands {
 								cmd.responses.add(args[1]);
 								bool(event, true);
 							}
+							BotIntercommns.redoCache();
 						}
 					}).build())
 				.addCommand("rm", new CommandBuilder().setPermRequired(Permissions.MANAGE_USR)
@@ -439,6 +441,7 @@ public class Commands {
 							else {
 								getLocalUserCommands(guild).remove(arg.toLowerCase());
 								bool(event, true);
+								BotIntercommns.redoCache();
 							}
 						}
 					}).build())

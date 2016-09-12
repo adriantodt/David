@@ -12,10 +12,14 @@
 
 package cf.adriantodt.bot;
 
-import cf.adriantodt.bot.gui.BotGui;
-import cf.adriantodt.bot.impl.*;
-import cf.adriantodt.bot.impl.i18n.I18n;
-import cf.adriantodt.bot.impl.i18n.I18nHardImpl;
+import cf.adriantodt.bot.base.Audio;
+import cf.adriantodt.bot.base.EventHandler;
+import cf.adriantodt.bot.base.I18n;
+import cf.adriantodt.bot.base.gui.BotGui;
+import cf.adriantodt.bot.impl.BotIntercommns;
+import cf.adriantodt.bot.impl.Commands;
+import cf.adriantodt.bot.impl.I18nHardImpl;
+import cf.adriantodt.bot.impl.Spy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import net.dv8tion.jda.JDA;
@@ -32,13 +36,15 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.awt.*;
 import java.util.*;
 
-import static cf.adriantodt.bot.impl.persistence.DataManager.*;
+import static cf.adriantodt.bot.base.persistence.DataManager.*;
 
 public class Bot extends ListenerAdapter {
 	public static final Random RAND = new Random();
 	public static final Gson JSON = new GsonBuilder().setPrettyPrinting().create();
+	public static final Gson JSON_INTERNAL = new GsonBuilder().create();
 	public static Logger LOGGER = LogManager.getLogger("BotCreator");
 	public static JDA API = null;
 	public static String BOTID = null, BOTNAME = null;
@@ -49,13 +55,15 @@ public class Bot extends ListenerAdapter {
 	public static void main(String[] args) {
 		LOGGER.info("Started!");
 		hackLog();
-		if (Arrays.stream(args).filter("nogui"::equals).findAny().orElse(null) == null) BotGui.createBotGui();
+		if (Arrays.stream(args).filter("nogui"::equals).findAny().orElse(null) == null && !GraphicsEnvironment.isHeadless())
+			BotGui.createBotGui();
+		else if (GraphicsEnvironment.isHeadless()) LOGGER.info("No UI. We're in a Headless Environiment.");
 		else LOGGER.info("UI Disabled");
 		Utils.startAsyncCpuUsage();
 		Utils.startAsyncUserTimeout();
 		try {
-			INSTANCE = new Bot();
 			loadConfig();
+			INSTANCE = new Bot();
 			API = new JDABuilder().addListener(INSTANCE).setBotToken(configs.token).setBulkDeleteSplittingEnabled(false).buildBlocking();
 			BOTID = API.getSelfInfo().getId();
 			BOTNAME = API.getSelfInfo().getUsername();

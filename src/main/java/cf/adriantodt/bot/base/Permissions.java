@@ -7,14 +7,13 @@
  * GNU Lesser General Public License v2.1:
  * https://github.com/adriantodt/David/blob/master/LICENSE
  *
- * File Created @ [02/09/16 08:18]
+ * File Created @ [12/09/16 07:38]
  */
 
-package cf.adriantodt.bot.base.perm;
+package cf.adriantodt.bot.base;
 
 import cf.adriantodt.bot.base.cmd.ICommand;
-import cf.adriantodt.bot.base.guild.DiscordGuild;
-import cf.adriantodt.bot.impl.persistence.DataManager;
+import cf.adriantodt.bot.base.persistence.DataManager;
 import net.dv8tion.jda.events.message.MessageReceivedEvent;
 
 import java.lang.reflect.Modifier;
@@ -50,7 +49,7 @@ Permissões:
 	PERMSYSTEM_ASSIST_PERMS (7-9)
 	                -> Protege pessoas de nível maior de serem afetadas por pessoas com nível maior.
 	PLAYING     (a) -> Comando &jogando
-	SCRIPTS         (b) -> Comando &scripting
+	SCRIPTS         (b) -> Comando &eval (JS), &lua (LuaJ)
 	GUILD       (c) -> Comando &guild
 	SPY         (d) -> Comando &spy
 	GLOBALS_IMP (e) -> Comando &globals e subcomando import

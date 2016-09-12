@@ -1,5 +1,5 @@
-group 'cf.adriantodt.oldbot'
-version '1.0'
+group 'cf.adriantodt.bot'
+version '1.1'
 
 apply plugin: 'java'
 apply plugin: 'application'
@@ -44,7 +44,7 @@ task fatJar(type: Jar) {
 }
 
 run {
-    if (project.hasProperty("appArgs")) //noinspection GroovyAssignabilityCheck
+    if (project.hasProperty("appArgs"))
     {
         args Eval.me(appArgs)
     }
