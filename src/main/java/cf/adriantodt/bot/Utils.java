@@ -13,6 +13,8 @@
 package cf.adriantodt.bot;
 
 import cf.adriantodt.bot.base.cmd.Holder;
+import cf.adriantodt.bot.base.gui.QueueLogAppender;
+import cf.adriantodt.bot.impl.Spy;
 import cf.brforgers.core.lib.IOHelper;
 import com.sun.management.OperatingSystemMXBean;
 import net.dv8tion.jda.entities.Guild;
@@ -37,25 +39,31 @@ public class Utils {
 		Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(scheduled, 0, everySeconds, TimeUnit.SECONDS);
 	}
 
-	public static void startAsyncDramaProvider() {
+	public static void startAsyncTasks() {
 		startAsyncTask(() -> {
 			synchronized (latestDrama) {
 				latestDrama.var = IOHelper.toString("https://drama.thog.eu/api/drama");
 			}
 		}, 10);
-	}
 
-	public static void startAsyncCpuUsage() {
 		final OperatingSystemMXBean os = ((OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean());
 		startAsyncTask(() -> cpuUsage = os.getProcessCpuLoad(), 2);
-	}
 
-	public static void startAsyncUserTimeout() {
 		startAsyncTask(() -> {
 			synchronized (userTimeout) {
 				userTimeout.replaceAll((user, integer) -> Math.max(0, integer - 1));
 			}
 		}, 5);
+
+		Thread thread = new Thread(() -> {
+			synchronized (Spy.logListeners) {
+				Holder<String> s = new Holder<>();
+				while ((s.var = QueueLogAppender.getNextLogEvent("DiscordListeners")) != null)
+					Spy.logListeners.forEach(channel -> channel.sendMessageAsync(s.var, null));
+			}
+		});
+		thread.setDaemon(true);
+		thread.start();
 	}
 
 	public static boolean canExecuteCmd(MessageReceivedEvent event) {

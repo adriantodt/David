@@ -59,8 +59,7 @@ public class Bot extends ListenerAdapter {
 			BotGui.createBotGui();
 		else if (GraphicsEnvironment.isHeadless()) LOGGER.info("No UI. We're in a Headless Environiment.");
 		else LOGGER.info("UI Disabled");
-		Utils.startAsyncCpuUsage();
-		Utils.startAsyncUserTimeout();
+		Utils.startAsyncTasks();
 		try {
 			loadConfig();
 			INSTANCE = new Bot();
@@ -77,7 +76,7 @@ public class Bot extends ListenerAdapter {
 			loadI18n();
 			I18nHardImpl.impl();
 			Statistics.startDate = new Date();
-			BotIntercommns.batchDoCommn();
+			BotIntercommns.init();
 		} catch (Exception e) {
 			LOGGER.error("An exception was caught during Initialization: ", e);
 			Java.stopApp();
@@ -161,14 +160,13 @@ public class Bot extends ListenerAdapter {
 	@Override
 	public void onUserOnlineStatusUpdate(UserOnlineStatusUpdateEvent event) {
 		if (event.getUser().getOnlineStatus() != OnlineStatus.OFFLINE && event.getUser().isBot())
-			BotIntercommns.pmBot(event.getUser());
+			BotIntercommns.start(event.getUser());
 	}
 
 	@Override
 	public void onMessageReceived(final MessageReceivedEvent event) {
 		Spy.spy(event);
 		EventHandler.handle(event);
-		BotIntercommns.onEvent(event);
 	}
 
 	@Override

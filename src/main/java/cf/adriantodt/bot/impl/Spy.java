@@ -29,6 +29,7 @@ import java.util.List;
 import static cf.adriantodt.bot.Answers.bool;
 
 public class Spy {
+	public static final List<MessageChannel> logListeners = new ArrayList<>();
 	public static List<MessageChannel> nodes = new ArrayList<>();
 
 	public static List<MessageChannel> getChannels(DiscordGuild guild) {
@@ -49,6 +50,12 @@ public class Spy {
 		if (nodes.contains(event.getChannel())) nodes.remove(event.getChannel());
 		else nodes.add(event.getChannel());
 		bool(event, nodes.contains(event.getChannel()));
+	}
+
+	public static void triggerLog(MessageReceivedEvent event) {
+		if (logListeners.contains(event.getChannel())) logListeners.remove(event.getChannel());
+		else logListeners.add(event.getChannel());
+		bool(event, logListeners.contains(event.getChannel()));
 	}
 
 	public static void spy(MessageReceivedEvent event) {

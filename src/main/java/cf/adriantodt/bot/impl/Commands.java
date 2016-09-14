@@ -34,7 +34,8 @@ import java.util.stream.Collectors;
 
 import static cf.adriantodt.bot.Answers.*;
 import static cf.adriantodt.bot.Statistics.parseInt;
-import static cf.adriantodt.bot.Utils.*;
+import static cf.adriantodt.bot.Utils.nnOrD;
+import static cf.adriantodt.bot.Utils.splitArgs;
 import static cf.adriantodt.bot.base.EventHandler.*;
 import static cf.adriantodt.bot.base.EventHandler.toofast;
 import static cf.adriantodt.bot.base.I18n.getLocalized;
@@ -53,7 +54,6 @@ public class Commands {
 		addCommand("drama", (guild, cmd, event) ->
 			send(event, "**Minecrosoft**: *" + Utils.latestDrama.var + "*\n  *(Provided by Minecraft Drama Generator)*")
 		);
-		startAsyncDramaProvider();
 
 		//implOkay
 		addCommand("okay", (guild, arguments, event) -> bool(event, (arguments.isEmpty() || Boolean.parseBoolean(arguments))));
@@ -307,6 +307,7 @@ public class Commands {
 		addCommand("spy",
 			new TreeCommandBuilder().setPermRequired(SPY)
 				.addCommand("trigger", addUsage((guild, arguments, event) -> Spy.trigger(event), "Ativa/Desativa a Espionagem no Canal."))
+				.addCommand("log", addUsage((guild, arguments, event) -> Spy.triggerLog(event), "Ativa/Desativa a Leitura de Logs no Canal."))
 				.addCommand("send",
 					new CommandBuilder()
 						.setUsage("Envia uma Mensagem para o canal especificado.\n(Parâmetros: <channel_id> <message>)\nO channel_id pode ser visto através do (#NUM) das mensagens de espionagem.")
@@ -428,7 +429,7 @@ public class Commands {
 								cmd.responses.add(args[1]);
 								bool(event, true);
 							}
-							BotIntercommns.redoCache();
+							BotIntercommns.updateCmds();
 						}
 					}).build())
 				.addCommand("rm", new CommandBuilder().setPermRequired(Permissions.MANAGE_USR)
@@ -441,7 +442,7 @@ public class Commands {
 							else {
 								getLocalUserCommands(guild).remove(arg.toLowerCase());
 								bool(event, true);
-								BotIntercommns.redoCache();
+								BotIntercommns.updateCmds();
 							}
 						}
 					}).build())

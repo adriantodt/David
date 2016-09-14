@@ -1,8 +1,29 @@
-group 'cf.adriantodt.bot'
-version '1.1'
+import com.github.edwgiz.mavenShadePlugin.log4j2CacheTransformer.PluginsCacheFileTransformer
+import com.github.jengelman.gradle.plugins.shadow.relocation.Relocator
+import org.apache.tools.zip.ZipOutputStream
+
+buildscript {
+    repositories {
+        maven {
+            url 'http://maven.ej-technologies.com/repository'
+        }
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+    }
+    dependencies {
+        classpath 'com.github.edwgiz:maven-shade-plugin.log4j2-cachefile-transformer:2.6.1'
+        classpath "com.github.jengelman.gradle.plugins:shadow:1.2.3"
+    }
+}
+
+apply plugin: "com.github.johnrengelman.shadow"
 
 apply plugin: 'java'
 apply plugin: 'application'
+
+group 'cf.adriantodt.bot'
+version '1.1.1'
 
 mainClassName = "cf.adriantodt.bot.Bot"
 
@@ -26,22 +47,36 @@ def commonManifest = {
     attributes 'Main-Class': mainClassName
 }
 
-task fatJar(type: Jar) {
-    baseName = project.name + '-fat'
-    from {
-        configurations.compile.collect {
-            dependency ->
-                if (dependency.directory) { // If it is a folder, just include the folder in its entirety
-                    return dependency
-                } else {
-                    // If it isn't a folder, put it in a zipTree. if it is a zip or jar the contents will be extracted.
-                    return zipTree(dependency)
-                }
+shadowJar {
+    classifier 'fat'
+    transform(new com.github.jengelman.gradle.plugins.shadow.transformers.Transformer() {
+
+        // this is an adapter required for generating a fat jar with correct log4j2 output
+
+        PluginsCacheFileTransformer target = new PluginsCacheFileTransformer();
+
+        @Override
+        boolean canTransformResource(FileTreeElement element) {
+            return target.canTransformResource(element.getPath());
         }
-    }
-    manifest commonManifest
-    with jar
+
+        @Override
+        void transform(String path, InputStream is, List<Relocator> relocators) {
+            target.processResource(path, is, relocators);
+        }
+
+        @Override
+        boolean hasTransformedResource() {
+            return target.hasTransformedResource();
+        }
+
+        @Override
+        void modifyOutputStream(ZipOutputStream jos) {
+            target.modifyOutputStream(jos);
+        }
+    })
 }
+
 
 run {
     if (project.hasProperty("appArgs"))
@@ -60,5 +95,5 @@ sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 artifacts {
-    archives fatJar//, sourceJar
+    archives shadowJar//, sourceJar
 }
