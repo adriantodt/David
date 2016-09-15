@@ -167,6 +167,7 @@ public class Bot extends ListenerAdapter {
 	public void onMessageReceived(final MessageReceivedEvent event) {
 		Spy.spy(event);
 		EventHandler.handle(event);
+		BotIntercommns.onEvent(event);
 	}
 
 	@Override
