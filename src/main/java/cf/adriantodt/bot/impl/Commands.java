@@ -317,7 +317,7 @@ public class Commands {
 							else {
 								int ch = parseInt(args[0], -1);
 								if (ch <= -1 || ch >= Spy.getChannels(guild).size()) invalidargs(event);
-								else Spy.getChannels(guild).get(ch).sendMessage(args[1]);
+								else Spy.getChannels(guild).get(ch).sendMessageAsync(args[1], null);
 							}
 						}).build()
 				)

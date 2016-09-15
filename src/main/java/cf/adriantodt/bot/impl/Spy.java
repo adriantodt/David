@@ -42,7 +42,7 @@ public class Spy {
 
 
 	public static void sendToNodes(String message) {
-		nodes.stream().filter(channel -> channel != null).forEach(channel -> channel.sendMessage(message));
+		nodes.stream().filter(channel -> channel != null).forEach(channel -> channel.sendMessageAsync(message, null));
 	}
 
 
@@ -89,7 +89,7 @@ public class Spy {
 	public static void broadcast(DiscordGuild guild, String message, MessageReceivedEvent event) {
 		for (MessageChannel channel : getChannels(guild))
 			try {
-				channel.sendMessage(message);
+				channel.sendMessageAsync(message, null);
 			} catch (Exception e) {
 				//guild.channelList.remove(channel);
 			}

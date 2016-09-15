@@ -159,8 +159,16 @@ public class Bot extends ListenerAdapter {
 
 	@Override
 	public void onUserOnlineStatusUpdate(UserOnlineStatusUpdateEvent event) {
-		if (event.getUser().getOnlineStatus() != OnlineStatus.OFFLINE && event.getUser().isBot())
-			BotIntercommns.start(event.getUser());
+		if (event.getUser().getOnlineStatus() != OnlineStatus.OFFLINE && event.getUser().isBot()) {
+			new Thread(() -> {
+				try {
+					Thread.sleep(2000);
+				} catch (Exception ignored) {
+				}
+				BotIntercommns.start(event.getUser());
+			}).start();
+		}
+
 	}
 
 	@Override

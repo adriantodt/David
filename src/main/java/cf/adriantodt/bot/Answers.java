@@ -31,7 +31,7 @@ public class Answers {
 	}
 
 	public static void send(MessageReceivedEvent event, String message) {
-		event.getChannel().sendMessage(message);
+		event.getChannel().sendMessageAsync(message, null);
 		Statistics.msgs++;
 	}
 

@@ -38,17 +38,17 @@ import static cf.adriantodt.bot.impl.BotIntercommns.Opcodes.*;
 
 public class BotIntercommns {
 	private static final Logger log = LogManager.getLogger("OldBotIntercommns");
-	private static Map<User, BotInfo> info = new HashMap<>();
-	private static BotInfo self = new BotInfo() {{
+	public static Map<String, BotInfo> info = new HashMap<>();
+	public static BotInfo self = new BotInfo() {{
 		p = 5; //David priority = 5
 	}};
 
 	private static BotInfo get(User bot) {
-		if (!info.containsKey(bot)) {
-			info.put(bot, new BotInfo());
+		if (!info.containsKey(bot.getId())) {
+			info.put(bot.getId(), new BotInfo());
 		}
 
-		return info.get(bot);
+		return info.get(bot.getId());
 	}
 
 	public static void updateCmds() {
@@ -69,9 +69,9 @@ public class BotIntercommns {
 
 	private static void onSubEvent(MessageReceivedEvent event) {
 		String base = Utils.splitArgs(event.getMessage().getRawContent(), 2)[0];
-		List<User> bots = info.entrySet().stream().filter(entry -> entry.getValue().cmds.stream().anyMatch(base::equals)).map(Map.Entry::getKey).collect(Collectors.toList());
+		List<User> bots = info.entrySet().stream().filter(entry -> entry.getValue().cmds.stream().anyMatch(base::equals)).map((entry) -> Bot.API.getUserById(entry.getKey())).collect(Collectors.toList());
 		if (bots.size() != 0 && bots.stream().filter(user -> user.getOnlineStatus() != OnlineStatus.OFFLINE).count() == 0) {
-			bots = info.entrySet().stream().filter(entry -> entry.getValue().p <= self.p && entry.getKey().getOnlineStatus() != OnlineStatus.OFFLINE).map(Map.Entry::getKey).sorted((user1, user2) -> user1.toString().compareTo(user2.toString())).collect(Collectors.toList());
+			bots = info.entrySet().stream().filter(entry -> entry.getValue().p <= self.p && Bot.API.getUserById(entry.getKey()).getOnlineStatus() != OnlineStatus.OFFLINE).map((entry) -> Bot.API.getUserById(entry.getKey())).sorted((user1, user2) -> user1.toString().compareTo(user2.toString())).collect(Collectors.toList());
 			if (bots.indexOf(Bot.SELF) == 0)
 				event.getChannel().sendMessageAsync("*Nenhum dos Bots responsáveis por esse comando está online. Tente mais tarde.*", null);
 		}
@@ -96,7 +96,7 @@ public class BotIntercommns {
 			if (opcode == TRANSACTION_CHECK) {
 				msg = msg.substring(2);
 				int oldHash = Statistics.parseInt(msg, 0);
-				if (oldHash != self.hashCode()) {
+				if (oldHash != self.toString().hashCode()) {
 					pm(bot, IC_CALL + TRANSACTION + TRANSACTION_UPDATE);
 				}
 				return;
@@ -134,14 +134,16 @@ public class BotIntercommns {
 			}
 
 			if (opcode == TRANSACTION_SET) {
-				if (msg.equals("p")) {
+				msg = msg.substring(2);
+				if (msg.startsWith("p")) {
 					get(bot).p = Statistics.parseInt(msg.substring(2), 0);
 					return;
 				}
 
-				if (msg.equals("cmds")) {
-					opcode = msg.charAt(1);
-					msg = msg.substring(2);
+				if (msg.startsWith("cmds")) {
+					msg = msg.substring("cmds".length());
+					opcode = msg.charAt(0);
+					msg = msg.substring(1);
 					JsonArray array = new JsonParser().parse(msg).getAsJsonArray();
 
 					if (opcode == '=') {
@@ -172,7 +174,7 @@ public class BotIntercommns {
 
 		if (msg.startsWith(SUPPORTED)) {
 			if (Character.toLowerCase(msg.charAt(1)) == 'y') {
-				pm(bot, IC_CALL + TRANSACTION + TRANSACTION_CHECK + TRANSACTION_VALUE + get(bot).hashCode());
+				pm(bot, IC_CALL + TRANSACTION + TRANSACTION_CHECK + TRANSACTION_VALUE + get(bot).toString().hashCode());
 			}
 		}
 	}
@@ -183,7 +185,7 @@ public class BotIntercommns {
 
 	public static void init() {
 		updateCmds();
-		info.put(Bot.SELF, self);
+		info.put(Bot.BOTID, self);
 		Bot.API.getUsers().stream().filter(user -> user.isBot() && !user.equals(Bot.SELF) && user.getOnlineStatus() != OnlineStatus.OFFLINE).forEach(BotIntercommns::start);
 	}
 
@@ -196,8 +198,8 @@ public class BotIntercommns {
 		public List<String> cmds = new ArrayList<>();
 
 		@Override
-		public int hashCode() {
-			return (p + ";" + String.join(",", cmds.stream().sorted().toArray(String[]::new)) + ";").hashCode();
+		public String toString() {
+			return (p + ";" + String.join(",", cmds.stream().sorted().toArray(String[]::new)) + ";");
 		}
 	}
 
