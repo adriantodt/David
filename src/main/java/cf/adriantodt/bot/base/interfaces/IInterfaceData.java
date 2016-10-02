@@ -12,7 +12,7 @@
 
 package cf.adriantodt.bot.base.interfaces;
 
-import cf.brforgers.core.lib.GeneralRegistry;
+import java.util.Map;
 
 public interface IInterfaceData {
 	/**
@@ -22,16 +22,22 @@ public interface IInterfaceData {
 	void stop();
 
 	/**
+	 * This method makes the Message be processed AFTER the Interface is processed.<br>
+	 * The Channel won't be handled my the interface anymore.
+	 */
+	void pass();
+
+	/**
 	 * Get the per-Channel-Session General Registry (Exclusive of this channel until {@link IInterfaceData#stop()}. After the unhandle the Registry is deleted.)
 	 *
 	 * @return the Volatile Registry
 	 */
-	GeneralRegistry getVolatileRegistry();
+	Map<String, Object> getVolatile();
 
 	/**
 	 * Get the per-Session General Registry (Exclusive of the interface until the Application is closed. After close the Registry is deleted.)
 	 *
 	 * @return the Session Registry
 	 */
-	GeneralRegistry getSessionRegistry();
+	Map<String, Object> getPersistent();
 }

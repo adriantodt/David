@@ -1,11 +1,16 @@
 /*
- * This class wasn't created by <AdrianTodt>. It's distributed as
- * part of the LuaJ.
+ * This class was created by <AdrianTodt>. It's distributed as
+ * part of the DavidBot. Get the Source Code in github:
+ * https://github.com/adriantodt/David
  *
- * Refer to them in this specific case.
+ * DavidBot is Open Source and distributed under the
+ * GNU Lesser General Public License v2.1:
+ * https://github.com/adriantodt/David/blob/master/LICENSE
+ *
+ * File Created @ [28/09/16 22:17]
  */
 
-package cf.adriantodt.bot.impl.scripting;
+package cf.adriantodt.bot.handlers.scripting;
 
 import org.luaj.vm2.*;
 import org.luaj.vm2.compiler.LuaC;

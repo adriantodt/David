@@ -10,7 +10,7 @@
  * File Created @ [02/09/16 08:18]
  */
 
-package cf.adriantodt.bot.base.persistence;
+package cf.adriantodt.bot.persistence;
 
 public class Configs {
 	public String token = "", owner = "";

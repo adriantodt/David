@@ -8,7 +8,7 @@
 package cf.adriantodt.bot.base.gui;
 
 import cf.adriantodt.bot.Bot;
-import cf.adriantodt.bot.Utils;
+import cf.adriantodt.bot.utils.Tasks;
 import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.entities.Guild;
 
@@ -18,7 +18,7 @@ import java.util.Vector;
 public class GuildListComponent extends JList implements Runnable {
 
 	public GuildListComponent() {
-		Utils.startAsyncTask(this, 10);
+		Tasks.startAsyncTask(this, 10);
 	}
 
 	@SuppressWarnings("unchecked")

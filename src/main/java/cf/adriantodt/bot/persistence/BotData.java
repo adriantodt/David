@@ -10,21 +10,15 @@
  * File Created @ [02/09/16 08:18]
  */
 
-package cf.adriantodt.bot.impl;
+package cf.adriantodt.bot.persistence;
 
-import cf.adriantodt.bot.base.interfaces.IChannelInterface;
-
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-public class Interfaces {
-	public static final Map<String, IChannelInterface> INTERFACES = new HashMap<>();
-
-	public static void impl() {
-
-	}
-
-	public static void addInterface(String name, IChannelInterface channelInterface) {
-		INTERFACES.put(name, channelInterface);
-	}
+public class BotData {
+	public List<DiscordGuildData> guilds = new ArrayList<>();
+	public String game = "";
+	public Map<String, List<String>> annoy = new HashMap<>();
 }

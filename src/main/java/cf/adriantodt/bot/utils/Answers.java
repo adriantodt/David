@@ -7,15 +7,19 @@
  * GNU Lesser General Public License v2.1:
  * https://github.com/adriantodt/David/blob/master/LICENSE
  *
- * File Created @ [02/09/16 08:18]
+ * File Created @ [28/09/16 22:11]
  */
 
-package cf.adriantodt.bot;
+package cf.adriantodt.bot.utils;
 
-import cf.adriantodt.bot.base.EventHandler;
+import cf.adriantodt.bot.Bot;
 import cf.adriantodt.bot.base.I18n;
 import cf.adriantodt.bot.base.Permissions;
+import cf.adriantodt.bot.handlers.CommandHandler;
 import net.dv8tion.jda.events.message.MessageReceivedEvent;
+
+import static cf.adriantodt.bot.utils.Formatter.*;
+import static cf.adriantodt.bot.utils.Utils.limit;
 
 
 public class Answers {
@@ -27,7 +31,7 @@ public class Answers {
 	}
 
 	public static void toofast(MessageReceivedEvent event) {
-		send(event, "*Acalme-se " + event.getAuthor().getUsername() + "! Você está executando comandos rápido de mais!*");
+		send(event, "*" + I18n.getLocalized("answers.calmDown", event) + " " + event.getAuthor().getAsMention() + "! " + I18n.getLocalized("answers.tooFast", event) + "!*");
 	}
 
 	public static void send(MessageReceivedEvent event, String message) {
@@ -40,18 +44,22 @@ public class Answers {
 	}
 
 	public static void sendCased(MessageReceivedEvent event, String message, String format) {
-		send(event, "```" + format + "\n" + message + "\n```");
+		send(event, encase(message, format));
 	}
 
 	public static void announce(MessageReceivedEvent event, String message) {
-		send(event, "***" + message + "***");
+		send(event, boldAndItalic(message));
 	}
 
 	public static void noperm(MessageReceivedEvent event) {
-		long perm = EventHandler.getSelf(event).retrievePerm();
-		perm ^= Permissions.getSenderPerm(EventHandler.getGuild(event), event) & perm;
+		long perm = CommandHandler.getSelf(event).retrievePerm();
+		perm ^= Permissions.getSenderPerm(CommandHandler.getGuild(event), event) & perm;
+		noperm(event, perm);
+	}
+
+	public static void noperm(MessageReceivedEvent event, long permsMissing) {
 		StringBuilder b = new StringBuilder("*(Permissões Ausentes:");
-		Permissions.toCollection(perm).forEach(s -> b.append(" ").append(s));
+		Permissions.toCollection(permsMissing).forEach(s -> b.append(" ").append(s));
 		b.append(")*");
 		dear(event, "você não tem permissão para executar esse comando.");
 		send(event, b.toString());
@@ -63,23 +71,13 @@ public class Answers {
 	}
 
 	public static void invalidargs(MessageReceivedEvent event) {
-		String usage = EventHandler.getSelf(event).retrieveUsage(I18n.getLang(event));
-		if (usage == null) dear(event, "você enviou argumento(s) incorreto(s) para o comando.");
+		String usage = CommandHandler.getSelf(event).retrieveUsage(I18n.getLang(event));
+		if (usage == null) dear(event, I18n.getLocalized("answers.invalidArgs", event));
 		else if (!usage.isEmpty()) sendCased(event, usage, "");
 		Statistics.invalidargs++;
 	}
 
 	public static void dear(MessageReceivedEvent event, String answer) {
-		send(event, "*" + I18n.getLocalized("answers.dear", event) + " " + event.getAuthor().getUsername() + ", " + answer + "*");
-	}
-
-	public static String limit(String value, int length) {
-		StringBuilder buf = new StringBuilder(value);
-		if (buf.length() > length) {
-			buf.setLength(length - 3);
-			buf.append("...");
-		}
-
-		return buf.toString();
+		send(event, italic(I18n.getLocalized("answers.dear", event) + " " + event.getAuthor().getUsername() + ", " + answer));
 	}
 }

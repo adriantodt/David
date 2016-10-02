@@ -12,6 +12,7 @@
 
 package cf.adriantodt.bot.base;
 
+import cf.adriantodt.bot.handlers.CommandHandler;
 import net.dv8tion.jda.entities.User;
 import net.dv8tion.jda.events.message.MessageReceivedEvent;
 
@@ -49,14 +50,14 @@ public class I18n {
 	}
 
 	public static String getLang(MessageReceivedEvent event) {
-		return instance.userLangs.getOrDefault(Permissions.processID(event.getAuthor().getId()), EventHandler.getGuild(event).defaultLanguage);
+		return instance.userLangs.getOrDefault(Permissions.processID(event.getAuthor().getId()), CommandHandler.getGuild(event).defaultLanguage);
 	}
 
 	public static String getLocalized(String unlocalized, String locale) {
 		String localized = unlocalized;
+		Map<String, String> locales = I18n.getLocales().get(unlocalized);
 		while (unlocalized.equals(localized) && locale != null) {
-			Map<String, String> locales = I18n.getLocales().get(locale);
-			localized = locales != null ? locales.getOrDefault(unlocalized, unlocalized) : unlocalized;
+			localized = locales != null ? locales.getOrDefault(locale, unlocalized) : unlocalized;
 			if (unlocalized.equals(localized)) locale = getParenting().get(locale);
 		}
 		return localized;
@@ -67,7 +68,7 @@ public class I18n {
 	}
 
 	public static void localize(String target, String unlocalized, String localized) {
-		if (!getLocales().containsKey(target)) getLocales().put(target, new HashMap<>());
-		getLocales().get(target).put(unlocalized, localized);
+		if (!getLocales().containsKey(unlocalized)) getLocales().put(unlocalized, new HashMap<>());
+		getLocales().get(unlocalized).put(target, localized);
 	}
 }

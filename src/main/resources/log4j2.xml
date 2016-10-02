@@ -5,10 +5,10 @@
             <PatternLayout pattern="[%d{HH:mm:ss}] [%t/%level] [%logger]: %msg%n"/>
         </Console>
         <Queue name="ServerGuiConsole">
-            <PatternLayout pattern="[%d{HH:mm:ss}] [%t/%level] [%logger]: %replace{%msg}{(?i)\u00A7[0-9A-FK-OR]}{}%n"/>
+            <PatternLayout pattern="[%d{HH:mm:ss}] [%logger(%level)]: %msg%n"/>
         </Queue>
         <Queue name="DiscordListeners">
-            <PatternLayout pattern="[%d{HH:mm:ss}] [%t/%level] [%logger]: %replace{%msg}{(?i)\u00A7[0-9A-FK-OR]}{}%n"/>
+            <PatternLayout pattern="[%d{HH:mm:ss}] [%t/%level] [%logger]: %msg%n"/>
         </Queue>
         <RollingRandomAccessFile name="File" fileName="logs/latest.log" filePattern="logs/%d{yyyy-MM-dd}-%i.log.gz">
             <PatternLayout pattern="[%d{HH:mm:ss}] [%t/%level] [%logger]: %msg%n"/>

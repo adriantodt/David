@@ -7,130 +7,75 @@
  * GNU Lesser General Public License v2.1:
  * https://github.com/adriantodt/David/blob/master/LICENSE
  *
- * File Created @ [02/09/16 08:18]
+ * File Created @ [22/09/16 18:35]
  */
 
 package cf.adriantodt.bot;
 
-import cf.adriantodt.bot.base.Audio;
-import cf.adriantodt.bot.base.EventHandler;
-import cf.adriantodt.bot.base.I18n;
-import cf.adriantodt.bot.base.gui.BotGui;
-import cf.adriantodt.bot.impl.BotIntercommns;
-import cf.adriantodt.bot.impl.Commands;
-import cf.adriantodt.bot.impl.I18nHardImpl;
-import cf.adriantodt.bot.impl.Spy;
+import cf.adriantodt.bot.base.ReadyBuilder;
+import cf.adriantodt.bot.handlers.BotGreeter;
+import cf.adriantodt.bot.handlers.BotIntercommns;
+import cf.adriantodt.bot.handlers.CommandHandler;
+import cf.adriantodt.bot.hardimpl.CmdsAndInterfaces;
+import cf.adriantodt.bot.hardimpl.I18nHardImpl;
+import cf.adriantodt.bot.persistence.DataManager;
+import cf.adriantodt.bot.utils.Statistics;
+import cf.adriantodt.bot.utils.Tasks;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.JDABuilder;
-import net.dv8tion.jda.OnlineStatus;
 import net.dv8tion.jda.entities.User;
-import net.dv8tion.jda.events.guild.GuildJoinEvent;
-import net.dv8tion.jda.events.guild.GuildLeaveEvent;
-import net.dv8tion.jda.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.events.user.UserOnlineStatusUpdateEvent;
-import net.dv8tion.jda.hooks.ListenerAdapter;
-import net.dv8tion.jda.utils.SimpleLog;
-import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.awt.*;
-import java.util.*;
+import java.util.Date;
+import java.util.Random;
 
-import static cf.adriantodt.bot.base.persistence.DataManager.*;
+import static cf.adriantodt.bot.persistence.DataManager.loadData;
+import static cf.adriantodt.bot.persistence.DataManager.loadI18n;
 
-public class Bot extends ListenerAdapter {
+public class Bot {
 	public static final Random RAND = new Random();
 	public static final Gson JSON = new GsonBuilder().setPrettyPrinting().create();
 	public static final Gson JSON_INTERNAL = new GsonBuilder().create();
-	public static Logger LOGGER = LogManager.getLogger("BotCreator");
+	public static Logger LOGGER = LogManager.getLogger("Bot");
 	public static JDA API = null;
-	public static String BOTID = null, BOTNAME = null;
 	public static User SELF = null;
 	public static String GAME = "";
-	public static Bot INSTANCE = null;
 
-	public static void main(String[] args) {
-		LOGGER.info("Started!");
-		hackLog();
-		if (Arrays.stream(args).filter("nogui"::equals).findAny().orElse(null) == null && !GraphicsEnvironment.isHeadless())
-			BotGui.createBotGui();
-		else if (GraphicsEnvironment.isHeadless()) LOGGER.info("No UI. We're in a Headless Environiment.");
-		else LOGGER.info("UI Disabled");
-		Utils.startAsyncTasks();
-		try {
-			loadConfig();
-			INSTANCE = new Bot();
-			API = new JDABuilder().addListener(INSTANCE).setBotToken(configs.token).setBulkDeleteSplittingEnabled(false).buildBlocking();
-			BOTID = API.getSelfInfo().getId();
-			BOTNAME = API.getSelfInfo().getUsername();
-			SELF = API.getUserById(BOTID);
-			LOGGER = LogManager.getLogger("Bot-" + BOTNAME);
-			LOGGER.info("Logged in as '" + BOTNAME + "' (ID @" + BOTID + ")");
-			LOGGER.info("Configs: " + getSaveFile().toAbsolutePath().toString());
-			Audio.setup();
-			Commands.impl();
-			loadData();
-			loadI18n();
-			I18nHardImpl.impl();
-			Statistics.startDate = new Date();
-			BotIntercommns.init();
-		} catch (Exception e) {
-			LOGGER.error("An exception was caught during Initialization: ", e);
-			Java.stopApp();
+	public static void init() throws Exception {
+		DataManager.loadConfig();
+		Tasks.startAsyncTasks();
+		new JDABuilder()
+			.setBotToken(DataManager.configs.token)
+			.setBulkDeleteSplittingEnabled(false)
+			.setAudioEnabled(false)
+			.addListener(
+				new ReadyBuilder()
+					.add(event -> API = event.getJDA())
+					.add(event -> SELF = event.getJDA().getSelfInfo())
+					.add(event -> {
+						loadData();
+						loadI18n();
+					})
+					.add(event -> I18nHardImpl.impl())
+					.build(),
+				new CommandHandler(), new BotIntercommns(), new BotGreeter()
+			).buildBlocking();
+		LOGGER = LogManager.getLogger(SELF.getUsername());
+		LOGGER.info("Logged in as '" + SELF.getUsername() + "' (ID @" + SELF.getId() + ")");
+		LOGGER.info("Configs: " + DataManager.getSaveFile().toAbsolutePath().toString());
+		if (Startup.UI != null) {
+			Startup.UI.frame.setTitle(SELF.getUsername() + " - GUI");
 		}
+		Tasks.startJDAAsyncTasks(API);
+		CmdsAndInterfaces.impl();
+		Statistics.startDate = new Date();
 	}
-
-	private static void hackLog() {
-		Java.hackStdout();
-		SimpleLog.addListener(new SimpleLog.LogListener() {
-			private Map<String, Logger> logs = new HashMap<>();
-
-			private Level convert(SimpleLog.Level level) {
-				switch (level) {
-					case ALL:
-						return Level.ALL;
-					case TRACE:
-						return Level.TRACE;
-					case DEBUG:
-						return Level.DEBUG;
-					case INFO:
-						return Level.INFO;
-					case WARNING:
-						return Level.WARN;
-					case FATAL:
-						return Level.FATAL;
-					case OFF:
-						return Level.OFF;
-					default:
-						return Level.OFF;
-				}
-			}
-
-			private Logger getLogger(String name) {
-				if (!logs.containsKey(name)) logs.put(name, LogManager.getLogger(name));
-				return logs.get(name);
-			}
-
-			@Override
-			public void onLog(SimpleLog log, SimpleLog.Level logLevel, Object message) {
-				getLogger(log.name).log(convert(logLevel), message);
-			}
-
-			@Override
-			public void onError(SimpleLog log, Throwable err) {
-				getLogger(log.name).error(err);
-			}
-		});
-		SimpleLog.LEVEL = SimpleLog.Level.OFF;
-	}
-
 
 	public static void stopBot() {
 		API.getAccountManager().setIdle(true);
-		API.getAccountManager().setGame(I18n.getLocalized("bot.stop", "en_US"));
 		API.getAccountManager().update();
 		LOGGER.info("Bot exiting...");
 		try {
@@ -142,7 +87,6 @@ public class Bot extends ListenerAdapter {
 
 	public static void restartBot() {
 		API.getAccountManager().setIdle(true);
-		API.getAccountManager().setGame(I18n.getLocalized("bot.restart", "en_US"));
 		API.getAccountManager().update();
 		LOGGER.info("Bot restarting...");
 		try {
@@ -155,43 +99,5 @@ public class Bot extends ListenerAdapter {
 	public static void setDefault() {
 		API.getAccountManager().setGame(GAME);
 		API.getAccountManager().setIdle(false);
-	}
-
-	@Override
-	public void onUserOnlineStatusUpdate(UserOnlineStatusUpdateEvent event) {
-		if (event.getUser().getOnlineStatus() != OnlineStatus.OFFLINE && event.getUser().isBot()) {
-			new Thread(() -> {
-				try {
-					Thread.sleep(2000);
-				} catch (Exception ignored) {
-				}
-				BotIntercommns.start(event.getUser());
-			}).start();
-		}
-
-	}
-
-	@Override
-	public void onMessageReceived(final MessageReceivedEvent event) {
-		Spy.spy(event);
-		EventHandler.handle(event);
-		BotIntercommns.onEvent(event);
-	}
-
-	@Override
-	public void onGuildJoin(GuildJoinEvent event) {
-		try {
-			Spy.spy(event);
-			event.getGuild().getPublicChannel().sendMessage(I18n.getLocalized("bot.hello1", "en_US"));
-			event.getGuild().getPublicChannel().sendMessage(String.format(I18n.getLocalized("bot.hello2", "en_US"), event.getGuild().getOwner().getAsMention()));
-		} catch (Exception e) {
-			event.getGuild().getManager().leave();
-		}
-
-	}
-
-	@Override
-	public void onGuildLeave(GuildLeaveEvent event) {
-		Spy.spy(event);
 	}
 }

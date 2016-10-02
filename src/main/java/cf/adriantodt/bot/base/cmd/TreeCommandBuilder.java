@@ -12,11 +12,11 @@
 
 package cf.adriantodt.bot.base.cmd;
 
-import cf.adriantodt.bot.Answers;
 import cf.adriantodt.bot.base.DiscordGuild;
-import cf.adriantodt.bot.base.EventHandler;
 import cf.adriantodt.bot.base.I18n;
 import cf.adriantodt.bot.base.Permissions;
+import cf.adriantodt.bot.handlers.CommandHandler;
+import cf.adriantodt.bot.utils.Answers;
 import net.dv8tion.jda.events.message.MessageReceivedEvent;
 
 import java.util.HashMap;
@@ -24,8 +24,8 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import static cf.adriantodt.bot.Answers.invalidargs;
-import static cf.adriantodt.bot.Utils.splitArgs;
+import static cf.adriantodt.bot.utils.Answers.invalidargs;
+import static cf.adriantodt.bot.utils.Utils.splitArgs;
 
 public class TreeCommandBuilder {
 	private static final ICommand DEFAULT_IMPL = new CommandBuilder().setAction(Answers::invalidargs).setPermRequired(Permissions.RUN_BASECMD).build();
@@ -99,7 +99,11 @@ public class TreeCommandBuilder {
 				String[] args = splitArgs(arguments, 2);
 				ICommand cmd = SUBCMDS.get(args[0].toLowerCase());
 				if (cmd == null) invalidargs(event);
-				else EventHandler.execute(cmd, guild, args[1], event);
+				else {
+					CommandHandler.onTree(event, cmd);
+					CommandHandler.execute(cmd, guild, args[1], event);
+					CommandHandler.onTree(event, this);
+				}
 			}
 
 			@Override

@@ -12,21 +12,22 @@
 
 package cf.adriantodt.bot.base.cmd;
 
-import cf.adriantodt.bot.base.Audio;
+import cf.adriantodt.bot.Bot;
 import cf.adriantodt.bot.base.DiscordGuild;
 import cf.adriantodt.bot.base.I18n;
 import cf.adriantodt.bot.base.Permissions;
+import cf.adriantodt.bot.handlers.scripting.JS;
 import cf.brforgers.core.lib.IOHelper;
 import net.dv8tion.jda.events.message.MessageReceivedEvent;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static cf.adriantodt.bot.Answers.noperm;
-import static cf.adriantodt.bot.Answers.send;
 import static cf.adriantodt.bot.Bot.RAND;
+import static cf.adriantodt.bot.utils.Answers.noperm;
+import static cf.adriantodt.bot.utils.Answers.send;
 
-public class UserCommand implements ICommand {
+public class UserCommand implements ICommand, ITranslatable {
 	public List<String> responses = new ArrayList<>();
 
 	@Override
@@ -39,13 +40,12 @@ public class UserCommand implements ICommand {
 			} else if (response.substring(0, 6).equals("loc://")) {
 				send(event, I18n.getLocalized(response.substring(6), "en_US"));
 				return;
-			} else if (response.substring(0, 6).equals("aud://")) {
-				Audio.queue(IOHelper.newURL(response.substring(6)), event);
-				return;
-			} else if (response.substring(0, 6).equals("scripting://")) {
+				//} else if (response.substring(0, 6).equals("aud://")) {
+				//	Audio.queue(IOHelper.newURL(response.substring(6)), event);
+				//	return;
+			} else if (response.substring(0, 5).equals("js://")) {
 				if (Permissions.havePermsRequired(guild, event, Permissions.RUN_SCT_CMD)) {
-					send(event, "TODO Lua Impl");
-					//scripting command
+					JS.eval(guild, response.substring(5), event);
 				} else {
 					noperm(event);
 				}
@@ -60,5 +60,10 @@ public class UserCommand implements ICommand {
 	@Override
 	public long retrievePerm() {
 		return Permissions.RUN_BASECMD | Permissions.RUN_USR_CMD;
+	}
+
+	@Override
+	public String toString(String language) {
+		return Bot.JSON_INTERNAL.toJson(responses);
 	}
 }

@@ -7,10 +7,10 @@
  * GNU Lesser General Public License v2.1:
  * https://github.com/adriantodt/David/blob/master/LICENSE
  *
- * File Created @ [06/09/16 22:09]
+ * File Created @ [28/09/16 22:17]
  */
 
-package cf.adriantodt.bot.impl.scripting;
+package cf.adriantodt.bot.handlers.scripting;
 
 import cf.adriantodt.bot.base.DiscordGuild;
 import cf.adriantodt.bot.base.I18n;
@@ -20,13 +20,15 @@ import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 
-import static cf.adriantodt.bot.Answers.exception;
-import static cf.adriantodt.bot.Answers.sendCased;
+import static cf.adriantodt.bot.utils.Answers.exception;
+import static cf.adriantodt.bot.utils.Answers.sendCased;
 
 public class JS {
 	private static final ScriptEngine engine;
+	public static final Evaluator JS_EVALUATOR = JS::eval;
 
 	static {
+		Evaluator.EVALUATOR_REGISTER.put("JS", JS_EVALUATOR);
 		engine = new ScriptEngineManager().getEngineByName("nashorn");
 		try {
 			engine.eval("var imports = new JavaImporter(java.io, java.lang, java.util);");

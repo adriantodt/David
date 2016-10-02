@@ -7,18 +7,20 @@
  * GNU Lesser General Public License v2.1:
  * https://github.com/adriantodt/David/blob/master/LICENSE
  *
- * File Created @ [02/09/16 08:18]
+ * File Created @ [28/09/16 22:16]
  */
 
-package cf.adriantodt.bot.base.persistence;
+package cf.adriantodt.bot.utils;
+
+import cf.adriantodt.bot.base.interfaces.IChannelInterface;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
-public class DiscordGuildData {
-	public Map<String, List<String>> commands = new HashMap<>();
-	public Map<String, Long> userPerms = new HashMap<>();
-	public Map<String, Boolean> flags = new HashMap<>();
-	public String id, name, lang;
+public class Interfaces {
+	public static final Map<String, IChannelInterface> INTERFACES = new HashMap<>();
+
+	public static void addInterface(String name, IChannelInterface channelInterface) {
+		INTERFACES.put(name, channelInterface);
+	}
 }

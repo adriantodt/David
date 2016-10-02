@@ -7,10 +7,6 @@
 
 package cf.adriantodt.bot.base.gui;
 
-import cf.adriantodt.bot.Bot;
-import net.dv8tion.jda.entities.MessageChannel;
-import net.dv8tion.jda.entities.PrivateChannel;
-import net.dv8tion.jda.entities.User;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -22,20 +18,15 @@ import javax.swing.text.Document;
 import java.awt.*;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
+import java.util.function.Consumer;
 
 public class BotGui extends JComponent {
-	private static final MessageChannel CONSOLE_CHANNEL = ConsoleForger.forgeChannel(LogManager.getLogger("Console Channel"));
-	private static final User CONSOLE_USER = ConsoleForger.forgeUser("Console", "Management", (PrivateChannel) CONSOLE_CHANNEL);
+	private static final Logger LOGGER = LogManager.getLogger("BotGUI");
 	private static final Font GUI_FONT = new Font("Monospaced", 0, 12);
-	private static final Logger LOGGER = LogManager.getLogger();
+	public JFrame frame;
+	private Consumer<String> out;
 
-	static {
-		ConsoleForger.ForgedChannel c = ((ConsoleForger.ForgedChannel) CONSOLE_CHANNEL);
-		c.user = CONSOLE_USER;
-		c.topic = "É fake";
-	}
-
-	public BotGui() {
+	private BotGui() {
 		this.setPreferredSize(new Dimension(858, 480));
 		this.setLayout(new BorderLayout());
 
@@ -50,18 +41,20 @@ public class BotGui extends JComponent {
 	/**
 	 * Creates the bot GUI and sets it visible for the user.
 	 */
-	public static void createBotGui() {
+	public static BotGui createBotGui() {
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		} catch (Exception ignored) {
 		}
 
 		BotGui botGui = new BotGui();
-		JFrame frame = new JFrame("David");
+		JFrame frame = new JFrame("Bot - GUI");
+		botGui.frame = frame;
 		frame.add(botGui);
 		frame.pack();
 		frame.setLocationRelativeTo(null);
 		frame.setVisible(true);
+		return botGui;
 	}
 
 	/**
@@ -92,11 +85,15 @@ public class BotGui extends JComponent {
 		jtextarea.setEditable(false);
 		jtextarea.setFont(GUI_FONT);
 		final JTextField jtextfield = new JTextField();
+
+		out = ConsoleHandler.wrap(in -> appendLine(jtextarea, jscrollpane, in + "\r\n"));
+
 		jtextfield.addActionListener(actionPerformed -> {
 			String s = jtextfield.getText().trim();
 
 			if (!s.isEmpty()) {
-				Bot.INSTANCE.onMessageReceived(ConsoleForger.forgeEvent(ConsoleForger.forgeMessage(s, CONSOLE_USER, CONSOLE_CHANNEL, LogManager.getLogger("Console Channel Event"))));
+				out.accept("<Input> " + s);
+				ConsoleHandler.handle(s, out);
 			}
 
 			jtextfield.setText("");
@@ -122,7 +119,7 @@ public class BotGui extends JComponent {
 	public void appendLine(final JTextArea textArea, final JScrollPane scrollPane, final String line) {
 
 		if (!SwingUtilities.isEventDispatchThread()) {
-			SwingUtilities.invokeLater(() -> BotGui.this.appendLine(textArea, scrollPane, line));
+			SwingUtilities.invokeLater(() -> this.appendLine(textArea, scrollPane, line));
 		} else {
 			Document document = textArea.getDocument();
 			JScrollBar jscrollbar = scrollPane.getVerticalScrollBar();

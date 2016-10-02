@@ -7,25 +7,25 @@
  * GNU Lesser General Public License v2.1:
  * https://github.com/adriantodt/David/blob/master/LICENSE
  *
- * File Created @ [14/09/16 15:39]
+ * File Created @ [28/09/16 22:07]
  */
 
-package cf.adriantodt.bot.impl;
+package cf.adriantodt.bot.handlers;
 
 import cf.adriantodt.bot.Bot;
-import cf.adriantodt.bot.Statistics;
-import cf.adriantodt.bot.Utils;
-import cf.adriantodt.bot.base.DiscordGuild;
-import cf.adriantodt.bot.base.EventHandler;
+import cf.adriantodt.bot.utils.Commands;
+import cf.adriantodt.bot.utils.Statistics;
+import cf.adriantodt.bot.utils.Utils;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
 import net.dv8tion.jda.OnlineStatus;
 import net.dv8tion.jda.entities.User;
+import net.dv8tion.jda.events.ReadyEvent;
 import net.dv8tion.jda.events.message.MessageReceivedEvent;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import net.dv8tion.jda.events.user.UserOnlineStatusUpdateEvent;
+import net.dv8tion.jda.hooks.ListenerAdapter;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -34,11 +34,11 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-import static cf.adriantodt.bot.impl.BotIntercommns.Opcodes.*;
+import static cf.adriantodt.bot.handlers.BotIntercommns.Opcodes.*;
 
-public class BotIntercommns {
-	private static final Logger log = LogManager.getLogger("OldBotIntercommns");
+public class BotIntercommns extends ListenerAdapter {
 	public static Map<String, BotInfo> info = new HashMap<>();
+
 	public static BotInfo self = new BotInfo() {{
 		p = 5; //David priority = 5
 	}};
@@ -52,32 +52,43 @@ public class BotIntercommns {
 	}
 
 	public static void updateCmds() {
-		List<String> cmds = EventHandler.getCommands(DiscordGuild.GLOBAL).keySet().stream().collect(Collectors.toList());
+		List<String> cmds = Commands.getBaseCommands().keySet().stream().collect(Collectors.toList());
 		self.cmds.clear();
 		self.cmds.addAll(cmds.stream().map(s -> "&" + s).collect(Collectors.toList()));
 		self.cmds.addAll(cmds.stream().map(s -> "?" + s).collect(Collectors.toList()));
 	}
 
-	public static void onEvent(MessageReceivedEvent event) {
+	private static void pm(User user, String content) {
+		user.getPrivateChannel().sendMessageAsync(content, null);
+	}
+
+	public static void start(User bot) {
+		pm(bot, IC_CALL + SUPPORTS_IC);
+	}
+
+	@Override
+	public void onUserOnlineStatusUpdate(UserOnlineStatusUpdateEvent event) {
+		if (event.getUser().isBot()) Utils.asyncSleepThen(2000, () -> BotIntercommns.start(event.getUser())).run();
+	}
+
+	public void onMessageReceived(MessageReceivedEvent event) {
 		if (!event.isPrivate() || !event.getAuthor().isBot() || Bot.API.getSelfInfo().equals(event.getAuthor())) {
-			onSubEvent(event);
+			//onSubEvent(event);
+			String base = Utils.splitArgs(event.getMessage().getRawContent(), 2)[0];
+			List<User> bots = info.entrySet().stream().filter(entry -> entry.getValue().cmds.stream().anyMatch(base::equals)).map((entry) -> Bot.API.getUserById(entry.getKey())).collect(Collectors.toList());
+			if (bots.size() != 0 && bots.stream().filter(user -> user.getOnlineStatus() != OnlineStatus.OFFLINE).count() == 0) {
+				bots = info.entrySet().stream().filter(entry -> entry.getValue().p <= self.p && Bot.API.getUserById(entry.getKey()).getOnlineStatus() != OnlineStatus.OFFLINE).map((entry) -> Bot.API.getUserById(entry.getKey())).sorted((user1, user2) -> user1.toString().compareTo(user2.toString())).collect(Collectors.toList());
+				if (bots.indexOf(Bot.SELF) == 0)
+					event.getChannel().sendMessageAsync("*Nenhum dos Bots responsáveis por esse comando está online. Tente mais tarde.*", null);
+			}
+
 			return;
 		}
 
 		transaction(event.getAuthor(), event.getMessage().getRawContent());
 	}
 
-	private static void onSubEvent(MessageReceivedEvent event) {
-		String base = Utils.splitArgs(event.getMessage().getRawContent(), 2)[0];
-		List<User> bots = info.entrySet().stream().filter(entry -> entry.getValue().cmds.stream().anyMatch(base::equals)).map((entry) -> Bot.API.getUserById(entry.getKey())).collect(Collectors.toList());
-		if (bots.size() != 0 && bots.stream().filter(user -> user.getOnlineStatus() != OnlineStatus.OFFLINE).count() == 0) {
-			bots = info.entrySet().stream().filter(entry -> entry.getValue().p <= self.p && Bot.API.getUserById(entry.getKey()).getOnlineStatus() != OnlineStatus.OFFLINE).map((entry) -> Bot.API.getUserById(entry.getKey())).sorted((user1, user2) -> user1.toString().compareTo(user2.toString())).collect(Collectors.toList());
-			if (bots.indexOf(Bot.SELF) == 0)
-				event.getChannel().sendMessageAsync("*Nenhum dos Bots responsáveis por esse comando está online. Tente mais tarde.*", null);
-		}
-	}
-
-	public static void transaction(User bot, String msg) {
+	private void transaction(User bot, String msg) {
 		if (msg.length() < (IC_CALL.length() + 1) || !msg.startsWith(IC_CALL)) return;
 		msg = msg.substring(IC_CALL.length());
 
@@ -179,18 +190,11 @@ public class BotIntercommns {
 		}
 	}
 
-	public static void pm(User user, String content) {
-		user.getPrivateChannel().sendMessageAsync(content, null);
-	}
-
-	public static void init() {
+	@Override
+	public void onReady(ReadyEvent event) {
 		updateCmds();
-		info.put(Bot.BOTID, self);
-		Bot.API.getUsers().stream().filter(user -> user.isBot() && !user.equals(Bot.SELF) && user.getOnlineStatus() != OnlineStatus.OFFLINE).forEach(BotIntercommns::start);
-	}
-
-	public static void start(User bot) {
-		pm(bot, IC_CALL + SUPPORTS_IC);
+		info.put(event.getJDA().getSelfInfo().getId(), self);
+		event.getJDA().getUsers().stream().filter(user -> user.isBot() && !user.equals(event.getJDA().getSelfInfo()) && user.getOnlineStatus() != OnlineStatus.OFFLINE).forEach(BotIntercommns::start);
 	}
 
 	public static class BotInfo {

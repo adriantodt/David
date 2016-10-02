@@ -25,7 +25,7 @@ apply plugin: 'application'
 group 'cf.adriantodt.bot'
 version '1.1.1'
 
-mainClassName = "cf.adriantodt.bot.Bot"
+mainClassName = "cf.adriantodt.bot.Startup"
 
 println System.getProperty("java.home")
 
@@ -35,7 +35,7 @@ repositories {
 }
 
 dependencies {
-    compile 'net.dv8tion:JDA:2.2.1_353'
+    compile 'net.dv8tion:JDA:2.2.1_372'
     compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.6.2'
     compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.6.2'
     compile group: 'com.google.code.gson', name: 'gson', version: '1.7.2'

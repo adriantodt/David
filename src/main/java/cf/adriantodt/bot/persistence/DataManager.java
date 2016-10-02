@@ -10,23 +10,26 @@
  * File Created @ [02/09/16 08:18]
  */
 
-package cf.adriantodt.bot.base.persistence;
+package cf.adriantodt.bot.persistence;
 
 import cf.adriantodt.bot.Bot;
 import cf.adriantodt.bot.Java;
-import cf.adriantodt.bot.Statistics;
 import cf.adriantodt.bot.base.DiscordGuild;
 import cf.adriantodt.bot.base.I18n;
 import cf.adriantodt.bot.base.cmd.UserCommand;
+import cf.adriantodt.bot.utils.Statistics;
 
+import java.nio.CharBuffer;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static cf.adriantodt.bot.Bot.*;
+
 
 public class DataManager {
 	public static BotData data;
@@ -48,6 +51,10 @@ public class DataManager {
 			guild.commands.forEach((cmdName, cmd) -> {
 				if (cmd != null) data.commands.put(cmdName, cmd.responses);
 			});
+			data.cmdChars = new char[guild.controlChars.size()];
+			for (int i = 0; i < guild.controlChars.size(); i++) {
+				data.cmdChars[i] = guild.controlChars.get(i);
+			}
 			DataManager.data.guilds.add(data);
 		});
 
@@ -56,6 +63,7 @@ public class DataManager {
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
+		saveI18n();
 		Statistics.saves++;
 	}
 
@@ -88,14 +96,16 @@ public class DataManager {
 					cmd.responses = responses;
 				}
 			});
+			guild.controlChars.clear();
+			guild.controlChars.addAll(CharBuffer.wrap(data.cmdChars).chars().mapToObj(c -> (char) c).collect(Collectors.toList()));
 		});
-
+		loadI18n();
 		Statistics.loads++;
 	}
 
 	public static void saveI18n() {
 		try {
-			Files.write(getPath(BOTNAME + "-i18n"), JSON.toJson(I18n.instance).getBytes(Charset.forName("UTF-8")));
+			Files.write(getPath(SELF.getUsername() + "-i18n"), JSON.toJson(I18n.instance).getBytes(Charset.forName("UTF-8")));
 		} catch (Exception e) {
 			throw new RuntimeException(e);
 		}
@@ -103,7 +113,7 @@ public class DataManager {
 
 	public static void loadI18n() {
 		try {
-			I18n.instance = JSON.fromJson(new String(Files.readAllBytes(getPath(BOTNAME + "-i18n")), Charset.forName("UTF-8")), I18n.class);
+			I18n.instance = JSON.fromJson(new String(Files.readAllBytes(getPath(SELF.getUsername() + "-i18n")), Charset.forName("UTF-8")), I18n.class);
 		} catch (Exception e) {
 			saveI18n();
 		}
@@ -127,7 +137,7 @@ public class DataManager {
 	}
 
 	public static Path getSaveFile() {
-		return getPath(Bot.BOTNAME);
+		return getPath(Bot.SELF.getUsername());
 	}
 
 	public static Path getPath(String file) {

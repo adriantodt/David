@@ -7,22 +7,29 @@
  * GNU Lesser General Public License v2.1:
  * https://github.com/adriantodt/David/blob/master/LICENSE
  *
- * File Created @ [12/09/16 07:39]
+ * File Created @ [28/09/16 22:15]
  */
 
-package cf.adriantodt.bot.impl;
+package cf.adriantodt.bot.hardimpl;
 
 import static cf.adriantodt.bot.base.I18n.localize;
+import static cf.adriantodt.bot.base.I18n.setParent;
 
 /**
  * Hardcoded Impl goes here. Shouldn't be used too much.
  * It's here for Anti Data Loss regeneration.
  */
 public class I18nHardImpl {
-
 	public static void impl() {
+		setParent("pt_BR", "en_US");
+		setParent("en_GB", "en_US");
+		setParent("en_SG", "en_US");
+		setParent("en_AU", "en_US");
+
 		localize("en_US", "bot.hello1", "Hello! I'm David. Someone dropped me here!");
-		localize("en_US", "bot.hello2", "Someone call %s to set my Default Language! (By default is English <en_US>, and the Owner can set it by sending `&guild lang <en_US|pt_BR|etc>`)");
+		localize("en_US", "bot.hello1", "Oi! Eu sou o David. Alguém me jogou aqui!");
+		localize("en_US", "bot.hello2", "Someone call %s to set my Default Language!\n(Because of the Region, I guessed the language as `%s`, but the Guild Owner can set it anytime by executing `&guild lang <en_US|pt_BR|etc>`)");
+		localize("en_US", "bot.hello2", "Alguém chame %s para definir minha Língua Padrão!\n(Por causa da Região, eu adivinhei a língua como `%s`, mas o Guild Owner pode defini-la a qualquer mmomento executando `&guild lang <en_US|pt_BR|etc>`)");
 		localize("en_US", "bot.stop", "Stopping...");
 		localize("pt_BR", "bot.stop", "Saindo...");
 		localize("en_US", "bot.restart", "Restarting...");
@@ -43,15 +50,6 @@ public class I18nHardImpl {
 		localize("pt_BR", "guild.channels", "Canais");
 		localize("en_US", "guild.users", "Users");
 		localize("pt_BR", "guild.users", "Usuários");
-
-		localize("en_US", "audio.queue", "added by %s for channel &s");
-		localize("pt_BR", "audio.queue", "adicionado por %s para o canal %s");
-		localize("en_US", "audio.notInGuild", "you need to be in a Guild to use audio commands.");
-		localize("pt_BR", "audio.notInGuild", "você tem que estar em uma Guild para usar comandos de áudio.");
-		localize("en_US", "audio.notInChannel", "you need to be connected to a channel to use audio commands.");
-		localize("pt_BR", "audio.notInChannel", "você tem que estar em conectado em um canal para usar comandos de áudio.");
-		localize("en_US", "audio.notInSameChannel", "you need to be connected to the same channel as the Bot to skip a music.");
-		localize("pt_BR", "audio.notInSameChannel", "você tem que estar em conectado no mesmo canal do Bot para pular uma música.");
 
 		localize("en_US", "playing.nowPlaying", "Now I'm playing %s!");
 		localize("pt_BR", "playing.nowPlaying", "Agora estou jogando %s!");
@@ -76,17 +74,6 @@ public class I18nHardImpl {
 		localize("pt_BR", "user.status", "Status");
 		localize("en_US", "user.playing", "Playing");
 		localize("pt_BR", "user.playing", "Jogando");
-
-		localize("en_US", "play.usage", "Play an audio track from internet.\nOnly direct link are accepted (Youtube is not supported.)");
-		localize("pt_BR", "play.usage", "Toca uma faixa de áudio da internet.\nSó são aceitos links diretos (YouTube não é suportado.)");
-
-		localize("en_US", "queue.queue", "Queue");
-		localize("pt_BR", "queue.queue", "Fila");
-		localize("en_US", "queue.noMusics", "no musics added");
-		localize("pt_BR", "queue.noMusics", "nenhuma música atualmente");
-
-		localize("en_US", "skip.usage", "Skip current audio track.");
-		localize("pt_BR", "skip.usage", "Pula a faixa de áudio atual.");
 
 		localize("en_US", "lang.set", "Now I'll speak in %s to you!");
 		localize("pt_BR", "lang.set", "Agora eu vou falar em %s para você!");
@@ -116,8 +103,21 @@ public class I18nHardImpl {
 
 		localize("en_US", "answers.dear", "Dear");
 		localize("pt_BR", "answers.dear", "Prezado");
+		localize("en_US", "answers.calmDown", "Calm down");
+		localize("pt_BR", "answers.calmDown", "Acalme-se");
+		localize("en_US", "answers.tooFast", "You're running commands too fast!");
+		localize("pt_BR", "answers.tooFast", "Você está executando comandos rápido de mais");
+		localize("en_US", "answers.invalidArgs", "you've sent invalid arguments to the command.");
+		localize("pt_BR", "answers.invalidArgs", "você enviou argumento(s) incorreto(s) para o comando.");
+		localize("pt_BR", "answers.exception", "uma exceção ocorreu durante a execução do comando:");
+		localize("en_US", "answers.exception", "uma exceção ocorreu durante a execução do comando:");
 
 		localize("en_US", "eval.noOut", "Executed successfully (No output was provided)");
 		localize("pt_BR", "eval.noOut", "Executou com sucesso (Nenhum objeto foi retornado)");
+
+		localize("en_US", "stats.negativeTime", "<Negative difference of time>");
+		localize("pt_BR", "stats.negativeTime", "<Diferença negativa de tempo>");
+		localize("en_US", "stats.timeFormat", "%d days, %d hours, %d minutes, %d seconds");
+		localize("pt_BR", "stats.timeFormat", "%d dias, %d horas, %d minutos, %d segundos");
 	}
 }

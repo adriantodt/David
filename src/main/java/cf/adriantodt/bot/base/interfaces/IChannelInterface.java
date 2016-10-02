@@ -24,7 +24,7 @@ public interface IChannelInterface {
 	 * @return the Permission Required
 	 */
 	default long retrievePerm() {
-		return Permissions.RUN_BASECMD;
+		return Permissions.USE_INTERFACES;
 	}
 
 	/**

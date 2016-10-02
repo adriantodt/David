@@ -7,15 +7,15 @@
 
 package cf.adriantodt.bot.base.gui;
 
-import cf.adriantodt.bot.Statistics;
+import cf.adriantodt.bot.utils.Statistics;
+import cf.adriantodt.bot.utils.Tasks;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.Arrays;
 import java.util.Date;
 
-import static cf.adriantodt.bot.Statistics.*;
-import static cf.adriantodt.bot.Utils.cpuUsage;
+import static cf.adriantodt.bot.utils.Statistics.*;
 
 public class StatsComponent extends JComponent {
 	private static final int mb = 1024 * 1024;
@@ -44,12 +44,12 @@ public class StatsComponent extends JComponent {
 
 		Runtime instance = Runtime.getRuntime();
 		System.gc();
-		this.msgs[0] = "Uptime: " + calculate(startDate == null ? new Date() : startDate, new Date());
+		this.msgs[0] = "Uptime: " + calculate(startDate == null ? new Date() : startDate, new Date(), "pt_BR");
 		this.msgs[1] = Statistics.msgs + " msgs; " + cmds + " cmds; " + crashes + " crashes; " + toofasts + " spam; " + noperm + " noperms; " + invalidargs + " invalidargs.";
 		this.msgs[2] = wgets + " wgets; " + musics + " musics played; " + Thread.activeCount() + " active threads.";
 		this.msgs[3] = saves + " saves; " + loads + " loads.";
 		this.msgs[4] = "RAM(Using/Total/Max): " + ((instance.totalMemory() - instance.freeMemory()) / mb) + " MB/" + (instance.totalMemory() / mb) + " MB/" + (instance.maxMemory() / mb) + " MB";
-		this.msgs[5] = "CPU Usage: " + (Math.floor(cpuUsage * 10000) / 100) + "%";
+		this.msgs[5] = "CPU Usage: " + Tasks.cpuUsage + "%";
 		addToArray(Statistics.msgs - lastValue);
 		lastValue = Statistics.msgs;
 		this.repaint();
