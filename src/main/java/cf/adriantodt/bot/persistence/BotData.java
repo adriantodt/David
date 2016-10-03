@@ -19,6 +19,6 @@ import java.util.Map;
 
 public class BotData {
 	public List<DiscordGuildData> guilds = new ArrayList<>();
-	public String game = "";
 	public Map<String, List<String>> annoy = new HashMap<>();
+	public String audioBot = "";
 }

@@ -16,7 +16,7 @@ import cf.adriantodt.bot.base.DiscordGuild;
 import cf.adriantodt.bot.base.Permissions;
 import net.dv8tion.jda.events.message.MessageReceivedEvent;
 
-public interface ICommand {
+public interface ICommand extends ITranslatable {
 	void run(DiscordGuild guild, String arguments, MessageReceivedEvent event);
 
 	/**
@@ -26,19 +26,5 @@ public interface ICommand {
 	 */
 	default long retrievePerm() {
 		return Permissions.RUN_BASECMD;
-	}
-
-	/**
-	 * Provides Usage on invalidargs().<br>
-	 * <br>
-	 * Null = Default invalidargs message<br>
-	 * Empty = No invalidargs message<br>
-	 * Not-Empty = Shows the String as message<br>
-	 *
-	 * @param language the Language the Usage must be
-	 * @return the Usage
-	 */
-	default String retrieveUsage(String language) {
-		return null;
 	}
 }

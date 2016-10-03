@@ -7,10 +7,10 @@
  * GNU Lesser General Public License v2.1:
  * https://github.com/adriantodt/David/blob/master/LICENSE
  *
- * File Created @ [02/10/16 16:23]
+ * File Created @ [02/10/16 19:01]
  */
 
-package cf.adriantodt.bot.base;
+package cf.adriantodt.bot.handlers;
 
 import net.dv8tion.jda.events.ReadyEvent;
 import net.dv8tion.jda.hooks.EventListener;

@@ -19,14 +19,12 @@ import cf.adriantodt.bot.base.I18n;
 import cf.adriantodt.bot.base.cmd.UserCommand;
 import cf.adriantodt.bot.utils.Statistics;
 
-import java.nio.CharBuffer;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import static cf.adriantodt.bot.Bot.*;
 
@@ -37,9 +35,10 @@ public class DataManager {
 
 	public static void saveData() {
 		Map<String, List<String>> persAnnoy = data.annoy;
+		String persAudioBot = data.audioBot;
 		data = new BotData();
-		data.game = Bot.GAME;
 		data.annoy = persAnnoy;
+		data.audioBot = persAudioBot;
 
 		DiscordGuild.all.forEach(guild -> {
 			DiscordGuildData data = new DiscordGuildData();
@@ -51,10 +50,7 @@ public class DataManager {
 			guild.commands.forEach((cmdName, cmd) -> {
 				if (cmd != null) data.commands.put(cmdName, cmd.responses);
 			});
-			data.cmdChars = new char[guild.controlChars.size()];
-			for (int i = 0; i < guild.controlChars.size(); i++) {
-				data.cmdChars[i] = guild.controlChars.get(i);
-			}
+			data.prefixes = guild.cmdPrefixes;
 			DataManager.data.guilds.add(data);
 		});
 
@@ -75,8 +71,6 @@ public class DataManager {
 			saveData();
 		}
 
-		Bot.GAME = data.game;
-		Bot.setDefault();
 
 		data.guilds.forEach(data -> {
 			DiscordGuild tmpG = DiscordGuild.fromId(data.id);
@@ -96,8 +90,8 @@ public class DataManager {
 					cmd.responses = responses;
 				}
 			});
-			guild.controlChars.clear();
-			guild.controlChars.addAll(CharBuffer.wrap(data.cmdChars).chars().mapToObj(c -> (char) c).collect(Collectors.toList()));
+			guild.cmdPrefixes.clear();
+			guild.cmdPrefixes.addAll(data.prefixes);
 		});
 		loadI18n();
 		Statistics.loads++;

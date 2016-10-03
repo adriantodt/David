@@ -49,8 +49,8 @@ Permissões:
 	PERMSYSTEM_ASSIST_PERMS (7-9)
 	                -> Protege pessoas de nível maior de serem afetadas por pessoas com nível maior.
 	PLAYING     (a) -> Comando &jogando
-	SCRIPTS         (b) -> Comando &eval (JS), &lua (LuaJ)
-	GUILD       (c) -> Comando &guild
+	SCRIPTS     (b) -> Comando &eval (JS), &lua (LuaJ)
+	EDIT_GUILD  (c) -> Comando &guild
 	SPY         (d) -> Comando &spy
 	GLOBALS_IMP (e) -> Comando &globals e subcomando import
 	GLOBALS_EXP (f) -> Subcomando export
@@ -76,7 +76,7 @@ public class Permissions {
 		PERMSYS_BO = bits(9),
 		PLAYING = bits(10),
 		SCRIPTS = bits(11),
-		GUILD = bits(12),
+		EDIT_GUILD = bits(12),
 		SPY = bits(13),
 		GLOBALS_IMP = bits(14),
 		GLOBALS_EXP = bits(15),
@@ -89,7 +89,7 @@ public class Permissions {
 	public static final long
 		BASE_USER = RUN_BASECMD | RUN_USR_CMD | RUN_SCT_CMD | GUILD_PASS | USE_INTERFACES,
 		GUILD_MOD = BASE_USER | MANAGE_USR | MANAGE_SPCS | PERMSYSTEM | PERMSYS_GM | GLOBALS_IMP,
-		GUILD_OWNER = GUILD_MOD | GLOBALS_EXP | SCRIPTS | GUILD | PERMSYS_GO,
+		GUILD_OWNER = GUILD_MOD | GLOBALS_EXP | SCRIPTS | EDIT_GUILD | PERMSYS_GO,
 		BOT_OWNER = GUILD_OWNER | PLAYING | LUAENV_FULL | SPY | SAVE_LOAD | STOP_RESET | PERMSYS_BO | ANNOY;
 
 	public static Map<String, Long> perms = new HashMap<String, Long>() {{

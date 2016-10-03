@@ -12,10 +12,7 @@
 
 package cf.adriantodt.bot;
 
-import cf.adriantodt.bot.base.ReadyBuilder;
-import cf.adriantodt.bot.handlers.BotGreeter;
-import cf.adriantodt.bot.handlers.BotIntercommns;
-import cf.adriantodt.bot.handlers.CommandHandler;
+import cf.adriantodt.bot.handlers.*;
 import cf.adriantodt.bot.hardimpl.CmdsAndInterfaces;
 import cf.adriantodt.bot.hardimpl.I18nHardImpl;
 import cf.adriantodt.bot.persistence.DataManager;
@@ -42,7 +39,6 @@ public class Bot {
 	public static Logger LOGGER = LogManager.getLogger("Bot");
 	public static JDA API = null;
 	public static User SELF = null;
-	public static String GAME = "";
 
 	public static void init() throws Exception {
 		DataManager.loadConfig();
@@ -55,13 +51,14 @@ public class Bot {
 				new ReadyBuilder()
 					.add(event -> API = event.getJDA())
 					.add(event -> SELF = event.getJDA().getSelfInfo())
+					.add(event -> event.getJDA().getAccountManager().setGame("mention me for help"))
 					.add(event -> {
 						loadData();
 						loadI18n();
 					})
 					.add(event -> I18nHardImpl.impl())
 					.build(),
-				new CommandHandler(), new BotIntercommns(), new BotGreeter()
+				new CommandHandler(), new BotIntercommns(), new BotGreeter(), new Spy()
 			).buildBlocking();
 		LOGGER = LogManager.getLogger(SELF.getUsername());
 		LOGGER.info("Logged in as '" + SELF.getUsername() + "' (ID @" + SELF.getId() + ")");
@@ -94,10 +91,5 @@ public class Bot {
 		} catch (Exception ignored) {
 		}
 		Java.restartApp();
-	}
-
-	public static void setDefault() {
-		API.getAccountManager().setGame(GAME);
-		API.getAccountManager().setIdle(false);
 	}
 }

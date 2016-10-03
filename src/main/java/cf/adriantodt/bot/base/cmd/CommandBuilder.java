@@ -68,7 +68,7 @@ public class CommandBuilder {
 	}
 
 	public CommandBuilder setUsage(Function<String, String> provider) {
-		usageProvider = provider;
+		usageProvider = s -> "<TRANSLATION REQUIRED> " + provider;
 		return this;
 	}
 
@@ -85,7 +85,7 @@ public class CommandBuilder {
 			}
 
 			@Override
-			public String retrieveUsage(String language) {
+			public String toString(String language) {
 				return usageProvider.apply(language);
 			}
 		};

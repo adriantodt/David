@@ -23,6 +23,7 @@ import java.util.*;
 
 public class DiscordGuild implements ITranslatable {
 	public static final DiscordGuild PM, GLOBAL;
+	public static final String[] DEFAULT_PREFIXES = {"&", "!"};
 	public static List<DiscordGuild> all = new ArrayList<>();
 
 	static {
@@ -41,7 +42,7 @@ public class DiscordGuild implements ITranslatable {
 	public Map<String, UserCommand> commands = new HashMap<>();
 	public Map<String, Boolean> flags = new HashMap<>();
 	public String id = "-1", name = "", defaultLanguage = "en_US";
-	public List<Character> controlChars = new ArrayList<>(Arrays.asList('&', '?'));
+	public List<String> cmdPrefixes = new ArrayList<>(Arrays.asList(DEFAULT_PREFIXES));
 
 	public DiscordGuild() {
 		all.add(this);

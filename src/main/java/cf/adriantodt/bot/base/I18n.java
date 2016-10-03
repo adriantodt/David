@@ -12,7 +12,9 @@
 
 package cf.adriantodt.bot.base;
 
+import cf.adriantodt.bot.Bot;
 import cf.adriantodt.bot.handlers.CommandHandler;
+import cf.adriantodt.bot.utils.Utils;
 import net.dv8tion.jda.entities.User;
 import net.dv8tion.jda.events.message.MessageReceivedEvent;
 
@@ -54,6 +56,10 @@ public class I18n {
 	}
 
 	public static String getLocalized(String unlocalized, String locale) {
+		return getBaseLocalized(unlocalized, locale).replace("$(BOTNAME)", Bot.SELF == null ? "Bot" : Bot.SELF.getUsername()).replace("$(PREFIX)", "&");
+	}
+
+	private static String getBaseLocalized(String unlocalized, String locale) {
 		String localized = unlocalized;
 		Map<String, String> locales = I18n.getLocales().get(unlocalized);
 		while (unlocalized.equals(localized) && locale != null) {
@@ -64,7 +70,7 @@ public class I18n {
 	}
 
 	public static String getLocalized(String unlocalized, MessageReceivedEvent event) {
-		return getLocalized(unlocalized, getLang(event));
+		return getBaseLocalized(unlocalized, getLang(event)).replace("$(BOTNAME)", Utils.name(Bot.SELF, event.getGuild())).replace("$(PREFIX)", Utils.random(DiscordGuild.fromDiscord(event).cmdPrefixes));
 	}
 
 	public static void localize(String target, String unlocalized, String localized) {

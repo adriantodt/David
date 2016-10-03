@@ -12,22 +12,34 @@
 
 package cf.adriantodt.bot.hardimpl;
 
+import cf.adriantodt.bot.Bot;
+import cf.adriantodt.bot.base.DiscordGuild;
+import cf.adriantodt.bot.base.I18n;
 import cf.adriantodt.bot.base.Permissions;
-import cf.adriantodt.bot.base.cmd.CommandBuilder;
-import cf.adriantodt.bot.base.cmd.TreeCommandBuilder;
+import cf.adriantodt.bot.base.cmd.*;
+import cf.adriantodt.bot.handlers.BotGreeter;
+import cf.adriantodt.bot.handlers.BotIntercommns;
+import cf.adriantodt.bot.handlers.CommandHandler;
 import cf.adriantodt.bot.persistence.DataManager;
+import cf.adriantodt.bot.utils.Channels;
+import cf.adriantodt.bot.utils.Statistics;
 import cf.adriantodt.bot.utils.Tasks;
 import net.dv8tion.jda.entities.Guild;
+import net.dv8tion.jda.entities.MessageChannel;
 import net.dv8tion.jda.entities.Role;
 import net.dv8tion.jda.entities.User;
 
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import static cf.adriantodt.bot.base.I18n.getLocalized;
 import static cf.adriantodt.bot.base.Permissions.*;
 import static cf.adriantodt.bot.utils.Answers.*;
-import static cf.adriantodt.bot.utils.Commands.addCommand;
+import static cf.adriantodt.bot.utils.Commands.*;
 import static cf.adriantodt.bot.utils.Utils.nnOrD;
 import static cf.adriantodt.bot.utils.Utils.splitArgs;
 
@@ -36,7 +48,9 @@ public class CmdsAndInterfaces {
 		//implUser
 		addCommand("user", new CommandBuilder()
 			.setAction((g, a, e) -> {
-				User user = (e.getMessage().getMentionedUsers().isEmpty() ? e.getAuthor() : e.getMessage().getMentionedUsers().get(0));
+				User pre =
+					(e.getMessage().getMentionedUsers().isEmpty() ? e.getAuthor() : e.getMessage().getMentionedUsers().get(e.getMessage().getMentionedUsers().size() - 1));
+				User user = pre == Bot.SELF && a.trim().isEmpty() ? e.getAuthor() : pre;
 				send(e,
 					user.getAsMention() + ": \n" + getLocalized("user.avatar", e) + ": " + user.getAvatarUrl() + "\n```" +
 						getLocalized("user.name", e) + ": " + user.getUsername() + "\n" +
@@ -116,19 +130,293 @@ public class CmdsAndInterfaces {
 				})
 				.build()
 			)
-			.addCommand("list", (guild, arguments, event) -> send(event, "**" + getLocalized("perms.get.userPerms", event) + ":**\n *" + String.join(", ", Permissions.toCollection(BOT_OWNER).stream().toArray(String[]::new)) + "*"))
+			.addCommand("list",
+				new CommandBuilder().setAction(
+					(guild, arguments, event) -> send(event, "**" + getLocalized("perms.get.userPerms", event) + ":**\n *" + String.join(", ", Permissions.toCollection(BOT_OWNER).stream().toArray(String[]::new)) + "*")
+				).setTranslatableUsage("perms.list.usage").build()
+			)
 			.build()
+		);
+
+		//implInviteMe
+		addCommand("inviteme",
+			new CommandBuilder().setAction(event -> send(event, "**" + getLocalized("inviteme.link", event) + ":**\n" + Bot.API.getSelfInfo().getAuthUrl()))
+				.setTranslatableUsage("inviteme.usage").build()
+		);
+
+		//implLang
+		addCommand("lang",
+			new CommandBuilder().setAction((arg, event) -> {
+				I18n.setLang(event.getAuthor(), arg);
+				if (arg.isEmpty()) announce(event, getLocalized("lang.setNone", event));
+				else announce(event, String.format(getLocalized("lang.set", event), arg));
+			}).setTranslatableUsage("lang.usage").build()
+		);
+
+		addCommand("guild", new TreeCommandBuilder()
+			.setPermRequired(Permissions.RUN_BASECMD)
+			.addCommand("info",
+				new CommandBuilder()
+					.setAction((guild, arguments, event) -> sendCased(event, guild.toString(I18n.getLang(event))))
+					.setTranslatableUsage("guild.info.usage").build()
+			)
+			.addDefault("info")
+			.addCommand("list",
+				new CommandBuilder()
+					.setAction((guild, arguments, event) -> Channels.listChannels(guild, event))
+					.setTranslatableUsage("guild.list.usage").build()
+			)
+			.addCommand("lang",
+				new CommandBuilder()
+					.setPermRequired(Permissions.EDIT_GUILD)
+					.setAction((guild, arg, event) -> {
+						arg = (arg.isEmpty() ? "en_US" : arg);
+						guild.defaultLanguage = arg;
+						announce(event, String.format(getLocalized("guild.lang.set", event), arg));
+					}).setTranslatableUsage("guild.lang.usage").build()
+			)
+			.addCommand("broadcast",
+				new CommandBuilder()
+					.setAction(Channels::broadcast)
+					.setTranslatableUsage("guild.broadcast.usage").build()
+			)
+			.addCommand("cleanup",
+				new CommandBuilder().setPermRequired(Permissions.EDIT_GUILD)
+					.setUsage("Ativa ou Desativa o \"Cleanup\" de Mensagens do Bot.")
+					.setAction((guild, args, event) -> {
+						guild.flags.put("cleanup", !guild.flags.get("cleanup"));
+						bool(event, guild.flags.get("cleanup"));
+					}).build()
+			)
+			.addCommand("prefixes",
+				new CommandBuilder().setPermRequired(PERMSYSTEM)
+					.setTranslatableUsage("perms.set.usage")
+					.setAction((guild, args, event) -> {
+						if (args.trim().isEmpty()) {
+							invalidargs(event);
+							return;
+						}
+						String[] all = args.split("\\s+", -1);
+						for (String each : all) {
+							if (each.toLowerCase().equals("+default")) {
+								Arrays.asList(DiscordGuild.DEFAULT_PREFIXES).forEach(s -> {
+									if (!guild.cmdPrefixes.contains(s)) guild.cmdPrefixes.add(s);
+								});
+							} else if (each.charAt(0) == '+') {
+								String v = each.substring(1);
+								if (!guild.cmdPrefixes.contains(v)) guild.cmdPrefixes.add(v);
+							} else if (each.toLowerCase().equals("clear")) {
+								guild.cmdPrefixes.clear();
+							} else if (each.toLowerCase().equals("list") || each.toLowerCase().equals("get")) {
+								send(event, Arrays.toString(guild.cmdPrefixes.toArray()));
+							}
+
+						}
+						bool(event, true);
+					})
+					.build()
+			)
+			.build()
+		);
+
+		addCommand("bot",
+			new TreeCommandBuilder().setPermRequired(RUN_BASECMD)
+				.addCommand("info",
+					new CommandBuilder().setAction(BotGreeter::greet).build()
+				)
+				.addDefault("info")
+				.addCommand("stop",
+					new CommandBuilder().setPermRequired(STOP_RESET)
+						.setAction(event -> {
+							announce(event, I18n.getLocalized("bot.stop", event));
+							Bot.stopBot();
+						})
+						.build()
+				)
+				.addCommand("restart",
+					new CommandBuilder().setPermRequired(STOP_RESET)
+						.setAction(event -> {
+							announce(event, I18n.getLocalized("bot.restart", event));
+							Bot.restartBot();
+						})
+						.build()
+				)
+				.addCommand("save",
+					new CommandBuilder().setPermRequired(SAVE_LOAD)
+						.setAction(event -> {
+							announce(event, I18n.getLocalized("bot.save", event));
+							DataManager.saveData();
+							bool(event, true);
+						})
+						.build()
+				)
+				.addCommand("load",
+					new CommandBuilder().setPermRequired(SAVE_LOAD)
+						.setAction(event -> {
+							announce(event, I18n.getLocalized("bot.load", event));
+							DataManager.loadData();
+							bool(event, true);
+						})
+						.build()
+				)
+				.addCommand("toofast",
+					new CommandBuilder().setPermRequired(Permissions.BOT_OWNER)
+						.setTranslatableUsage("bot.toofast.usage")
+						.setAction((event) -> {
+							CommandHandler.toofast = !CommandHandler.toofast;
+							bool(event, CommandHandler.toofast);
+						}).build()
+				)
+				.addCommand("stats",
+					new CommandBuilder().setAction(Statistics::printStats).setTranslatableUsage("bot.stats.usage").build()
+				)
+				.build()
+		);
+
+		addCommand("cmds",
+			new TreeCommandBuilder()
+				.addCommand("list",
+					new CommandBuilder().setAction((guild, args, event) -> {
+						List<String> cmds, userCmds, tmp = new ArrayList<>();
+
+						cmds = getCommands(guild).entrySet().stream().filter(entry -> Permissions.canRunCommand(guild, event, entry.getValue())).filter(entry -> {
+							if (entry.getValue() instanceof UserCommand) {
+								tmp.add(entry.getKey());
+								return false;
+							}
+							return true;
+						}).map(Map.Entry::getKey).sorted(String::compareTo).collect(Collectors.toList());
+
+						userCmds = tmp.stream().sorted(String::compareTo).collect(Collectors.toList());
+
+						Holder<StringBuilder> b = new Holder<>();
+						Holder<Boolean> first = new Holder<>();
+
+						b.var = new StringBuilder("**Comandos Disponíveis:**\n *");
+						first.var = true;
+						cmds.forEach(s -> {
+							if (first.var) {
+								first.var = false;
+								b.var.append(s);
+							} else {
+								String a = " " + s;
+								if (b.var.length() + a.length() >= 1999) {
+									b.var.append("*");
+									send(event, b.var.toString());
+									b.var = new StringBuilder("*");
+								}
+								b.var.append(a);
+							}
+
+						});
+						if (first.var) b.var.append("(nenhum comando disponível)");
+						b.var.append("*");
+						send(event, b.var.toString());
+
+						b.var = new StringBuilder("**Comandos de Usuário Disponíveis:**\n *");
+						first.var = true;
+
+						userCmds.forEach(s -> {
+							if (first.var) {
+								first.var = false;
+								b.var.append(s);
+							} else {
+								String a = " " + s;
+								if (b.var.length() + a.length() >= 1999) {
+									b.var.append("*");
+									send(event, b.var.toString());
+									b.var = new StringBuilder("*");
+								}
+								b.var.append(a);
+							}
+
+						});
+						if (first.var) b.var.append("(nenhum comando disponível)");
+						b.var.append("*");
+						send(event, b.var.toString());
+					}).build())
+				.addDefault("list")
+				.addCommand("detailed", new CommandBuilder().setAction((guild, args, event) -> {
+					MessageChannel channel = event.getAuthor().getPrivateChannel();
+					List<String> cmds = getBaseCommands().entrySet().stream().filter(entry -> Permissions.canRunCommand(guild, event, entry.getValue())).map(
+						(entry) -> entry.getKey() + " - " + entry.getValue().toString(I18n.getLang(event))).sorted(String::compareTo).collect(Collectors.toList());
+
+					Holder<StringBuilder> b = new Holder<>();
+					Holder<Boolean> first = new Holder<>();
+
+					b.var = new StringBuilder("**Comandos:**\n```");
+					first.var = true;
+					cmds.forEach(s -> {
+						if (first.var) {
+							first.var = false;
+							b.var.append(s);
+						} else {
+							String a = "\n" + s;
+							if (b.var.length() + a.length() >= 1995) {
+								b.var.append("```");
+								channel.sendMessageAsync(b.var.toString(), null);
+								b.var = new StringBuilder("*");
+							}
+							b.var.append(a);
+						}
+
+					});
+					if (first.var) b.var.append("(nenhum comando disponível)");
+					b.var.append("```");
+					channel.sendMessageAsync(b.var.toString(), null);
+					send(event, event.getAuthor().getAsMention() + " :mailbox_with_mail:");
+				}).build())
+				.addCommand("add", new CommandBuilder().setPermRequired(Permissions.MANAGE_USR)
+					.setUsage("Adiciona um Comando de Usuário")
+					.setAction((guild, arg, event) -> {
+						String[] args = splitArgs(arg, 2); //COMMAND_NAME RESPONSE
+						if (args[0].isEmpty() | args[1].isEmpty()) invalidargs(event);
+						else {
+							UserCommand cmd = getLocalUserCommands(guild).get(args[0].toLowerCase());
+							if (cmd == null) {
+								UserCommand ncmd = new UserCommand();
+								ncmd.responses.add(args[1]);
+								getLocalUserCommands(guild).put(args[0].toLowerCase(), ncmd);
+								bool(event, true);
+							} else {
+								cmd.responses.add(args[1]);
+								bool(event, true);
+							}
+						}
+					}).build())
+				.addCommand("rm", new CommandBuilder().setPermRequired(Permissions.MANAGE_USR)
+					.setUsage("Remove um Comando de Usuário")
+					.setAction((guild, arg, event) -> {
+						if (arg.isEmpty()) invalidargs(event);
+						else {
+							ICommand pre = getLocalUserCommands(guild).get(arg.toLowerCase());
+							if (pre == null) invalidargs(event);
+							else {
+								getLocalUserCommands(guild).remove(arg.toLowerCase());
+								bool(event, true);
+								BotIntercommns.updateCmds();
+							}
+						}
+					}).build())
+				.addCommand("debug", new CommandBuilder().setPermRequired(Permissions.MANAGE_USR).setAction((guild, arg, event) -> {
+					if (arg.isEmpty()) invalidargs(event);
+					else {
+						ICommand cmd = getLocalUserCommands(guild).get(arg);
+						if (cmd == null) invalidargs(event);
+						else
+							send(event, "***Debug do Comando `" + arg + "`:*** " + Arrays.toString(((UserCommand) cmd).responses.toArray()));
+					}
+				})
+					.build())
+				.build()
+		);
+
+		addCommand("audio",
+			new CommandBuilder().setAction((guild, args, event) -> send(event, "Our bot doesn't have Audio Support.")).build()
 		);
 	}
 }
 
-//	public static void impl() {
-//		implCmds();
-//		implSpy();
-//		implBot();
-//		implPerms();
-//		implGuild();
-//
 //		//implOkay
 //		addCommand("okay", (guild, arguments, event) -> bool(event, (arguments.isEmpty() || Boolean.parseBoolean(arguments))));
 //
@@ -142,150 +430,11 @@ public class CmdsAndInterfaces {
 //		//implWget
 //		addCommand("wget", (guild, arguments, event) -> sendCased(event, IOHelper.toString(arguments), ""));
 //
-//		//implInviteMe
-//		addCommand("inviteme",
-//			(guild, arguments, event) -> send(event, "**" + getLocalized("inviteme.link", event) + ":**\n"+Bot.API.getSelfInfo().getAuthUrl())
-//		);
-//
-//		//implLang
-//		addCommand("lang",
-//			(guild, arg, event) -> {
-//				I18n.setLang(event.getAuthor(), arg);
-//				if (arg.isEmpty()) announce(event, getLocalized("lang.setNone", event));
-//				else announce(event, String.format(getLocalized("lang.set", event), arg));
-//			}
-//		);
-//
 //		//implEval
 //		addCommand("eval",
 //			new CommandBuilder()
 //				.setAction(JS::eval)
 //				.setPermRequired(SCRIPTS | RUN_SCT_CMD)
-//				.build()
-//		);
-//
-//		//implAnnoy
-//		addCommand("annoy", new CommandBuilder()
-//			.setPermRequired(ANNOY)
-//			.setUsage("")
-//			.setAction(((arguments, event) -> {
-//				String[] args = splitArgs(arguments, 3); //!spysend CH MSG
-//				if (args[0].isEmpty() || args[1].isEmpty()) invalidargs(event);
-//				else {
-//					args[0] = processID(args[0]);
-//					if ("clear".equals(args[1])) {
-//						DataManager.data.annoy.remove(args[0]);
-//						bool(event, true);
-//					}
-//					if ("add".equals(args[1])) {
-//						if (!DataManager.data.annoy.containsKey(args[0]))
-//							DataManager.data.annoy.put(args[0], new ArrayList<>());
-//						DataManager.data.annoy.get(args[0]).add(args[2]);
-//						bool(event, true);
-//					}
-//				}
-//			}))
-//			.build()
-//		);
-//	}
-//
-//	private static void implGuild() {
-//		addCommand("guild", new TreeCommandBuilder()
-//			.setPermRequired(Permissions.RUN_BASECMD)
-//			.addCommand("info",
-//				new CommandBuilder()
-//					.setAction((guild, arguments, event) -> sendCased(event, guild.toString()))
-//					.setTranslatableUsage("guild.info.usage").build()
-//			)
-//			.addDefault("info")
-//			.addCommand("list",
-//				new CommandBuilder()
-//					.setAction((guild, arguments, event) -> Spy.listChannels(guild, event))
-//					.setTranslatableUsage("guild.list.usage").build()
-//			)
-//			.addCommand("lang",
-//				(guild, arg, event) -> {
-//					arg = (arg.isEmpty() ? "en_US" : arg);
-//					guild.defaultLanguage = arg;
-//					announce(event, String.format(getLocalized("guild.lang.set", event), arg));
-//				}
-//			)
-//			.addCommand("broadcast",
-//				new CommandBuilder()
-//					.setAction(Spy::broadcast)
-//					.setTranslatableUsage("guild.broadcast.usage").build()
-//			)
-//			.build()
-//		);
-//	}
-//
-//	private static void implBot() {
-//		addCommand("bot",
-//			new TreeCommandBuilder().setPermRequired(RUN_BASECMD)
-//				.addCommand("info", addUsage(
-//					(guild, arguments, event) -> sendCased(event,
-//						"Olá, eu sou o David, o Bot mais aleatório feito em Java.\n\n" +
-//							"Os Dados e Comandos são Guardados de Forma Dependente de Guilds, o que significa que não espalho as piadas para outros grupos!\n\n" +
-//							"Use ?cmds ou &cmds (? e & são aceitos em todos os comandos) para começar!",
-//						""
-//					), "Informações sobre Bot.")
-//				)
-//				.addDefault("info")
-//				.addCommand("stop",
-//					new CommandBuilder().setPermRequired(STOP_RESET)
-//						.setAction(event -> {
-//							announce(event, "Saindo...");
-//							Bot.stopBot();
-//						})
-//						.build()
-//				)
-//				.addCommand("restart",
-//					new CommandBuilder().setPermRequired(STOP_RESET)
-//						.setAction(event -> {
-//							announce(event, "Saindo...");
-//							Bot.restartBot();
-//						})
-//						.build()
-//				)
-//				.addCommand("save",
-//					new CommandBuilder().setPermRequired(SAVE_LOAD)
-//						.setAction(event -> {
-//							announce(event, "Salvando...");
-//							DataManager.saveData();
-//							DataManager.saveI18n();
-//							bool(event, true);
-//						})
-//						.build()
-//				)
-//				.addCommand("cleanup",
-//					new CommandBuilder().setPermRequired(Permissions.GUILD)
-//						.setUsage("Ativa ou Desativa o \"Cleanup\" de Mensagens do Bot.")
-//						.setAction((event) -> {
-//							cleanup = !cleanup;
-//							bool(event, cleanup);
-//						}).build()
-//				)
-//				.addCommand("toofast",
-//					new CommandBuilder().setPermRequired(Permissions.GUILD)
-//						.setUsage("Ativa ou Desativa o \"Toofast\" de Mensagens do Bot.")
-//						.setAction((event) -> {
-//							toofast = !toofast;
-//							bool(event, toofast);
-//						}).build()
-//				)
-//				.addCommand("load",
-//					new CommandBuilder().setPermRequired(SAVE_LOAD)
-//						.setAction(event -> {
-//							announce(event, "Carregando...");
-//							DataManager.loadData();
-//							DataManager.loadI18n();
-//							bool(event, true);
-//						})
-//						.build()
-//				)
-//				.addCommand("stats",
-//					addUsage((guild, arguments, event) -> Statistics.printStats(event), "Estatísticas sobre a última sessão.")
-//				)
 //				.build()
 //		);
 //	}
@@ -332,117 +481,5 @@ public class CmdsAndInterfaces {
 //						}
 //					}).build()
 //				).build()
-//		);
-//	}
-//
-//	private static void implCmds() {
-//		addCommand("cmds",
-//			new TreeCommandBuilder()
-//				.addCommand("list",
-//					addUsage((guild, args, event) -> {
-//							List<String> cmds, userCmds, tmp = new ArrayList<>();
-//
-//							cmds = getCommands(guild).entrySet().stream().filter(entry -> Permissions.canRunCommand(guild, event, entry.getValue())).filter(entry -> {
-//								if (entry.getValue() instanceof UserCommand) {
-//									tmp.add(entry.getKey());
-//									return false;
-//								}
-//								return true;
-//							}).map(Map.Entry::getKey).sorted(String::compareTo).collect(Collectors.toList());
-//
-//							userCmds = tmp.stream().sorted(String::compareTo).collect(Collectors.toList());
-//
-//							Holder<StringBuilder> b = new Holder<>();
-//							Holder<Boolean> first = new Holder<>();
-//
-//							b.var = new StringBuilder("**Comandos Disponíveis:**\n *");
-//							first.var = true;
-//							cmds.forEach(s -> {
-//								if (first.var) {
-//									first.var = false;
-//									b.var.append(s);
-//								} else {
-//									String a = " " + s;
-//									if (b.var.length() + a.length() >= 1999) {
-//										b.var.append("*");
-//										send(event, b.var.toString());
-//										b.var = new StringBuilder("*");
-//									}
-//									b.var.append(a);
-//								}
-//
-//							});
-//							if (first.var) b.var.append("(nenhum comando disponível)");
-//							b.var.append("*");
-//							send(event, b.var.toString());
-//
-//							b.var = new StringBuilder("**Comandos de Usuário Disponíveis:**\n *");
-//							first.var = true;
-//
-//							userCmds.forEach(s -> {
-//								if (first.var) {
-//									first.var = false;
-//									b.var.append(s);
-//								} else {
-//									String a = " " + s;
-//									if (b.var.length() + a.length() >= 1999) {
-//										b.var.append("*");
-//										send(event, b.var.toString());
-//										b.var = new StringBuilder("*");
-//									}
-//									b.var.append(a);
-//								}
-//
-//							});
-//							if (first.var) b.var.append("(nenhum comando disponível)");
-//							b.var.append("*");
-//							send(event, b.var.toString());
-//						}
-//						, "Mostra os Comandos disponíveis"))
-//				.addDefault("list")
-//				.addCommand("add", new CommandBuilder().setPermRequired(Permissions.MANAGE_USR)
-//					.setUsage("Adiciona um Comando de Usuário")
-//					.setAction((guild, arg, event) -> {
-//						String[] args = splitArgs(arg, 2); //COMMAND_NAME RESPONSE
-//						if (args[0].isEmpty() | args[1].isEmpty()) invalidargs(event);
-//						else {
-//							UserCommand cmd = getLocalUserCommands(guild).get(args[0].toLowerCase());
-//							if (cmd == null) {
-//								UserCommand ncmd = new UserCommand();
-//								ncmd.responses.add(args[1]);
-//								getLocalUserCommands(guild).put(args[0].toLowerCase(), ncmd);
-//								bool(event, true);
-//							} else {
-//								cmd.responses.add(args[1]);
-//								bool(event, true);
-//							}
-//							BotIntercommns.updateCmds();
-//						}
-//					}).build())
-//				.addCommand("rm", new CommandBuilder().setPermRequired(Permissions.MANAGE_USR)
-//					.setUsage("Remove um Comando de Usuário")
-//					.setAction((guild, arg, event) -> {
-//						if (arg.isEmpty()) invalidargs(event);
-//						else {
-//							ICommand pre = getLocalUserCommands(guild).get(arg.toLowerCase());
-//							if (pre == null) invalidargs(event);
-//							else {
-//								getLocalUserCommands(guild).remove(arg.toLowerCase());
-//								bool(event, true);
-//								BotIntercommns.updateCmds();
-//							}
-//						}
-//					}).build())
-//				.addCommand("debug", new CommandBuilder().setPermRequired(Permissions.MANAGE_USR).setAction((guild, arg, event) -> {
-//					if (arg.isEmpty()) invalidargs(event);
-//					else {
-//						ICommand cmd = getLocalUserCommands(guild).get(arg);
-//						if (cmd == null) invalidargs(event);
-//						else
-//							send(event, "***Debug do Comando `" + arg + "`:*** " + Arrays.toString(((UserCommand) cmd).responses.toArray()));
-//					}
-//				})
-//					.build())
-//				.build()
 //		);
 //	}

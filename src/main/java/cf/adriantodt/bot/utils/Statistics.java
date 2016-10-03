@@ -67,7 +67,8 @@ public class Statistics {
 		return onCatch;
 	}
 
-	public static void printStats(MessageReceivedEvent event, String language) {
+	public static void printStats(MessageReceivedEvent event) {
+		String language = I18n.getLang(event);
 		int mb = 1024 * 1024;
 		Runtime instance = Runtime.getRuntime();
 		send(event,

@@ -20,6 +20,10 @@ import net.dv8tion.jda.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.hooks.ListenerAdapter;
 
 public class BotGreeter extends ListenerAdapter {
+	public static void greet(MessageReceivedEvent event) {
+		event.getChannel().sendMessage(I18n.getLocalized("bot.help", event));
+	}
+
 	@Override
 	public void onGuildJoin(GuildJoinEvent event) {
 		try {
@@ -35,7 +39,7 @@ public class BotGreeter extends ListenerAdapter {
 	@Override
 	public void onMessageReceived(MessageReceivedEvent event) {
 		if (event.getMessage().getRawContent().trim().matches("<@!?" + event.getJDA().getSelfInfo().getId() + ">")) {
-			event.getChannel().sendMessage(I18n.getLocalized("bot.help", "en_US"));
+			greet(event);
 		}
 	}
 }

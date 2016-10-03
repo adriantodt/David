@@ -12,6 +12,7 @@
 
 package cf.adriantodt.bot.utils;
 
+import cf.adriantodt.bot.Bot;
 import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.entities.Guild;
 import net.dv8tion.jda.entities.User;
@@ -22,6 +23,7 @@ import org.json.JSONObject;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static cf.adriantodt.bot.utils.Tasks.userTimeout;
@@ -94,7 +96,7 @@ public class Utils {
 	}
 
 	public static String name(User user, Guild guild) {
-		return (guild.getNicknameForUser(user) == null ? user.getUsername() : guild.getNicknameForUser(user));
+		return (guild == null || guild.getNicknameForUser(user) == null ? user.getUsername() : guild.getNicknameForUser(user));
 	}
 
 	public static String nnOrD(String str, String defaultStr) {
@@ -120,5 +122,13 @@ public class Utils {
 		}
 
 		return buf.toString();
+	}
+
+	public static <T> T random(List<T> list) {
+		return list.get(Bot.RAND.nextInt(list.size()));
+	}
+
+	public static <T> T random(T[] array) {
+		return array[Bot.RAND.nextInt(array.length)];
 	}
 }

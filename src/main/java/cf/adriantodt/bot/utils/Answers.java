@@ -34,6 +34,11 @@ public class Answers {
 		send(event, "*" + I18n.getLocalized("answers.calmDown", event) + " " + event.getAuthor().getAsMention() + "! " + I18n.getLocalized("answers.tooFast", event) + "!*");
 	}
 
+	public static void sendTranslated(MessageReceivedEvent event, String unlocalized) {
+		event.getChannel().sendMessageAsync(I18n.getLocalized(unlocalized, event), null);
+		Statistics.msgs++;
+	}
+
 	public static void send(MessageReceivedEvent event, String message) {
 		event.getChannel().sendMessageAsync(message, null);
 		Statistics.msgs++;
@@ -71,7 +76,7 @@ public class Answers {
 	}
 
 	public static void invalidargs(MessageReceivedEvent event) {
-		String usage = CommandHandler.getSelf(event).retrieveUsage(I18n.getLang(event));
+		String usage = CommandHandler.getSelf(event).toString(I18n.getLang(event));
 		if (usage == null) dear(event, I18n.getLocalized("answers.invalidArgs", event));
 		else if (!usage.isEmpty()) sendCased(event, usage, "");
 		Statistics.invalidargs++;

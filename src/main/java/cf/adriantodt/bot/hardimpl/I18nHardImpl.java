@@ -26,14 +26,24 @@ public class I18nHardImpl {
 		setParent("en_SG", "en_US");
 		setParent("en_AU", "en_US");
 
-		localize("en_US", "bot.hello1", "Hello! I'm David. Someone dropped me here!");
-		localize("en_US", "bot.hello1", "Oi! Eu sou o David. Alguém me jogou aqui!");
-		localize("en_US", "bot.hello2", "Someone call %s to set my Default Language!\n(Because of the Region, I guessed the language as `%s`, but the Guild Owner can set it anytime by executing `&guild lang <en_US|pt_BR|etc>`)");
-		localize("en_US", "bot.hello2", "Alguém chame %s para definir minha Língua Padrão!\n(Por causa da Região, eu adivinhei a língua como `%s`, mas o Guild Owner pode defini-la a qualquer mmomento executando `&guild lang <en_US|pt_BR|etc>`)");
+		localize("en_US", "bot.hello1", "Hello! I'm $(BOTNAME). Someone dropped me here!");
+		localize("pt_BR", "bot.hello1", "Oi! Eu sou o $(BOTNAME). Alguém me jogou aqui!");
+		localize("en_US", "bot.hello2", "Someone call %s to set my Default Language!\n(Because of the Region, I guessed the language as `%s`, but the Guild Owner can set it anytime by executing `$(PREFIX)guild lang <en_US|pt_BR|etc>`)");
+		localize("pt_BR", "bot.hello2", "Alguém chame %s para definir minha Língua Padrão!\n(Por causa da Região, eu adivinhei a língua como `%s`, mas o Guild Owner pode defini-la a qualquer mmomento executando `$(PREFIX)guild lang <en_US|pt_BR|etc>`)");
 		localize("en_US", "bot.stop", "Stopping...");
 		localize("pt_BR", "bot.stop", "Saindo...");
 		localize("en_US", "bot.restart", "Restarting...");
 		localize("pt_BR", "bot.restart", "Reiniciando...");
+		localize("en_US", "bot.save", "Saving...");
+		localize("pt_BR", "bot.save", "Salvando...");
+		localize("en_US", "bot.load", "Loading...");
+		localize("pt_BR", "bot.load", "Carregando...");
+		localize("en_US", "bot.toofast.usage", "Toggles \"TooFast\" SpamProtection.");
+		localize("pt_BR", "bot.toofast.usage", "Ativa ou Desativa o \"Toofast\" SpamProtection.");
+		localize("en_US", "bot.stats.usage", "Session Statistics.");
+		localize("pt_BR", "bot.stats.usage", "Estatísticas da sessão.");
+		localize("en_US", "bot.help", "Hello! I'm $(BOTNAME).\nTo get started with the Commands, send: `$(PREFIX)cmds`\nTo invite me to your Guild, send: `$(PREFIX)inviteme`");
+		localize("pt_BR", "bot.help", "Olá! Eu sou o $(BOTNAME).\nPara começar a usar os Comandos, envie: `$(PREFIX)cmds`\nPara me convidar para a sua Guild, envie: `$(PREFIX)inviteme`");
 
 		localize("en_US", "tree.subcmds", "Sub-Commands");
 		localize("pt_BR", "tree.subcmds", "Sub-Comandos");
@@ -50,11 +60,6 @@ public class I18nHardImpl {
 		localize("pt_BR", "guild.channels", "Canais");
 		localize("en_US", "guild.users", "Users");
 		localize("pt_BR", "guild.users", "Usuários");
-
-		localize("en_US", "playing.nowPlaying", "Now I'm playing %s!");
-		localize("pt_BR", "playing.nowPlaying", "Agora estou jogando %s!");
-		localize("en_US", "playing.notPlaying", "Now I'm not playing!");
-		localize("pt_BR", "playing.notPlaying", "Agora não estou jogando!");
 
 		localize("en_US", "user.none", "none");
 		localize("pt_BR", "user.none", "nenhum");
@@ -79,9 +84,13 @@ public class I18nHardImpl {
 		localize("pt_BR", "lang.set", "Agora eu vou falar em %s para você!");
 		localize("en_US", "lang.setNone", "Now I'll speak the Guild's Default Language!");
 		localize("pt_BR", "lang.setNone", "Agora eu vou falar na lingua padrão da Guild!");
+		localize("en_US", "lang.usage", "Define the language the bot will talk with you");
+		localize("pt_br", "lang.usage", "Define a língua que o Bot vai falar com você");
 
 		localize("en_US", "inviteme.link", "Click the Link to invite the Bot to your Guild");
 		localize("pt_BR", "inviteme.link", "Clique no Link para convidar o Bot para a sua Guild");
+		localize("en_US", "inviteme.usage", "Sends an Link to Invite the Bot to your Guild");
+		localize("pt_br", "inviteme.usage", "Envia um Link para Conviar o Bot para a sua Guild");
 
 		localize("en_US", "guild.info.usage", "Show Guild info.");
 		localize("pt_BR", "guild.info.usage", "Mostre informações sobre a Guild.");
@@ -89,6 +98,8 @@ public class I18nHardImpl {
 		localize("pt_BR", "guild.list.usage", "Mostre os canais da Guild.");
 		localize("en_US", "guild.lang.set", "Now I'll speak %s in this Guild!");
 		localize("pt_BR", "guild.lang.set", "Agora eu vou falar em %s nessa Guild!");
+		localize("en_US", "lang.usage", "Define the language the bot will speak at the Guild");
+		localize("pt_br", "lang.usage", "Define a língua que o Bot vai falar na Guild");
 		localize("en_US", "guild.broadcast.usage", "Send a message to all channels of the Guild.");
 		localize("pt_BR", "guild.broadcast.usage", "Envie uma mensagem para todos os canais da Guild.");
 
@@ -100,6 +111,8 @@ public class I18nHardImpl {
 		localize("pt_BR", "perms.get.none", "nenhuma");
 		localize("en_US", "perms.set.usage", "Define the User Permissions.\n(Parameters: <user>)\nDefine the permissions of a user specified by the parameter.");
 		localize("pt_BR", "perms.set.usage", "Define as Permissões de um Usuário.\n(Parâmetros: <user>)\nDefine as permissões do usuário suprido pelo parâmetro.");
+		localize("en_US", "perms.list.usage", "List all the permissions");
+		localize("pt_BR", "perms.list.usage", "Lista todas as permissões");
 
 		localize("en_US", "answers.dear", "Dear");
 		localize("pt_BR", "answers.dear", "Prezado");

@@ -14,9 +14,7 @@ package cf.adriantodt.bot.base.cmd;
 
 import cf.adriantodt.bot.base.DiscordGuild;
 import cf.adriantodt.bot.base.I18n;
-import cf.adriantodt.bot.base.Permissions;
 import cf.adriantodt.bot.handlers.CommandHandler;
-import cf.adriantodt.bot.utils.Answers;
 import net.dv8tion.jda.events.message.MessageReceivedEvent;
 
 import java.util.HashMap;
@@ -28,7 +26,6 @@ import static cf.adriantodt.bot.utils.Answers.invalidargs;
 import static cf.adriantodt.bot.utils.Utils.splitArgs;
 
 public class TreeCommandBuilder {
-	private static final ICommand DEFAULT_IMPL = new CommandBuilder().setAction(Answers::invalidargs).setPermRequired(Permissions.RUN_BASECMD).build();
 	private final Map<String, ICommand> SUBCMDS = new HashMap<>();
 	private final Function<String, String> USAGE_IMPL = (lang) -> {
 		Holder<StringBuilder> b = new Holder<>();
@@ -37,7 +34,7 @@ public class TreeCommandBuilder {
 		b.var = new StringBuilder(I18n.getLocalized("tree.subcmds", lang) + ":");
 		first.var = true;
 		SUBCMDS.forEach((cmdName, cmd) -> {
-			String usage = cmd.retrieveUsage(lang);
+			String usage = (cmd == null) ? null : cmd.toString(lang);
 			if (usage == null || usage.isEmpty()) return;
 			if (first.var) {
 				first.var = false;
@@ -52,7 +49,7 @@ public class TreeCommandBuilder {
 	private Function<String, String> usageProvider = USAGE_IMPL;
 
 	public TreeCommandBuilder() {
-		addDefault(DEFAULT_IMPL);
+		addDefault((ICommand) null);
 	}
 
 	public TreeCommandBuilder addCommand(String cmd, ICommand command) {
@@ -112,7 +109,7 @@ public class TreeCommandBuilder {
 			}
 
 			@Override
-			public String retrieveUsage(String language) {
+			public String toString(String language) {
 				return usageProvider == null ? null : usageProvider.apply(language);
 			}
 		};

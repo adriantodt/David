@@ -23,17 +23,19 @@ import cf.adriantodt.bot.utils.Utils;
 import net.dv8tion.jda.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.hooks.ListenerAdapter;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.WeakHashMap;
 
 import static cf.adriantodt.bot.utils.Answers.*;
+import static cf.adriantodt.bot.utils.Utils.asyncSleepThen;
 import static cf.adriantodt.bot.utils.Utils.splitArgs;
 
 public class CommandHandler extends ListenerAdapter {
-	public static boolean cleanup = true, toofast = true;
-	private static Map<MessageReceivedEvent, ICommand> map = new WeakHashMap<>();
-	private static Map<MessageReceivedEvent, DiscordGuild> map2 = new WeakHashMap<>();
+	public static boolean toofast = true;
+	private static Map<MessageReceivedEvent, ICommand> map = new HashMap<>();
+	private static Map<MessageReceivedEvent, DiscordGuild> map2 = new HashMap<>();
 
 	public static void execute(ICommand command, DiscordGuild guild, String arguments, MessageReceivedEvent event) {
 		if (Permissions.canRunCommand(DiscordGuild.GLOBAL, event, command) || Permissions.canRunCommand(guild, event, command))
@@ -46,7 +48,7 @@ public class CommandHandler extends ListenerAdapter {
 	}
 
 	public static DiscordGuild getGuild(MessageReceivedEvent event) {
-		return map2.get(event);
+		return map2.getOrDefault(event, DiscordGuild.fromDiscord(event));
 	}
 
 	public static void onTree(MessageReceivedEvent event, ICommand command) {
@@ -55,13 +57,9 @@ public class CommandHandler extends ListenerAdapter {
 
 	public void onMessageReceived(MessageReceivedEvent event) {
 		if (event.getAuthor() == Bot.SELF) { //Safer
-			new Thread(() -> {
-				try {
-					Thread.sleep(15 * 1000);
-					if (cleanup) event.getMessage().deleteMessage();
-				} catch (Exception ignored) {
-				}
-			}).start();
+			asyncSleepThen(15 * 1000, () -> {
+				if (DiscordGuild.fromDiscord(event).flags.get("cleanup")) event.getMessage().deleteMessage();
+			}).run();
 			return;
 		}
 
@@ -69,14 +67,23 @@ public class CommandHandler extends ListenerAdapter {
 		if (!Permissions.havePermsRequired(global, event, Permissions.RUN_BASECMD) || !Permissions.havePermsRequired(local, event, Permissions.RUN_BASECMD))
 			return;
 
-
 		String cmd = event.getMessage().getRawContent();
+
+		List<String> prefixes = new ArrayList<>(local.cmdPrefixes);
+		prefixes.add("<@!" + Bot.SELF.getId() + "> ");
+		prefixes.add("<@" + Bot.SELF.getId() + "> ");
+		boolean isCmd = false;
+		for (String prefix : prefixes) {
+			if (cmd.startsWith(prefix)) {
+				cmd = cmd.substring(prefix.length());
+				isCmd = true;
+				break;
+			}
+		}
+
 		boolean exec = false;
-
-		String baseCmd = splitArgs(cmd, 2)[0];
-		if (!baseCmd.isEmpty() && (baseCmd.charAt(0) == '?' || baseCmd.charAt(0) == '.')) { //Is Command
-			baseCmd = baseCmd.substring(1); //We don't need the Slash Char
-
+		if (isCmd) { //Is Command
+			String baseCmd = splitArgs(cmd, 2)[0];
 			//GuildWorksTM
 			if (baseCmd.indexOf(':') != -1) {
 				String guildname = baseCmd.substring(0, baseCmd.indexOf(':'));
@@ -120,7 +127,5 @@ public class CommandHandler extends ListenerAdapter {
 				}
 			}
 		}
-
-		Bot.setDefault();
 	}
 }

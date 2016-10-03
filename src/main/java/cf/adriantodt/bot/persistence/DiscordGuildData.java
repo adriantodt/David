@@ -12,6 +12,7 @@
 
 package cf.adriantodt.bot.persistence;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,5 +22,5 @@ public class DiscordGuildData {
 	public Map<String, Long> userPerms = new HashMap<>();
 	public Map<String, Boolean> flags = new HashMap<>();
 	public String id, name, lang;
-	public char[] cmdChars = {'&', '?'};
+	public List<String> prefixes = new ArrayList<>();
 }
