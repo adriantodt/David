@@ -1,13 +1,16 @@
 # David
 ## Using the Official Version
 (These 2 bots are being hosted by myself and are the most stable version you would even found)
+
 `Current Stable Version: 3-LATEST`
-[Invite David to your Guild](https://discordapp.com/oauth2/authorize?client_id=219162800516235275&scope=bot)
-(You should invite this one)
+
+[Invite David to your Guild](https://discordapp.com/oauth2/authorize?client_id=219162800516235275&scope=bot) (You should invite this one)
+
+-----
 
 `Current Development (This Branch) Version: 4.0-RETHINKTEST_1`
-[Invite David Beta to your Guild](https://discordapp.com/oauth2/authorize?client_id=228629168231940096&scope=bot)
-(Only Online when testing new code; Can spam things often)
+
+[Invite David Beta to your Guild](https://discordapp.com/oauth2/authorize?client_id=228629168231940096&scope=bot) (Only Online when testing new code; Can spam things often)
 
 ## Running (4.X+)
 1. Start a [RethinkDB Server](https://www.rethinkdb.com/docs/install/) somewhere.
