@@ -13,19 +13,28 @@
 package cf.adriantodt.bot.base;
 
 import cf.adriantodt.bot.Bot;
+import cf.adriantodt.bot.data.Guilds;
 import cf.adriantodt.bot.handlers.CommandHandler;
 import cf.adriantodt.bot.utils.Utils;
 import net.dv8tion.jda.entities.User;
 import net.dv8tion.jda.events.message.MessageReceivedEvent;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+/*
+ * LOCALES:
+ * [pt_BR, en_US] = defaultLocales
+ * [g_GUILDNAME] = guild translation
+ */
 public class I18n {
 	public static I18n instance = new I18n();
 
 	private Map<String, Map<String, String>> locales = new HashMap<>();
 	private Map<String, String> parents = new HashMap<>(), userLangs = new HashMap<>();
+	private List<String> moderated = new ArrayList<>();
 
 	private I18n() {
 	}
@@ -52,7 +61,11 @@ public class I18n {
 	}
 
 	public static String getLang(MessageReceivedEvent event) {
-		return instance.userLangs.getOrDefault(Permissions.processID(event.getAuthor().getId()), CommandHandler.getGuild(event).defaultLanguage);
+		return instance.userLangs.getOrDefault(Permissions.processID(event.getAuthor().getId()), CommandHandler.getGuild(event).getLang());
+	}
+
+	public static List<String> getModerated() {
+		return instance.moderated;
 	}
 
 	public static String getLocalized(String unlocalized, String locale) {
@@ -65,12 +78,21 @@ public class I18n {
 		while (unlocalized.equals(localized) && locale != null) {
 			localized = locales != null ? locales.getOrDefault(locale, unlocalized) : unlocalized;
 			if (unlocalized.equals(localized)) locale = getParenting().get(locale);
+			else if (localized.length() > 1 && localized.startsWith("$$=") && localized.endsWith(";")) { //This won't change the parent
+				localized = localized.substring(3, localized.length() - 1); //Substring localized
+				if (unlocalized.equals(localized)) {//unlocalized = localized -> LOOP
+					return localized;
+				} else {
+					unlocalized = localized;
+					locales = I18n.getLocales().get(unlocalized);
+				}
+			}
 		}
 		return localized;
 	}
 
 	public static String getLocalized(String unlocalized, MessageReceivedEvent event) {
-		return getBaseLocalized(unlocalized, getLang(event)).replace("$(BOTNAME)", Utils.name(Bot.SELF, event.getGuild())).replace("$(PREFIX)", Utils.random(DiscordGuild.fromDiscord(event).cmdPrefixes));
+		return getBaseLocalized(unlocalized, getLang(event)).replace("$(BOTNAME)", Utils.name(Bot.SELF, event.getGuild())).replace("$(PREFIX)", Utils.random(Guilds.fromDiscord(event).getCmdPrefixes()));
 	}
 
 	public static void localize(String target, String unlocalized, String localized) {

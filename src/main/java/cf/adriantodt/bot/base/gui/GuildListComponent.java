@@ -8,24 +8,40 @@
 package cf.adriantodt.bot.base.gui;
 
 import cf.adriantodt.bot.Bot;
-import cf.adriantodt.bot.utils.Tasks;
 import net.dv8tion.jda.JDA;
 import net.dv8tion.jda.entities.Guild;
+import net.dv8tion.jda.events.guild.GuildJoinEvent;
+import net.dv8tion.jda.events.guild.GuildLeaveEvent;
+import net.dv8tion.jda.hooks.SubscribeEvent;
 
 import javax.swing.*;
 import java.util.Vector;
 
 public class GuildListComponent extends JList implements Runnable {
-
 	public GuildListComponent() {
-		Tasks.startAsyncTask(this, 10);
+		run();
+		Bot.onLoaded.add(this);
+		Bot.onLoaded.add(() -> Bot.API.addEventListener(this));
+	}
+
+	@SubscribeEvent
+	public void onGuildJoin(GuildJoinEvent event) {
+		run();
+	}
+
+	@SubscribeEvent
+	public void onGuildLeave(GuildLeaveEvent event) {
+		run();
 	}
 
 	@SuppressWarnings("unchecked")
 	public void run() {
-		if (Bot.API == null || Bot.API.getStatus() == JDA.Status.INITIALIZING) return;
 		Vector<String> vector = new Vector<>();
-		Bot.API.getGuilds().stream().map(Guild::getName).forEach(vector::add);
+		if (Bot.API == null || Bot.API.getStatus() == JDA.Status.INITIALIZING) {
+			vector.add("<Bot being Loaded>");
+		} else {
+			Bot.API.getGuilds().stream().map(Guild::getName).forEach(vector::add);
+		}
 		this.setListData(vector);
 	}
 }

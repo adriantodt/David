@@ -12,8 +12,11 @@
 
 package cf.adriantodt.bot.hardimpl;
 
-import static cf.adriantodt.bot.base.I18n.localize;
+import cf.adriantodt.bot.base.I18n;
+
 import static cf.adriantodt.bot.base.I18n.setParent;
+
+//import static cf.adriantodt.bot.base.I18n.localize;
 
 /**
  * Hardcoded Impl goes here. Shouldn't be used too much.
@@ -38,10 +41,20 @@ public class I18nHardImpl {
 		localize("pt_BR", "bot.save", "Salvando...");
 		localize("en_US", "bot.load", "Loading...");
 		localize("pt_BR", "bot.load", "Carregando...");
+		localize("en_US", "bot.stop.usage", "Stops the Bot");
+		localize("pt_BR", "bot.stop.usage", "Desliga o Bot");
+		localize("en_US", "bot.restart.usage", "Restarts the Bot");
+		localize("pt_BR", "bot.restart.usage", "Reinicia o Bot");
+		localize("en_US", "bot.save.usage", "Saves the Data to Disk");
+		localize("pt_BR", "bot.save.usage", "Salva os Dados no Disco");
+		localize("en_US", "bot.load.usage", "Loads the Data from Disk");
+		localize("pt_BR", "bot.load.usage", "Carrega os Dados atuais do Disco");
 		localize("en_US", "bot.toofast.usage", "Toggles \"TooFast\" SpamProtection.");
 		localize("pt_BR", "bot.toofast.usage", "Ativa ou Desativa o \"Toofast\" SpamProtection.");
 		localize("en_US", "bot.stats.usage", "Session Statistics.");
 		localize("pt_BR", "bot.stats.usage", "Estatísticas da sessão.");
+		localize("en_US", "bot.info.usage", "Bot Information");
+		localize("pt_BR", "bot.info.usage", "Informações do Bot");
 		localize("en_US", "bot.help", "Hello! I'm $(BOTNAME).\nTo get started with the Commands, send: `$(PREFIX)cmds`\nTo invite me to your Guild, send: `$(PREFIX)inviteme`");
 		localize("pt_BR", "bot.help", "Olá! Eu sou o $(BOTNAME).\nPara começar a usar os Comandos, envie: `$(PREFIX)cmds`\nPara me convidar para a sua Guild, envie: `$(PREFIX)inviteme`");
 
@@ -60,6 +73,16 @@ public class I18nHardImpl {
 		localize("pt_BR", "guild.channels", "Canais");
 		localize("en_US", "guild.users", "Users");
 		localize("pt_BR", "guild.users", "Usuários");
+		localize("en_US", "guild.info.usage", "Show Guild info.");
+		localize("pt_BR", "guild.info.usage", "Mostre informações sobre a Guild.");
+		localize("en_US", "guild.list.usage", "List the Guild channels.");
+		localize("pt_BR", "guild.list.usage", "Mostre os canais da Guild.");
+		localize("en_US", "guild.lang.set", "Now I'll speak %s in this Guild!");
+		localize("pt_BR", "guild.lang.set", "Agora eu vou falar em %s nessa Guild!");
+		localize("en_US", "guild.broadcast.usage", "Send a message to all channels of the Guild.");
+		localize("pt_BR", "guild.broadcast.usage", "Envie uma mensagem para todos os canais da Guild.");
+		localize("en_US", "guild.cleanup.usage", "Toggles Message Cleanup (Messages from the bot are deleted after 15s).");
+		localize("pt_BR", "guild.cleanup.usage", "Ativa ou Desativa o \"Cleanup\" de mensagens (Mensagens do bot são deletadas após 15s).");
 
 		localize("en_US", "user.none", "none");
 		localize("pt_BR", "user.none", "nenhum");
@@ -92,16 +115,8 @@ public class I18nHardImpl {
 		localize("en_US", "inviteme.usage", "Sends an Link to Invite the Bot to your Guild");
 		localize("pt_br", "inviteme.usage", "Envia um Link para Conviar o Bot para a sua Guild");
 
-		localize("en_US", "guild.info.usage", "Show Guild info.");
-		localize("pt_BR", "guild.info.usage", "Mostre informações sobre a Guild.");
-		localize("en_US", "guild.list.usage", "List the Guild channels.");
-		localize("pt_BR", "guild.list.usage", "Mostre os canais da Guild.");
-		localize("en_US", "guild.lang.set", "Now I'll speak %s in this Guild!");
-		localize("pt_BR", "guild.lang.set", "Agora eu vou falar em %s nessa Guild!");
 		localize("en_US", "lang.usage", "Define the language the bot will speak at the Guild");
 		localize("pt_br", "lang.usage", "Define a língua que o Bot vai falar na Guild");
-		localize("en_US", "guild.broadcast.usage", "Send a message to all channels of the Guild.");
-		localize("pt_BR", "guild.broadcast.usage", "Envie uma mensagem para todos os canais da Guild.");
 
 		localize("en_US", "perms.get.usage", "Show the current User Permissions.\n(Parameters: [user])\nIf executed without arguments, return the sender's permissions.\nIf a user is specified, the user's permissions is returned instead.");
 		localize("pt_BR", "perms.get.usage", "Mostrar as Permissões que o Usuário tem.\n(Parâmetros: [user])\nSe executado sem argumentos, retorna as suas permissões.\nSe um usuário for suprido, retorna as permissões do usuário.");
@@ -132,5 +147,51 @@ public class I18nHardImpl {
 		localize("pt_BR", "stats.negativeTime", "<Diferença negativa de tempo>");
 		localize("en_US", "stats.timeFormat", "%d days, %d hours, %d minutes, %d seconds");
 		localize("pt_BR", "stats.timeFormat", "%d dias, %d horas, %d minutos, %d segundos");
+
+		localize("en_US", "gui.title", "$(BOTNAME) - GUI");
+		//pt_BR = en_US
+		localize("en_US", "gui.stats", "Stats");
+		localize("pt_BR", "gui.stats", "Estatísticas");
+		localize("en_US", "gui.guilds", "Guilds");
+		//pt_BR = en_US
+		localize("en_US", "gui.input", "Input");
+		//pt_BR = en_US
+		localize("en_US", "gui.logAndChat", "Log and Chat");
+		localize("pt_BR", "gui.logAndChat", "Log e Chat");
+		localize("en_US", "gui.cmds.help", "Show all Console Commands");
+		localize("pt_BR", "gui.cmds.help", "Mostra todos os Comandos de Console");
+		localize("en_US", "gui.cmds.save", "$$=bot.save.usage;");
+		localize("pt_BR", "gui.cmds.save", "$$=bot.save.usage;");
+		localize("en_US", "gui.cmds.load", "$$=bot.load.usage;");
+		localize("pt_BR", "gui.cmds.load", "$$=bot.load.usage;");
+		localize("en_US", "gui.cmds.stop", "$$=bot.stop.usage;");
+		localize("pt_BR", "gui.cmds.stop", "$$=bot.stop.usage;");
+		localize("en_US", "gui.cmds.restart", "$$=bot.restart.usage;");
+		localize("pt_BR", "gui.cmds.restart", "$$=bot.restart.usage;");
+		localize("en_US", "gui.cmds.lang", "Set GUI Language");
+		localize("pt_BR", "gui.cmds.lang", "Define a Língua da GUI");
+		localize("en_US", "gui.stats0", "Uptime: %s");
+		//pt_BR = en_US
+		localize("en_US", "gui.stats1", "%d msgs; %d cmds; %d crashes; %d spam; %d noperms; %d invalidargs.");
+		//pt_BR = en_US
+		localize("en_US", "gui.stats2", "%d wgets; %d active threads.");
+		localize("pt_BR", "gui.stats2", "%d wgets; %d threads ativas.");
+		localize("en_US", "gui.stats3", "%d saves; %d loads.");
+		//pt_BR = en_US
+		localize("en_US", "gui.stats4", "RAM(Using/Total/Max): %s MB/%d MB/%d MB.");
+		localize("en_US", "gui.stats4", "RAM(Usando/Total/Max): %s MB/%d MB/%d MB.");
+		localize("en_US", "gui.stats5", "CPU Usage: %.2f%%.");
+		localize("en_US", "gui.stats5", "CPU Usage: %.2f%%.");
+		localize("en_US", "gui.load", "$$=bot.load;");
+		localize("pt_BR", "gui.load", "$$=bot.load;");
+		localize("en_US", "gui.save", "$$=bot.save;");
+		localize("pt_BR", "gui.save", "$$=bot.save;");
+		localize("en_US", "gui.done", "Done.");
+		localize("pt_BR", "gui.done", "Feito.");
+	}
+
+	private static void localize(String lang, String untranslated, String translated) {
+		I18n.localize(lang, untranslated, translated);
+		I18n.getModerated().add(untranslated + "@" + lang);
 	}
 }

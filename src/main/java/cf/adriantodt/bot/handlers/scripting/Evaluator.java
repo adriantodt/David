@@ -12,7 +12,7 @@
 
 package cf.adriantodt.bot.handlers.scripting;
 
-import cf.adriantodt.bot.base.DiscordGuild;
+import cf.adriantodt.bot.data.Guilds;
 import net.dv8tion.jda.events.message.MessageReceivedEvent;
 
 import java.util.HashMap;
@@ -21,5 +21,5 @@ import java.util.Map;
 public interface Evaluator {
 	Map<String, Evaluator> EVALUATOR_REGISTER = new HashMap<>();
 
-	void eval(DiscordGuild guild, String command, MessageReceivedEvent event);
+	void eval(Guilds.Data guild, String command, MessageReceivedEvent event);
 }

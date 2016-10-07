@@ -13,7 +13,8 @@
 package cf.adriantodt.bot.base;
 
 import cf.adriantodt.bot.base.cmd.ICommand;
-import cf.adriantodt.bot.persistence.DataManager;
+import cf.adriantodt.bot.data.DataManager;
+import cf.adriantodt.bot.data.Guilds;
 import net.dv8tion.jda.events.message.MessageReceivedEvent;
 
 import java.lang.reflect.Modifier;
@@ -59,7 +60,7 @@ Permissões:
 	USE_INTERFACES  (A) -> Usar as Interfaces
 	LUAENV_FULL (B) -> Lua pode ser executado/compilado no Ambiente Inseguro
 	(C-X) -> Free Slots
-	SAVE_LOAD   (Y) -> Salvar ou Carregar do Disco os Comandos/Guilds/Permissões
+	SAVE_LOAD   (Y) -> Salvar ou Carregar do Disco os Comandos/Guilds/Permissões (Unused)
 	STOP_RESET  (Z) -> Parar ou Reiniciar o Bot
  */
 public class Permissions {
@@ -83,14 +84,14 @@ public class Permissions {
 		ANNOY = bits(16),
 		USE_INTERFACES = bits(36),
 		LUAENV_FULL = bits(37),
-		SAVE_LOAD = bits(61),
-		STOP_RESET = bits(62);
+	//		SAVE_LOAD = bits(61),
+	STOP_RESET = bits(62);
 
 	public static final long
 		BASE_USER = RUN_BASECMD | RUN_USR_CMD | RUN_SCT_CMD | GUILD_PASS | USE_INTERFACES,
 		GUILD_MOD = BASE_USER | MANAGE_USR | MANAGE_SPCS | PERMSYSTEM | PERMSYS_GM | GLOBALS_IMP,
 		GUILD_OWNER = GUILD_MOD | GLOBALS_EXP | SCRIPTS | EDIT_GUILD | PERMSYS_GO,
-		BOT_OWNER = GUILD_OWNER | PLAYING | LUAENV_FULL | SPY | SAVE_LOAD | STOP_RESET | PERMSYS_BO | ANNOY;
+		BOT_OWNER = GUILD_OWNER | PLAYING | LUAENV_FULL | SPY | STOP_RESET | PERMSYS_BO | ANNOY;
 
 	public static Map<String, Long> perms = new HashMap<String, Long>() {{
 		Arrays.stream(Permissions.class.getDeclaredFields()) //This Reflection is used to HashMap-fy all the Fields above.
@@ -111,18 +112,18 @@ public class Permissions {
 		return mask;
 	}
 
-	public static long getSenderPerm(DiscordGuild guild, MessageReceivedEvent event) {
+	public static long getSenderPerm(Guilds.Data guild, MessageReceivedEvent event) {
 		return getPermFor(guild, event.getAuthor().getId());
 	}
 
-	public static boolean setPerms(DiscordGuild guild, MessageReceivedEvent event, String target, long permsToAdd, long permsToTake) {
+	public static boolean setPerms(Guilds.Data guild, MessageReceivedEvent event, String target, long permsToAdd, long permsToTake) {
 		target = processID(target); //Un-mention ID
 		if (target.equals(event.getAuthor().getId())) return false; //Disable changing itself
 		long senderPerm = getSenderPerm(guild, event), targetPerm = getPermFor(guild, target); //Get perrms
 		if (!checkPerms(senderPerm, targetPerm)) return false; //Check the Special Bits
 		if ((senderPerm & (permsToAdd | permsToTake)) != (permsToAdd | permsToTake))
 			return false; //Check if the Sender Perm have all the permissions
-		guild.userPerms.put(target, targetPerm ^ (targetPerm & permsToTake) | permsToAdd);
+		guild.setUserPerms(target, targetPerm ^ (targetPerm & permsToTake) | permsToAdd);
 		return true;
 	}
 
@@ -135,18 +136,18 @@ public class Permissions {
 		return targetPerm <= senderPerm;
 	}
 
-	public static long getPermFor(DiscordGuild guild, String target) {
+	public static long getPermFor(Guilds.Data guild, String target) {
 		target = processID(target);
-		long global = DiscordGuild.GLOBAL.userPerms.getOrDefault(target, 0L), unrevokeable = (target.equals(processID(DataManager.configs.owner)) || target.equals("console") ? BOT_OWNER : (guild.guild != null && guild.guild.getOwnerId().equals(target)) ? GUILD_OWNER : 0);
-		return global | guild.userPerms.getOrDefault(target, (global == 0 ? guild.userPerms.getOrDefault("default", BASE_USER) : global)) | unrevokeable;
+		long global = Guilds.GLOBAL.getUserPerms(target, 0L), unrevokeable = (target.equals(processID(DataManager.configs.ownerID)) || target.equals("console") ? BOT_OWNER : (guild.getGuild() != null && guild.getGuild().getOwnerId().equals(target)) ? GUILD_OWNER : 0);
+		return global | guild.getUserPerms(target, (global == 0 ? guild.getUserPerms("default", BASE_USER) : global)) | unrevokeable;
 		//this will merge the Global Perms, the Local Perms, and Unrevokeable Perms (BOT_OWNER or GUILD_OWNER)
 	}
 
-	public static boolean canRunCommand(DiscordGuild guild, MessageReceivedEvent event, ICommand cmd) {
+	public static boolean canRunCommand(Guilds.Data guild, MessageReceivedEvent event, ICommand cmd) {
 		return havePermsRequired(guild, event, cmd.retrievePerm());
 	}
 
-	public static boolean havePermsRequired(DiscordGuild guild, MessageReceivedEvent event, long perms) {
+	public static boolean havePermsRequired(Guilds.Data guild, MessageReceivedEvent event, long perms) {
 		return (perms & getSenderPerm(guild, event)) == perms;
 	}
 

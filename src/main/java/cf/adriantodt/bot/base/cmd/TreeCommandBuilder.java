@@ -12,8 +12,8 @@
 
 package cf.adriantodt.bot.base.cmd;
 
-import cf.adriantodt.bot.base.DiscordGuild;
 import cf.adriantodt.bot.base.I18n;
+import cf.adriantodt.bot.data.Guilds;
 import cf.adriantodt.bot.handlers.CommandHandler;
 import net.dv8tion.jda.events.message.MessageReceivedEvent;
 
@@ -92,7 +92,7 @@ public class TreeCommandBuilder {
 	public ICommand build() {
 		return new ICommand() {
 			@Override
-			public void run(DiscordGuild guild, String arguments, MessageReceivedEvent event) {
+			public void run(Guilds.Data guild, String arguments, MessageReceivedEvent event) {
 				String[] args = splitArgs(arguments, 2);
 				ICommand cmd = SUBCMDS.get(args[0].toLowerCase());
 				if (cmd == null) invalidargs(event);

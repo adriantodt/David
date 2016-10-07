@@ -12,7 +12,7 @@
 
 package cf.adriantodt.bot.base.cmd;
 
-import cf.adriantodt.bot.base.DiscordGuild;
+import cf.adriantodt.bot.data.Guilds;
 import net.dv8tion.jda.events.message.MessageReceivedEvent;
 
 import java.util.function.BiConsumer;
@@ -23,11 +23,11 @@ import java.util.function.Supplier;
 import static cf.adriantodt.bot.base.I18n.getLocalized;
 
 public class CommandBuilder {
-	private TriConsumer<DiscordGuild, String, MessageReceivedEvent> action = null;
+	private TriConsumer<Guilds.Data, String, MessageReceivedEvent> action = null;
 	private Supplier<Long> permProvider = () -> 0L;
 	private Function<String, String> usageProvider = (s) -> null;
 
-	public CommandBuilder setAction(TriConsumer<DiscordGuild, String, MessageReceivedEvent> consumer) {
+	public CommandBuilder setAction(TriConsumer<Guilds.Data, String, MessageReceivedEvent> consumer) {
 		action = consumer;
 		return this;
 	}
@@ -75,7 +75,7 @@ public class CommandBuilder {
 	public ICommand build() {
 		return new ICommand() {
 			@Override
-			public void run(DiscordGuild guild, String arguments, MessageReceivedEvent event) {
+			public void run(Guilds.Data guild, String arguments, MessageReceivedEvent event) {
 				action.accept(guild, arguments, event);
 			}
 

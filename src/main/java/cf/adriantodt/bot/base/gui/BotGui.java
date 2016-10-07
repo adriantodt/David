@@ -7,6 +7,7 @@
 
 package cf.adriantodt.bot.base.gui;
 
+import cf.adriantodt.bot.Bot;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -19,6 +20,8 @@ import java.awt.*;
 import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.util.function.Consumer;
+
+import static cf.adriantodt.bot.base.gui.GuiTranslationHandler.*;
 
 public class BotGui extends JComponent {
 	private static final Logger LOGGER = LogManager.getLogger("BotGUI");
@@ -47,73 +50,87 @@ public class BotGui extends JComponent {
 		} catch (Exception ignored) {
 		}
 
-		BotGui botGui = new BotGui();
+		BotGui ui = new BotGui();
 		JFrame frame = new JFrame("Bot - GUI");
-		botGui.frame = frame;
-		frame.add(botGui);
+		addHook(frame::setTitle, "title");
+		addLazyHook(frame::repaint);
+		addLazyHook(frame::revalidate);
+		Bot.onLoaded.add(GuiTranslationHandler::update);
+		ui.frame = frame;
+		frame.add(ui);
 		frame.pack();
 		frame.setLocationRelativeTo(null);
 		frame.setVisible(true);
-		return botGui;
+		return ui;
 	}
 
 	/**
 	 * Generates new StatsComponent and returns it.
 	 */
 	private JComponent getStatsComponent() throws Exception {
-		JPanel jpanel = new JPanel(new BorderLayout());
-		jpanel.add(new StatsComponent(), "North");
-		jpanel.add(this.getGuildListComponent(), "Center");
-		jpanel.setBorder(new TitledBorder(new EtchedBorder(), "Stats"));
-		return jpanel;
+		JPanel panel = new JPanel(new BorderLayout());
+		panel.add(new StatsComponent(), "North");
+		panel.add(this.getGuildListComponent(), "Center");
+		TitledBorder b = new TitledBorder(new EtchedBorder(), "Stats");
+		addHook(b::setTitle, "stats");
+		panel.setBorder(b);
+		return panel;
 	}
 
 	/**
 	 * Generates new GuildListComponent and returns it.
 	 */
 	private JComponent getGuildListComponent() throws Exception {
-		JList jlist = new GuildListComponent();
-		JScrollPane jscrollpane = new JScrollPane(jlist, 22, 30);
-		jscrollpane.setBorder(new TitledBorder(new EtchedBorder(), "Guilds"));
-		return jscrollpane;
+		JList list = new GuildListComponent();
+		JScrollPane pane = new JScrollPane(list, 22, 30);
+		TitledBorder b = new TitledBorder(new EtchedBorder(), "Guilds");
+		addHook(b::setTitle, "guilds");
+		pane.setBorder(b);
+		Bot.onLoaded.add(() -> Bot.API.addEventListener(list));
+		return pane;
 	}
 
 	private JComponent getLogComponent() throws Exception {
-		JPanel jpanel = new JPanel(new BorderLayout());
-		final JTextArea jtextarea = new JTextArea();
-		final JScrollPane jscrollpane = new JScrollPane(jtextarea, 22, 30);
-		jtextarea.setEditable(false);
-		jtextarea.setFont(GUI_FONT);
-		final JTextField jtextfield = new JTextField();
+		JPanel panel = new JPanel(new BorderLayout());
+		final JTextArea textArea = new JTextArea();
+		final JScrollPane pane = new JScrollPane(textArea, 22, 30);
+		textArea.setEditable(false);
+		textArea.setFont(GUI_FONT);
+		final JTextField textField = new JTextField();
+		textField.setEditable(false);
+		Bot.onLoaded.add(() -> textField.setEditable(true));
 
-		out = ConsoleHandler.wrap(in -> appendLine(jtextarea, jscrollpane, in + "\r\n"));
+		out = ConsoleHandler.wrap(in -> appendLine(textArea, pane, in + "\r\n"));
 
-		jtextfield.addActionListener(actionPerformed -> {
-			String s = jtextfield.getText().trim();
+		textField.addActionListener(actionPerformed -> {
+			String s = textField.getText().trim();
 
 			if (!s.isEmpty()) {
-				out.accept("<Input> " + s);
+				out.accept("<" + get("input") + "> " + s);
 				ConsoleHandler.handle(s, out);
 			}
 
-			jtextfield.setText("");
+			textField.setText("");
 		});
-		jtextarea.addFocusListener(new FocusAdapter() {
-			public void focusGained(FocusEvent p_focusGained_1_) {
+		textArea.addFocusListener(new FocusAdapter() {
+			public void focusGained(FocusEvent focusEvent) {
 			}
 		});
-		jpanel.add(jscrollpane, "Center");
-		jpanel.add(jtextfield, "South");
-		jpanel.setBorder(new TitledBorder(new EtchedBorder(), "Log and chat"));
+		panel.add(pane, "Center");
+		panel.add(textField, "South");
+		TitledBorder b = new TitledBorder(new EtchedBorder(), "Log and chat");
+		addHook(b::setTitle, "logAndChat");
+		panel.setBorder(b);
+		panel.getBorder();
 		Thread thread = new Thread(() -> {
 			String s;
 
 			while ((s = QueueLogAppender.getNextLogEvent("ServerGuiConsole")) != null)
-				appendLine(jtextarea, jscrollpane, s);
+				appendLine(textArea, pane, s);
 		});
 		thread.setDaemon(true);
 		thread.start();
-		return jpanel;
+		return panel;
 	}
 
 	public void appendLine(final JTextArea textArea, final JScrollPane scrollPane, final String line) {

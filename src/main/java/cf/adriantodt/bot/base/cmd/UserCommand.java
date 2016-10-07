@@ -12,15 +12,15 @@
 
 package cf.adriantodt.bot.base.cmd;
 
-import cf.adriantodt.bot.Bot;
-import cf.adriantodt.bot.base.DiscordGuild;
 import cf.adriantodt.bot.base.I18n;
 import cf.adriantodt.bot.base.Permissions;
+import cf.adriantodt.bot.data.Guilds;
 import cf.adriantodt.bot.handlers.scripting.JS;
 import cf.brforgers.core.lib.IOHelper;
 import net.dv8tion.jda.events.message.MessageReceivedEvent;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static cf.adriantodt.bot.Bot.RAND;
@@ -31,7 +31,7 @@ public class UserCommand implements ICommand, ITranslatable {
 	public List<String> responses = new ArrayList<>();
 
 	@Override
-	public void run(DiscordGuild guild, String arguments, MessageReceivedEvent event) {
+	public void run(Guilds.Data guild, String arguments, MessageReceivedEvent event) {
 		String response = responses.get(RAND.nextInt(responses.size()));
 		if (response.length() > 7) {
 			if (response.substring(0, 6).equals("get://")) {
@@ -64,6 +64,6 @@ public class UserCommand implements ICommand, ITranslatable {
 
 	@Override
 	public String toString(String language) {
-		return Bot.JSON_INTERNAL.toJson(responses);
+		return Arrays.toString(responses.toArray());
 	}
 }

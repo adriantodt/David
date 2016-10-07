@@ -13,7 +13,7 @@
 package cf.adriantodt.bot.utils;
 
 import cf.adriantodt.bot.Bot;
-import cf.adriantodt.bot.base.DiscordGuild;
+import cf.adriantodt.bot.data.Guilds;
 import net.dv8tion.jda.entities.Message;
 import net.dv8tion.jda.entities.MessageChannel;
 import net.dv8tion.jda.entities.PrivateChannel;
@@ -31,12 +31,12 @@ public class Channels {
 		List<Message> msgl = channel.getHistory().retrieve(10);
 		for (int i = Math.min(10, msgl.size() - 1); i > 0; i--) {
 			Message msg = msgl.get(i);
-			msgs += "\n[" + getChannelName(DiscordGuild.fromDiscord(event), channel) + "] <" + msg.getAuthor().getUsername() + "> " + msg.getContent();
+			msgs += "\n[" + getChannelName(Guilds.fromDiscord(event), channel) + "] <" + msg.getAuthor().getUsername() + "> " + msg.getContent();
 		}
 		Answers.send(event, msgs);
 	}
 
-	public static String getChannelName(DiscordGuild guild, MessageChannel channel) {
+	public static String getChannelName(Guilds.Data guild, MessageChannel channel) {
 		if (channel instanceof PrivateChannel) {
 			return ((PrivateChannel) channel).getUser().getUsername() + "'s PM" + "(#" + getChannels(guild).indexOf(channel) + ")";
 		} else if (channel instanceof TextChannel) {
@@ -46,15 +46,15 @@ public class Channels {
 		return "Além";
 	}
 
-	public static List<MessageChannel> getChannels(DiscordGuild guild) {
+	public static List<MessageChannel> getChannels(Guilds.Data guild) {
 		List<MessageChannel> r = new ArrayList<>();
-		if (guild == DiscordGuild.PM || guild == DiscordGuild.GLOBAL) r.addAll(Bot.API.getPrivateChannels());
-		if (guild == DiscordGuild.GLOBAL) r.addAll(Bot.API.getTextChannels());
-		if (guild.guild != null) r.addAll(guild.guild.getTextChannels());
+		if (guild == Guilds.PM || guild == Guilds.GLOBAL) r.addAll(Bot.API.getPrivateChannels());
+		if (guild == Guilds.GLOBAL) r.addAll(Bot.API.getTextChannels());
+		if (guild.getGuild() != null) r.addAll(guild.getGuild().getTextChannels());
 		return r;
 	}
 
-	public static void broadcast(DiscordGuild guild, String message, MessageReceivedEvent event) {
+	public static void broadcast(Guilds.Data guild, String message, MessageReceivedEvent event) {
 		for (MessageChannel channel : getChannels(guild))
 			try {
 				channel.sendMessageAsync(message, null);
@@ -63,7 +63,7 @@ public class Channels {
 		bool(event, true);
 	}
 
-	public static void listChannels(DiscordGuild guild, MessageReceivedEvent event) {
+	public static void listChannels(Guilds.Data guild, MessageReceivedEvent event) {
 		String msgs = "***Canais:***";
 		List<MessageChannel> l = Channels.getChannels(guild);
 		for (int i = 0; i < l.size(); i++) {

@@ -13,7 +13,7 @@
 package cf.adriantodt.bot.handlers;
 
 import net.dv8tion.jda.events.ReadyEvent;
-import net.dv8tion.jda.hooks.EventListener;
+import net.dv8tion.jda.hooks.SubscribeEvent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,12 +27,9 @@ public class ReadyBuilder {
 		return this;
 	}
 
-	public EventListener build() {
-		return event -> {
-			if (event instanceof ReadyEvent) {
-				l.forEach(readyEventConsumer -> readyEventConsumer.accept((ReadyEvent) event));
-				event.getJDA().removeEventListener(this);
-			}
-		};
+	@SubscribeEvent
+	public void handle(ReadyEvent event) {
+		l.forEach(readyEventConsumer -> readyEventConsumer.accept(event));
+		event.getJDA().removeEventListener(this);
 	}
 }

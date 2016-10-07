@@ -12,12 +12,12 @@
 
 package cf.adriantodt.bot.base.cmd;
 
-import cf.adriantodt.bot.base.DiscordGuild;
 import cf.adriantodt.bot.base.Permissions;
+import cf.adriantodt.bot.data.Guilds;
 import net.dv8tion.jda.events.message.MessageReceivedEvent;
 
 public interface ICommand extends ITranslatable {
-	void run(DiscordGuild guild, String arguments, MessageReceivedEvent event);
+	void run(Guilds.Data guild, String arguments, MessageReceivedEvent event);
 
 	/**
 	 * Provides Check for Minimal Perm usage.

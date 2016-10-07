@@ -65,10 +65,10 @@ public class ToDoLuaJ {
 
 		// Example userTimeout scripts that attempt rogue operations, and will fail.
 		runScriptInSandbox("return setmetatable('abc', {})");
-		runScriptInSandbox("getmetatable('abc').len = function() end");
+		runScriptInSandbox("getmetatable('abc').len = function() pushChanges");
 		runScriptInSandbox("getmetatable('abc').__index = {}");
 		runScriptInSandbox("getmetatable('abc').__index.x = 1");
-		runScriptInSandbox("while true do print('loop') end");
+		runScriptInSandbox("while true do print('loop') pushChanges");
 
 		// Example use of other shared metatables, which should also be made read-only.
 		// This toy example allows booleans to be added to numbers.

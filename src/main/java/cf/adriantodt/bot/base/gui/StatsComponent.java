@@ -7,6 +7,7 @@
 
 package cf.adriantodt.bot.base.gui;
 
+import cf.adriantodt.bot.Bot;
 import cf.adriantodt.bot.utils.Statistics;
 import cf.adriantodt.bot.utils.Tasks;
 
@@ -15,6 +16,7 @@ import java.awt.*;
 import java.util.Arrays;
 import java.util.Date;
 
+import static cf.adriantodt.bot.base.gui.GuiTranslationHandler.get;
 import static cf.adriantodt.bot.utils.Statistics.*;
 
 public class StatsComponent extends JComponent {
@@ -29,6 +31,7 @@ public class StatsComponent extends JComponent {
 		this.setMaximumSize(new Dimension(456, 246));
 		new Timer(1000, actionPerformed -> tick()).start();
 		this.setBackground(Color.BLACK);
+		Bot.onLoaded.add(this::tick);
 	}
 
 	private void addToArray(int value) {
@@ -44,12 +47,22 @@ public class StatsComponent extends JComponent {
 
 		Runtime instance = Runtime.getRuntime();
 		System.gc();
-		this.msgs[0] = "Uptime: " + calculate(startDate == null ? new Date() : startDate, new Date(), "pt_BR");
-		this.msgs[1] = Statistics.msgs + " msgs; " + cmds + " cmds; " + crashes + " crashes; " + toofasts + " spam; " + noperm + " noperms; " + invalidargs + " invalidargs.";
-		this.msgs[2] = wgets + " wgets; " + musics + " musics played; " + Thread.activeCount() + " active threads.";
-		this.msgs[3] = saves + " saves; " + loads + " loads.";
-		this.msgs[4] = "RAM(Using/Total/Max): " + ((instance.totalMemory() - instance.freeMemory()) / mb) + " MB/" + (instance.totalMemory() / mb) + " MB/" + (instance.maxMemory() / mb) + " MB";
-		this.msgs[5] = "CPU Usage: " + Tasks.cpuUsage + "%";
+		if (!Bot.LOADED) {
+			this.msgs[0] = "Please Wait...";
+			this.msgs[1] = null;
+			this.msgs[2] = null;
+			this.msgs[3] = null;
+			this.msgs[4] = null;
+			this.msgs[5] = null;
+
+		} else {
+			this.msgs[0] = String.format(get("stats0"), calculate(startDate == null ? new Date() : startDate, new Date(), GuiTranslationHandler.getLang()));
+			this.msgs[1] = String.format(get("stats1"), Statistics.msgs, cmds, crashes, toofasts, noperm, invalidargs);
+			this.msgs[2] = String.format(get("stats2"), wgets, Thread.activeCount());
+			this.msgs[3] = String.format(get("stats3"), saves, loads);
+			this.msgs[4] = String.format(get("stats4"), (instance.totalMemory() - instance.freeMemory()) / mb, instance.totalMemory() / mb, instance.maxMemory() / mb);
+			this.msgs[5] = String.format(get("stats5"), Tasks.cpuUsage);
+		}
 		addToArray(Statistics.msgs - lastValue);
 		lastValue = Statistics.msgs;
 		this.repaint();

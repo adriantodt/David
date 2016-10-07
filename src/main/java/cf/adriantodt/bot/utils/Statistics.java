@@ -25,7 +25,7 @@ import static cf.adriantodt.bot.utils.Tasks.cpuUsage;
 
 public class Statistics {
 	public static Date startDate = null;
-	public static int loads = 0, saves = 0, crashes = 0, noperm = 0, invalidargs = 0, msgs = 0, cmds = 0, wgets = 0, toofasts = 0, musics = 0;
+	public static int loads = 0, saves = 0, crashes = 0, noperm = 0, invalidargs = 0, msgs = 0, cmds = 0, wgets = 0, toofasts = 0;
 
 	public static String calculate(Date startDate, Date endDate, String language) {
 
@@ -79,7 +79,6 @@ public class Statistics {
 					+ "\n - " + Statistics.crashes + " crashes ocorreram"
 					+ "\n - " + Statistics.toofasts + " comandos bloqueados por SpamDetection"
 					+ "\n - " + Statistics.wgets + " solicitações Web"
-					+ "\n - " + Statistics.musics + " músicas tocadas"
 					+ "\n - " + Thread.activeCount() + " threads ativas"
 					+ "\n - Sem Permissão: " + Statistics.noperm + " / Argumentos Invalidos: " + Statistics.invalidargs
 					+ "\n - Saves: " + Statistics.saves + " / Loads: " + Statistics.loads

@@ -25,7 +25,7 @@ import net.dv8tion.jda.entities.User;
 import net.dv8tion.jda.events.ReadyEvent;
 import net.dv8tion.jda.events.message.MessageReceivedEvent;
 import net.dv8tion.jda.events.user.UserOnlineStatusUpdateEvent;
-import net.dv8tion.jda.hooks.ListenerAdapter;
+import net.dv8tion.jda.hooks.SubscribeEvent;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -36,7 +36,7 @@ import java.util.stream.StreamSupport;
 
 import static cf.adriantodt.bot.handlers.BotIntercommns.Opcodes.*;
 
-public class BotIntercommns extends ListenerAdapter {
+public class BotIntercommns {
 	public static Map<String, BotInfo> info = new HashMap<>();
 
 	public static BotInfo self = new BotInfo() {{
@@ -66,12 +66,13 @@ public class BotIntercommns extends ListenerAdapter {
 		pm(bot, IC_CALL + SUPPORTS_IC);
 	}
 
-	@Override
-	public void onUserOnlineStatusUpdate(UserOnlineStatusUpdateEvent event) {
+	@SubscribeEvent
+	public static void onUserOnlineStatusUpdate(UserOnlineStatusUpdateEvent event) {
 		if (event.getUser().isBot()) Utils.asyncSleepThen(2000, () -> BotIntercommns.start(event.getUser())).run();
 	}
 
-	public void onMessageReceived(MessageReceivedEvent event) {
+	@SubscribeEvent
+	public static void onMessageReceived(MessageReceivedEvent event) {
 		if (!event.isPrivate() || !event.getAuthor().isBot() || Bot.API.getSelfInfo().equals(event.getAuthor())) {
 			//onSubEvent(event);
 			String base = Utils.splitArgs(event.getMessage().getRawContent(), 2)[0];
@@ -88,7 +89,7 @@ public class BotIntercommns extends ListenerAdapter {
 		transaction(event.getAuthor(), event.getMessage().getRawContent());
 	}
 
-	private void transaction(User bot, String msg) {
+	private static void transaction(User bot, String msg) {
 		if (msg.length() < (IC_CALL.length() + 1) || !msg.startsWith(IC_CALL)) return;
 		msg = msg.substring(IC_CALL.length());
 
@@ -190,8 +191,8 @@ public class BotIntercommns extends ListenerAdapter {
 		}
 	}
 
-	@Override
-	public void onReady(ReadyEvent event) {
+	@SubscribeEvent
+	public static void onReady(ReadyEvent event) {
 		updateCmds();
 		info.put(event.getJDA().getSelfInfo().getId(), self);
 		event.getJDA().getUsers().stream().filter(user -> user.isBot() && !user.equals(event.getJDA().getSelfInfo()) && user.getOnlineStatus() != OnlineStatus.OFFLINE).forEach(BotIntercommns::start);

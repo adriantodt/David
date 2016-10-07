@@ -12,8 +12,8 @@
 
 package cf.adriantodt.bot.handlers.scripting;
 
-import cf.adriantodt.bot.base.DiscordGuild;
 import cf.adriantodt.bot.base.I18n;
+import cf.adriantodt.bot.data.Guilds;
 import net.dv8tion.jda.events.message.MessageReceivedEvent;
 
 import javax.script.ScriptEngine;
@@ -37,7 +37,7 @@ public class JS {
 		}
 	}
 
-	public static void eval(DiscordGuild guild, String command, MessageReceivedEvent event) {
+	public static void eval(Guilds.Data guild, String command, MessageReceivedEvent event) {
 		try {
 			engine.put("event", event);
 			engine.put("guild", guild);

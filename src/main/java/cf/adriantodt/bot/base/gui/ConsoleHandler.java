@@ -13,7 +13,6 @@
 package cf.adriantodt.bot.base.gui;
 
 import cf.adriantodt.bot.Bot;
-import cf.adriantodt.bot.persistence.DataManager;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -22,6 +21,7 @@ import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
+import static cf.adriantodt.bot.base.gui.GuiTranslationHandler.get;
 import static cf.adriantodt.bot.utils.Utils.splitArgs;
 
 public class ConsoleHandler {
@@ -29,22 +29,33 @@ public class ConsoleHandler {
 	public static final Map<BiConsumer<String, Consumer<String>>, String> HELP = new HashMap<>();
 
 	static {
-		CMDS.put("?", (s, in) -> CMDS.entrySet().stream().map(entry -> entry.getKey() + " - " + HELP.get(entry.getValue())).sorted().forEach(in));
+		CMDS.put("?", (s, in) -> CMDS.entrySet().stream().map(entry -> entry.getKey() + " - " + get("cmds." + HELP.get(entry.getValue()))).sorted().forEach(in));
 		CMDS.put("help", CMDS.get("?"));
 		CMDS.put("cmds", CMDS.get("?"));
-		HELP.put(CMDS.get("?"), "Show all Console Commands");
+		HELP.put(CMDS.get("?"), "help");
 
 		CMDS.put("stop", (s, in) -> Bot.stopBot());
-		HELP.put(CMDS.get("stop"), "Stop the Bot");
+		HELP.put(CMDS.get("stop"), "stop");
 
 		CMDS.put("restart", (s, in) -> Bot.restartBot());
-		HELP.put(CMDS.get("restart"), "Restart the Bot");
+		HELP.put(CMDS.get("restart"), "restart");
 
-		CMDS.put("load", (s, in) -> DataManager.loadData());
-		HELP.put(CMDS.get("load"), "Load the Bot Data from Disk");
+//		CMDS.put("load", (s, in) -> {
+//			in.accept(get("load"));
+//			DataManager.loadData();
+//			in.accept(get("done"));
+//		});
+//		HELP.put(CMDS.get("load"), "load");
+//
+//		CMDS.put("save", (s, in) -> {
+//			in.accept(get("save"));
+//			DataManager.saveData();
+//			in.accept(get("done"));
+//		});
+//		HELP.put(CMDS.get("save"), "save");
 
-		CMDS.put("save", (s, in) -> DataManager.saveData());
-		HELP.put(CMDS.get("save"), "Save the Bot Data to Disk");
+		CMDS.put("lang", (s, in) -> GuiTranslationHandler.setLang(s));
+		HELP.put(CMDS.get("lang"), "lang");
 	}
 
 	public static void handle(String command, Consumer<String> out) {

@@ -12,9 +12,10 @@
 
 package cf.adriantodt.bot.utils;
 
-import cf.adriantodt.bot.base.DiscordGuild;
 import cf.adriantodt.bot.base.cmd.ICommand;
 import cf.adriantodt.bot.base.cmd.UserCommand;
+import cf.adriantodt.bot.data.Guilds;
+import cf.adriantodt.bot.data.UserCommands;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -28,7 +29,7 @@ public class Commands {
 		COMMANDS.put(name, command);
 	}
 
-	public static Map<String, ICommand> getCommands(DiscordGuild guild) {
+	public static Map<String, ICommand> getCommands(Guilds.Data guild) {
 		HashMap<String, ICommand> usercmds = new HashMap<>();
 		usercmds.putAll(concatMaps(getGlobalUserCommands(), getLocalUserCommands(guild)));
 		return concatMaps(getBaseCommands(), usercmds);
@@ -39,11 +40,11 @@ public class Commands {
 	}
 
 	public static Map<String, UserCommand> getGlobalUserCommands() {
-		return getLocalUserCommands(DiscordGuild.GLOBAL);
+		return getLocalUserCommands(Guilds.GLOBAL);
 	}
 
-	public static Map<String, UserCommand> getLocalUserCommands(DiscordGuild guild) {
-		return guild.commands;
+	public static Map<String, UserCommand> getLocalUserCommands(Guilds.Data guild) {
+		return UserCommands.allFrom(guild);
 	}
 
 	private static <T, U> Map<T, U> concatMaps(Map<T, U> map1, Map<T, U> map2) {

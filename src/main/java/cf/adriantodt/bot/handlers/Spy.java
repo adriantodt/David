@@ -12,14 +12,14 @@
 
 package cf.adriantodt.bot.handlers;
 
-import cf.adriantodt.bot.base.DiscordGuild;
+import cf.adriantodt.bot.data.Guilds;
 import cf.adriantodt.bot.utils.Channels;
 import net.dv8tion.jda.entities.MessageChannel;
 import net.dv8tion.jda.entities.TextChannel;
 import net.dv8tion.jda.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.events.guild.GuildLeaveEvent;
 import net.dv8tion.jda.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.hooks.ListenerAdapter;
+import net.dv8tion.jda.hooks.SubscribeEvent;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -29,7 +29,7 @@ import java.util.Map;
 import static cf.adriantodt.bot.utils.Answers.bool;
 import static cf.adriantodt.bot.utils.Channels.getChannels;
 
-public class Spy extends ListenerAdapter {
+public class Spy {
 	public static final Map<SpyType, List<MessageChannel>> channels = new HashMap<>();
 
 	static {
@@ -64,7 +64,7 @@ public class Spy extends ListenerAdapter {
 		bool(event, get(type).contains(event.getChannel()));
 	}
 
-	public static void kickSelf(DiscordGuild guild, MessageReceivedEvent event, int channelId) {
+	public static void kickSelf(Guilds.Data guild, MessageReceivedEvent event, int channelId) {
 		MessageChannel channel = getChannels(guild).get(channelId);
 
 		if (channel instanceof TextChannel) {
@@ -73,16 +73,19 @@ public class Spy extends ListenerAdapter {
 		bool(event, channel instanceof TextChannel);
 	}
 
-	public void onGuildLeave(GuildLeaveEvent event) {
+	@SubscribeEvent
+	public static void onGuildLeave(GuildLeaveEvent event) {
 		toNodes("[!] Leaved " + event.getGuild().getName() + "!");
 	}
 
-	public void onMessageReceived(MessageReceivedEvent event) {
+	@SubscribeEvent
+	public static void onMessageReceived(MessageReceivedEvent event) {
 		if (nodes().contains(event.getChannel()) || ignored().contains(event.getChannel())) return;
-		toNodes("[" + Channels.getChannelName(DiscordGuild.fromDiscord(event), event.getChannel()) + "] <" + event.getAuthor().getUsername() + "> " + event.getMessage().getContent());
+		toNodes("[" + Channels.getChannelName(Guilds.fromDiscord(event), event.getChannel()) + "] <" + event.getAuthor().getUsername() + "> " + event.getMessage().getContent());
 	}
 
-	public void onGuildJoin(GuildJoinEvent event) {
+	@SubscribeEvent
+	public static void onGuildJoin(GuildJoinEvent event) {
 		toNodes("[!] Joined " + event.getGuild().getName() + "!");
 	}
 

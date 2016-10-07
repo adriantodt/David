@@ -12,32 +12,32 @@
 
 package cf.adriantodt.bot.handlers;
 
-import cf.adriantodt.bot.base.DiscordGuild;
 import cf.adriantodt.bot.base.I18n;
+import cf.adriantodt.bot.data.Guilds;
 import cf.adriantodt.bot.utils.Utils;
 import net.dv8tion.jda.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.hooks.ListenerAdapter;
+import net.dv8tion.jda.hooks.SubscribeEvent;
 
-public class BotGreeter extends ListenerAdapter {
+public class BotGreeter {
 	public static void greet(MessageReceivedEvent event) {
 		event.getChannel().sendMessage(I18n.getLocalized("bot.help", event));
 	}
 
-	@Override
-	public void onGuildJoin(GuildJoinEvent event) {
+	@SubscribeEvent
+	public static void onGuildJoin(GuildJoinEvent event) {
 		try {
-			DiscordGuild guild = DiscordGuild.fromDiscord(event.getGuild());
-			guild.defaultLanguage = Utils.guessGuildLanguage(event.getGuild());
-			event.getGuild().getPublicChannel().sendMessage(I18n.getLocalized("bot.hello1", guild.defaultLanguage));
-			event.getGuild().getPublicChannel().sendMessage(String.format(I18n.getLocalized("bot.hello2", guild.defaultLanguage), event.getGuild().getOwner().getAsMention(), guild.defaultLanguage));
+			Guilds.Data guild = Guilds.fromDiscord(event.getGuild());
+			guild.setLang(Utils.guessGuildLanguage(event.getGuild()));
+			event.getGuild().getPublicChannel().sendMessage(I18n.getLocalized("bot.hello1", guild.getLang()));
+			event.getGuild().getPublicChannel().sendMessage(String.format(I18n.getLocalized("bot.hello2", guild.getLang()), event.getGuild().getOwner().getAsMention(), guild.getLang()));
 		} catch (Exception e) {
 			event.getGuild().getManager().leave();
 		}
 	}
 
-	@Override
-	public void onMessageReceived(MessageReceivedEvent event) {
+	@SubscribeEvent
+	public static void onMessageReceived(MessageReceivedEvent event) {
 		if (event.getMessage().getRawContent().trim().matches("<@!?" + event.getJDA().getSelfInfo().getId() + ">")) {
 			greet(event);
 		}
