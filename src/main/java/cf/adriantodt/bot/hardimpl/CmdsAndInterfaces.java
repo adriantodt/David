@@ -183,10 +183,7 @@ public class CmdsAndInterfaces {
 			.addCommand("cleanup",
 				new CommandBuilder().setPermRequired(Permissions.EDIT_GUILD)
 					.setTranslatableUsage("guild.cleanup.usage")
-					.setAction((guild, args, event) -> {
-						guild.setFlag("cleanup", !guild.getFlag("cleanup"));
-						bool(event, guild.getFlag("cleanup"));
-					}).build()
+					.setAction((guild, args, event) -> bool(event, guild.toggleFlag("cleanup"))).build()
 			)
 			.addCommand("prefixes",
 				new CommandBuilder().setPermRequired(PERMSYSTEM)
@@ -212,8 +209,8 @@ public class CmdsAndInterfaces {
 							} else if (each.toLowerCase().equals("list") || each.toLowerCase().equals("get")) {
 								send(event, Arrays.toString(cmdPrefixes.toArray()));
 							}
-
 						}
+						cmdPrefixesHandler.pushChanges();
 						bool(event, true);
 					})
 					.build()

@@ -199,7 +199,7 @@ public class Guilds {
 			return userPerms.getOrDefault(s, orDefault);
 		}
 
-		public void setUserPerms(String s, Long userPerms) {
+		public void setUserPerms(String s, long userPerms) {
 			this.userPerms.put(s, userPerms);
 			pushUpdate(this, r.hashMap("userPerms", userPerms));
 		}
@@ -211,6 +211,12 @@ public class Guilds {
 		public void setFlag(String s, Boolean flag) {
 			this.flags.put(s, flag);
 			pushUpdate(this, r.hashMap("flags", flags));
+		}
+
+		public boolean toggleFlag(String s) {
+			boolean f = !getFlag(s);
+			setFlag(s, f);
+			return f;
 		}
 
 		public Guild getGuild(JDA jda) {
