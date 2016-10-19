@@ -19,8 +19,8 @@ import cf.adriantodt.bot.data.Guilds;
 import cf.adriantodt.bot.utils.Commands;
 import cf.adriantodt.bot.utils.Statistics;
 import cf.adriantodt.bot.utils.Utils;
-import net.dv8tion.jda.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.hooks.SubscribeEvent;
+import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.hooks.SubscribeEvent;
 
 import java.util.ArrayList;
 import java.util.HashMap;

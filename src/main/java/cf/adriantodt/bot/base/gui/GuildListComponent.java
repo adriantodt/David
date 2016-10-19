@@ -8,11 +8,11 @@
 package cf.adriantodt.bot.base.gui;
 
 import cf.adriantodt.bot.Bot;
-import net.dv8tion.jda.JDA;
-import net.dv8tion.jda.entities.Guild;
-import net.dv8tion.jda.events.guild.GuildJoinEvent;
-import net.dv8tion.jda.events.guild.GuildLeaveEvent;
-import net.dv8tion.jda.hooks.SubscribeEvent;
+import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.events.guild.GuildJoinEvent;
+import net.dv8tion.jda.core.events.guild.GuildLeaveEvent;
+import net.dv8tion.jda.core.hooks.SubscribeEvent;
 
 import javax.swing.*;
 import java.util.Vector;

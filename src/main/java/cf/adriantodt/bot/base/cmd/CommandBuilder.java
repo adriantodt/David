@@ -13,7 +13,7 @@
 package cf.adriantodt.bot.base.cmd;
 
 import cf.adriantodt.bot.data.Guilds;
-import net.dv8tion.jda.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;

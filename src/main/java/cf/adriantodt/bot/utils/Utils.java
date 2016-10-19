@@ -13,18 +13,12 @@
 package cf.adriantodt.bot.utils;
 
 import cf.adriantodt.bot.Bot;
-import net.dv8tion.jda.JDA;
-import net.dv8tion.jda.entities.Guild;
-import net.dv8tion.jda.entities.User;
-import net.dv8tion.jda.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.handle.EntityBuilder;
-import org.json.JSONObject;
+import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.User;
+import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
-import java.lang.reflect.Field;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static cf.adriantodt.bot.utils.Tasks.userTimeout;
 
@@ -38,44 +32,36 @@ public class Utils {
 		return count + 1 < 5;
 	}
 
-	@SuppressWarnings("unchecked")
-	public static Map<String, JSONObject> cachedJdaGuildJsons(JDA jda) throws NoSuchFieldException, IllegalAccessException {
-		Field f = EntityBuilder.class.getField("cachedJdaGuildJsons");
-		f.setAccessible(true);
-		HashMap<JDA, HashMap<String, JSONObject>> base = (HashMap<JDA, HashMap<String, JSONObject>>) f.get(null);
-		return base.get(jda);
-	}
-
 	public static String guessGuildLanguage(Guild guild) {
 		switch (guild.getRegion()) {
-			case BRAZIL:
-			case VIP_BRAZIL:
-				return "pt_BR";
+//			case BRAZIL:
+//			case VIP_BRAZIL:
+//				return "pt_BR";
 			case AMSTERDAM:
-			case EU_WEST:
-			case EU_CENTRAL:
+//			case EU_WEST:
+//			case EU_CENTRAL:
 			case FRANKFURT:
 			case LONDON:
-			case VIP_AMSTERDAM:
-			case VIP_EU_WEST:
-			case VIP_EU_CENTRAL:
-			case VIP_FRANKFURT:
-			case VIP_LONDON:
+//			case VIP_AMSTERDAM:
+//			case VIP_EU_WEST:
+//			case VIP_EU_CENTRAL:
+//			case VIP_FRANKFURT:
+//			case VIP_LONDON:
 				return "en_GB";
 			case SINGAPORE:
-			case VIP_SINGAPORE:
+//			case VIP_SINGAPORE:
 				return "en_SG";
 			case SYDNEY:
-			case VIP_SYDNEY:
+//			case VIP_SYDNEY:
 				return "en_AU";
 			case US_EAST:
 			case US_WEST:
 			case US_CENTRAL:
 			case US_SOUTH:
-			case VIP_US_EAST:
-			case VIP_US_WEST:
-			case VIP_US_CENTRAL:
-			case VIP_US_SOUTH:
+//			case VIP_US_EAST:
+//			case VIP_US_WEST:
+//			case VIP_US_CENTRAL:
+//			case VIP_US_SOUTH:
 			case UNKNOWN:
 			default:
 				return "en_US";
@@ -96,7 +82,7 @@ public class Utils {
 	}
 
 	public static String name(User user, Guild guild) {
-		return (guild == null || guild.getNicknameForUser(user) == null ? user.getUsername() : guild.getNicknameForUser(user));
+		return guild == null ? user.getName() : guild.getMember(user).getEffectiveName();
 	}
 
 	public static String nnOrD(String str, String defaultStr) {

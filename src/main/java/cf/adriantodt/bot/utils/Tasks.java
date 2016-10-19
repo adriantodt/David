@@ -17,8 +17,8 @@ import cf.adriantodt.bot.base.gui.QueueLogAppender;
 import cf.adriantodt.bot.handlers.Spy;
 import cf.brforgers.core.lib.IOHelper;
 import com.sun.management.OperatingSystemMXBean;
-import net.dv8tion.jda.JDA;
-import net.dv8tion.jda.entities.User;
+import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.core.entities.User;
 
 import java.lang.management.ManagementFactory;
 import java.util.HashMap;
@@ -57,7 +57,7 @@ public class Tasks {
 			synchronized (Spy.channels) {
 				Holder<String> s = new Holder<>();
 				while ((s.var = QueueLogAppender.getNextLogEvent("DiscordListeners")) != null)
-					Spy.logs().forEach(channel -> channel.sendMessageAsync(s.var, null));
+					Spy.logs().forEach(channel -> channel.sendMessage(s.var).queue());
 			}
 		});
 		thread.setName("Discord Log Listening");

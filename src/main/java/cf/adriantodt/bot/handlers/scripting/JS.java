@@ -14,7 +14,7 @@ package cf.adriantodt.bot.handlers.scripting;
 
 import cf.adriantodt.bot.base.I18n;
 import cf.adriantodt.bot.data.Guilds;
-import net.dv8tion.jda.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;

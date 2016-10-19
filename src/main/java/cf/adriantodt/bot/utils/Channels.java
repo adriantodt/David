@@ -14,11 +14,12 @@ package cf.adriantodt.bot.utils;
 
 import cf.adriantodt.bot.Bot;
 import cf.adriantodt.bot.data.Guilds;
-import net.dv8tion.jda.entities.Message;
-import net.dv8tion.jda.entities.MessageChannel;
-import net.dv8tion.jda.entities.PrivateChannel;
-import net.dv8tion.jda.entities.TextChannel;
-import net.dv8tion.jda.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.entities.Message;
+import net.dv8tion.jda.core.entities.MessageChannel;
+import net.dv8tion.jda.core.entities.PrivateChannel;
+import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.exceptions.RateLimitedException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,19 +27,19 @@ import java.util.List;
 import static cf.adriantodt.bot.utils.Answers.bool;
 
 public class Channels {
-	public static void getPast(MessageReceivedEvent event, MessageChannel channel) {
+	public static void getPast(MessageReceivedEvent event, MessageChannel channel) throws RateLimitedException {
 		String msgs = "***Past:***";
-		List<Message> msgl = channel.getHistory().retrieve(10);
+		List<Message> msgl = channel.getHistory().retrievePast(10).block();
 		for (int i = Math.min(10, msgl.size() - 1); i > 0; i--) {
 			Message msg = msgl.get(i);
-			msgs += "\n[" + getChannelName(Guilds.fromDiscord(event), channel) + "] <" + msg.getAuthor().getUsername() + "> " + msg.getContent();
+			msgs += "\n[" + getChannelName(Guilds.fromDiscord(event), channel) + "] <" + msg.getAuthor().getName() + "> " + msg.getContent();
 		}
 		Answers.send(event, msgs);
 	}
 
 	public static String getChannelName(Guilds.Data guild, MessageChannel channel) {
 		if (channel instanceof PrivateChannel) {
-			return ((PrivateChannel) channel).getUser().getUsername() + "'s PM" + "(#" + getChannels(guild).indexOf(channel) + ")";
+			return ((PrivateChannel) channel).getUser().getName() + "'s PM" + "(#" + getChannels(guild).indexOf(channel) + ")";
 		} else if (channel instanceof TextChannel) {
 			return ((TextChannel) channel).getGuild().getName() + ":" + ((TextChannel) channel).getName() + "(#" + getChannels(guild).indexOf(channel) + ")";
 		}
@@ -57,7 +58,7 @@ public class Channels {
 	public static void broadcast(Guilds.Data guild, String message, MessageReceivedEvent event) {
 		for (MessageChannel channel : getChannels(guild))
 			try {
-				channel.sendMessageAsync(message, null);
+				channel.sendMessage(message).queue();
 			} catch (Exception ignored) {
 			}
 		bool(event, true);
@@ -71,7 +72,7 @@ public class Channels {
 			if (channel instanceof TextChannel) {
 				msgs += "\n[" + i + "] = " + ((TextChannel) channel).getGuild().getName() + ":" + ((TextChannel) channel).getName();
 			} else if (channel instanceof PrivateChannel) {
-				msgs += "\n[" + i + "] = " + ((PrivateChannel) channel).getUser().getUsername() + "'s PM";
+				msgs += "\n[" + i + "] = " + ((PrivateChannel) channel).getUser().getName() + "'s PM";
 			}
 		}
 		Answers.send(event, msgs);

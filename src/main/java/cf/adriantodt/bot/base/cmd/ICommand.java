@@ -14,7 +14,7 @@ package cf.adriantodt.bot.base.cmd;
 
 import cf.adriantodt.bot.base.Permissions;
 import cf.adriantodt.bot.data.Guilds;
-import net.dv8tion.jda.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 public interface ICommand extends ITranslatable {
 	void run(Guilds.Data guild, String arguments, MessageReceivedEvent event);

@@ -17,7 +17,7 @@ import cf.adriantodt.bot.base.Permissions;
 import cf.adriantodt.bot.data.Guilds;
 import cf.adriantodt.bot.handlers.scripting.JS;
 import cf.brforgers.core.lib.IOHelper;
-import net.dv8tion.jda.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 import java.util.ArrayList;
 import java.util.Arrays;

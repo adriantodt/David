@@ -14,12 +14,12 @@ package cf.adriantodt.bot.handlers;
 
 import cf.adriantodt.bot.data.Guilds;
 import cf.adriantodt.bot.utils.Channels;
-import net.dv8tion.jda.entities.MessageChannel;
-import net.dv8tion.jda.entities.TextChannel;
-import net.dv8tion.jda.events.guild.GuildJoinEvent;
-import net.dv8tion.jda.events.guild.GuildLeaveEvent;
-import net.dv8tion.jda.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.hooks.SubscribeEvent;
+import net.dv8tion.jda.core.entities.MessageChannel;
+import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.core.events.guild.GuildJoinEvent;
+import net.dv8tion.jda.core.events.guild.GuildLeaveEvent;
+import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.hooks.SubscribeEvent;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -55,7 +55,7 @@ public class Spy {
 	}
 
 	public static void toNodes(String message) {
-		nodes().stream().filter(channel -> channel != null).forEach(channel -> channel.sendMessageAsync(message, null));
+		nodes().stream().filter(channel -> channel != null).forEach(channel -> channel.sendMessage(message).queue());
 	}
 
 	public static void trigger(MessageReceivedEvent event, SpyType type) {
@@ -68,7 +68,8 @@ public class Spy {
 		MessageChannel channel = getChannels(guild).get(channelId);
 
 		if (channel instanceof TextChannel) {
-			((TextChannel) channel).getGuild().getManager().leave();
+			//TODO WAIT DV8 ADD LEAVE
+			//((TextChannel) channel).getGuild().getManager().leave();
 		}
 		bool(event, channel instanceof TextChannel);
 	}
@@ -81,7 +82,7 @@ public class Spy {
 	@SubscribeEvent
 	public static void onMessageReceived(MessageReceivedEvent event) {
 		if (nodes().contains(event.getChannel()) || ignored().contains(event.getChannel())) return;
-		toNodes("[" + Channels.getChannelName(Guilds.fromDiscord(event), event.getChannel()) + "] <" + event.getAuthor().getUsername() + "> " + event.getMessage().getContent());
+		toNodes("[" + Channels.getChannelName(Guilds.fromDiscord(event), event.getChannel()) + "] <" + event.getAuthor().getName() + "> " + event.getMessage().getContent());
 	}
 
 	@SubscribeEvent

@@ -20,12 +20,13 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
-import net.dv8tion.jda.OnlineStatus;
-import net.dv8tion.jda.entities.User;
-import net.dv8tion.jda.events.ReadyEvent;
-import net.dv8tion.jda.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.events.user.UserOnlineStatusUpdateEvent;
-import net.dv8tion.jda.hooks.SubscribeEvent;
+import net.dv8tion.jda.core.OnlineStatus;
+import net.dv8tion.jda.core.entities.ChannelType;
+import net.dv8tion.jda.core.entities.User;
+import net.dv8tion.jda.core.events.ReadyEvent;
+import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.events.user.UserOnlineStatusUpdateEvent;
+import net.dv8tion.jda.core.hooks.SubscribeEvent;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -73,14 +74,14 @@ public class BotIntercommns {
 
 	@SubscribeEvent
 	public static void onMessageReceived(MessageReceivedEvent event) {
-		if (!event.isPrivate() || !event.getAuthor().isBot() || Bot.API.getSelfInfo().equals(event.getAuthor())) {
+		if (event.getChannelType() != ChannelType.PRIVATE || !event.getAuthor().isBot() || Bot.API.getSelfInfo().equals(event.getAuthor())) {
 			//onSubEvent(event);
 			String base = Utils.splitArgs(event.getMessage().getRawContent(), 2)[0];
 			List<User> bots = info.entrySet().stream().filter(entry -> entry.getValue().cmds.stream().anyMatch(base::equals)).map((entry) -> Bot.API.getUserById(entry.getKey())).collect(Collectors.toList());
 			if (bots.size() != 0 && bots.stream().filter(user -> user.getOnlineStatus() != OnlineStatus.OFFLINE).count() == 0) {
 				bots = info.entrySet().stream().filter(entry -> entry.getValue().p <= self.p && Bot.API.getUserById(entry.getKey()).getOnlineStatus() != OnlineStatus.OFFLINE).map((entry) -> Bot.API.getUserById(entry.getKey())).sorted((user1, user2) -> user1.toString().compareTo(user2.toString())).collect(Collectors.toList());
 				if (bots.indexOf(Bot.SELF) == 0)
-					event.getChannel().sendMessageAsync("*Nenhum dos Bots responsáveis por esse comando está online. Tente mais tarde.*", null);
+					event.getChannel().sendMessage("*Nenhum dos Bots responsáveis por esse comando está online. Tente mais tarde.*").queue();
 			}
 
 			return;

@@ -14,7 +14,7 @@ package cf.adriantodt.bot.utils;
 
 import cf.adriantodt.bot.Bot;
 import cf.adriantodt.bot.data.Guilds;
-import net.dv8tion.jda.entities.MessageChannel;
+import net.dv8tion.jda.core.entities.MessageChannel;
 
 import java.util.ArrayList;
 import java.util.HashMap;

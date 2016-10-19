@@ -24,10 +24,10 @@ import cf.adriantodt.bot.handlers.CommandHandler;
 import cf.adriantodt.bot.utils.Channels;
 import cf.adriantodt.bot.utils.Statistics;
 import cf.adriantodt.bot.utils.Tasks;
-import net.dv8tion.jda.entities.Guild;
-import net.dv8tion.jda.entities.MessageChannel;
-import net.dv8tion.jda.entities.Role;
-import net.dv8tion.jda.entities.User;
+import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.entities.MessageChannel;
+import net.dv8tion.jda.core.entities.Role;
+import net.dv8tion.jda.core.entities.User;
 
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -53,7 +53,7 @@ public class CmdsAndInterfaces {
 				User user = pre == Bot.SELF && a.trim().isEmpty() ? e.getAuthor() : pre;
 				send(e,
 					user.getAsMention() + ": \n" + getLocalized("user.avatar", e) + ": " + user.getAvatarUrl() + "\n```" +
-						getLocalized("user.name", e) + ": " + user.getUsername() + "\n" +
+						getLocalized("user.name", e) + ": " + user.getName() + "\n" +
 
 						(g.getGuild() == null ? "" :
 							getLocalized("user.nick", e) + ": " + (e.getGuild().getNicknameForUser(user) == null ? "(" + getLocalized("user.none", e) + ")" : e.getGuild().getNicknameForUser(user)) + "\n" +

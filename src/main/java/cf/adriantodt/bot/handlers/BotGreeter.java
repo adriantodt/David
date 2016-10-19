@@ -15,9 +15,9 @@ package cf.adriantodt.bot.handlers;
 import cf.adriantodt.bot.base.I18n;
 import cf.adriantodt.bot.data.Guilds;
 import cf.adriantodt.bot.utils.Utils;
-import net.dv8tion.jda.events.guild.GuildJoinEvent;
-import net.dv8tion.jda.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.hooks.SubscribeEvent;
+import net.dv8tion.jda.core.events.guild.GuildJoinEvent;
+import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.hooks.SubscribeEvent;
 
 public class BotGreeter {
 	public static void greet(MessageReceivedEvent event) {
@@ -32,7 +32,8 @@ public class BotGreeter {
 			event.getGuild().getPublicChannel().sendMessage(I18n.getLocalized("bot.hello1", guild.getLang()));
 			event.getGuild().getPublicChannel().sendMessage(String.format(I18n.getLocalized("bot.hello2", guild.getLang()), event.getGuild().getOwner().getAsMention(), guild.getLang()));
 		} catch (Exception e) {
-			event.getGuild().getManager().leave();
+			//TODO WAIT DV8 TO ADD LEAVE
+			//event.getGuild();
 		}
 	}
 

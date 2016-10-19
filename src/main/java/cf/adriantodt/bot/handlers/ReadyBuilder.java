@@ -12,8 +12,9 @@
 
 package cf.adriantodt.bot.handlers;
 
-import net.dv8tion.jda.events.ReadyEvent;
-import net.dv8tion.jda.hooks.SubscribeEvent;
+
+import net.dv8tion.jda.core.events.ReadyEvent;
+import net.dv8tion.jda.core.hooks.SubscribeEvent;
 
 import java.util.ArrayList;
 import java.util.List;

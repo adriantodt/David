@@ -16,8 +16,8 @@ import cf.adriantodt.bot.Bot;
 import cf.adriantodt.bot.data.Guilds;
 import cf.adriantodt.bot.handlers.CommandHandler;
 import cf.adriantodt.bot.utils.Utils;
-import net.dv8tion.jda.entities.User;
-import net.dv8tion.jda.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.entities.User;
+import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -69,7 +69,7 @@ public class I18n {
 	}
 
 	public static String getLocalized(String unlocalized, String locale) {
-		return getBaseLocalized(unlocalized, locale).replace("$(BOTNAME)", Bot.SELF == null ? "Bot" : Bot.SELF.getUsername()).replace("$(PREFIX)", "&");
+		return getBaseLocalized(unlocalized, locale).replace("$(BOTNAME)", Bot.SELF == null ? "Bot" : Bot.SELF.getName()).replace("$(PREFIX)", "&");
 	}
 
 	private static String getBaseLocalized(String unlocalized, String locale) {

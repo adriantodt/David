@@ -32,11 +32,17 @@ println System.getProperty("java.home")
 repositories {
     mavenCentral()
     jcenter()
+    flatDir {
+        dirs 'libs'
+    }
 }
 
 dependencies {
-    compile 'net.dv8tion:JDA:2.2.1_373'
-    compile group: 'org.apache.logging.log4j', name: 'log4j-api', version: '2.6.2'
+    //compile 'net.dv8tion:JDA:2.2.1_373'
+    //compile fileTree(dir: 'libs', include: '*.jar') //JDA3 is in /libs
+    compile name: 'JDA-withDependencies-3.0.ALPHA_34'
+    //source name: 'JDA-3.0.ALPHA_34-sources'
+    //javadoc name: 'JDA-3.0.ALPHA_34-javadoc'
     compile group: 'org.apache.logging.log4j', name: 'log4j-core', version: '2.6.2'
     compile group: 'com.rethinkdb', name: 'rethinkdb-driver', version: '2.3.3'
     compile group: 'org.apache.logging.log4j', name: 'log4j-slf4j-impl', version: '2.1'

@@ -19,13 +19,13 @@ import cf.adriantodt.bot.utils.Tasks;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.rethinkdb.model.MapObject;
-import net.dv8tion.jda.JDA;
-import net.dv8tion.jda.entities.Guild;
-import net.dv8tion.jda.events.guild.GuildJoinEvent;
-import net.dv8tion.jda.events.guild.GuildLeaveEvent;
-import net.dv8tion.jda.events.guild.GuildUpdateEvent;
-import net.dv8tion.jda.events.message.MessageReceivedEvent;
-import net.dv8tion.jda.hooks.SubscribeEvent;
+import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.core.entities.Guild;
+import net.dv8tion.jda.core.events.guild.GuildJoinEvent;
+import net.dv8tion.jda.core.events.guild.GuildLeaveEvent;
+import net.dv8tion.jda.core.events.guild.update.GuildUpdateNameEvent;
+import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.hooks.SubscribeEvent;
 
 import java.util.*;
 
@@ -91,11 +91,8 @@ public class Guilds {
 	}
 
 	@SubscribeEvent
-	public static void renamedGuild(GuildUpdateEvent e) {
-		Data data = fromDiscord(e.getGuild());
-		if (!data.getName().replaceAll("\\d*$", "").equals(toGuildName(e.getGuild().getName()).replaceAll("\\d*$", ""))) {
-			data.setName(toGuildName(e.getGuild().getName()));
-		}
+	public static void renamedGuild(GuildUpdateNameEvent e) {
+		fromDiscord(e.getGuild()).setName(toGuildName(e.getGuild().getName()));
 	}
 
 	public static Data fromDiscord(Guild guild) {
@@ -153,10 +150,10 @@ public class Guilds {
 	public static String toString(Data data, JDA jda, String language) {
 		Guild guild = data.getGuild(jda);
 		return I18n.getLocalized("guild.guild", language) + ": " + data.name + (guild != null && !data.name.equals(guild.getName()) ? " (" + guild.getName() + ")" : "")
-			+ "\n - " + I18n.getLocalized("guild.admin", language) + ": " + (guild == null ? Bot.API.getUserById(DataManager.configs.ownerID).getUsername() : guild.getOwner().getUsername())
+			+ "\n - " + I18n.getLocalized("guild.admin", language) + ": " + (guild == null ? Bot.API.getUserById(DataManager.configs.ownerID).getName() : guild.getOwner().getUser().getName())
 			//+ "\n - " + I18n.getLocalized("guild.cmds", language) + ": " + commands.size()
 			+ "\n - " + I18n.getLocalized("guild.channels", language) + ": " + (guild == null ? (data == PM ? Bot.API.getPrivateChannels().size() : Bot.API.getTextChannels().size() + Bot.API.getPrivateChannels().size()) : guild.getTextChannels().size())
-			+ "\n - " + I18n.getLocalized("guild.users", language) + ": " + (guild == null ? (data == PM ? Bot.API.getPrivateChannels().size() : Bot.API.getUsers().size()) : guild.getUsers().size())
+			+ "\n - " + I18n.getLocalized("guild.users", language) + ": " + (guild == null ? (data == PM ? Bot.API.getPrivateChannels().size() : Bot.API.getUsers().size()) : guild.getMembers().size())
 			+ "\n - ID: " + data.id;
 	}
 
