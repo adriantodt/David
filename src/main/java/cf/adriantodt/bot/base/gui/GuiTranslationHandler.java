@@ -13,7 +13,7 @@
 package cf.adriantodt.bot.base.gui;
 
 import cf.adriantodt.bot.Bot;
-import cf.adriantodt.bot.base.I18n;
+import cf.adriantodt.bot.data.I18n;
 
 import java.util.ArrayList;
 import java.util.List;

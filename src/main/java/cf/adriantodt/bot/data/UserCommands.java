@@ -14,9 +14,8 @@ package cf.adriantodt.bot.data;
 
 import cf.adriantodt.bot.base.cmd.UserCommand;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.nio.charset.Charset;
+import java.util.*;
 
 import static cf.adriantodt.bot.data.DataManager.*;
 
@@ -37,11 +36,15 @@ public class UserCommands {
 		if (!guildCommands.containsKey(guild)) guildCommands.put(guild, new HashMap<>());
 		guildCommands.get(guild).put(name, command);
 
+		//Base64-fy
+		List list = r.array();
+		command.responses.forEach(s -> list.add(Base64.getEncoder().encodeToString(s.getBytes(Charset.forName("UTF-8")))));
+
 		//Insert
 		cachedCommands.put(command, h.response(r.table("commands").insert(
 			r.array(
 				r.hashMap("gid", guild.getId())
-					.with("responses", r.array().addAll(command.responses))
+					.with("responses", list)
 					.with("name", name)
 			)
 		).run(conn)).object().getAsJsonObject().get("generated_keys").getAsJsonArray().get(0).getAsString());
@@ -50,8 +53,12 @@ public class UserCommands {
 	public static void update(UserCommand command) {
 		if (!cachedCommands.containsKey(command)) throw new IllegalStateException("The Command isn't registered");
 
+		//Base64-fy
+		List list = r.array();
+		command.responses.forEach(s -> list.add(Base64.getEncoder().encodeToString(s.getBytes(Charset.forName("UTF-8")))));
+
 		//Update
-		r.table("commands").get(cachedCommands.get(command)).update(arg -> r.hashMap("responses", r.array().addAll(command.responses))).runNoReply(conn);
+		r.table("commands").get(cachedCommands.get(command)).update(arg -> r.hashMap("responses", list)).runNoReply(conn);
 	}
 
 	public static void remove(UserCommand command) {
@@ -66,7 +73,7 @@ public class UserCommands {
 
 		h.query(r.table("commands").filter(row -> row.g("gid").eq(data.getId())).run(conn)).list().getAsJsonArray().forEach(jsonElement -> {
 			UserCommand cmd = new UserCommand();
-			jsonElement.getAsJsonObject().get("responses").getAsJsonArray().forEach(jsonString -> cmd.responses.add(jsonString.getAsString()));
+			jsonElement.getAsJsonObject().get("responses").getAsJsonArray().forEach(jsonString -> cmd.responses.add(new String(Base64.getDecoder().decode(jsonString.getAsString()), Charset.forName("UTF-8"))));
 			guildCommands.get(data).put(jsonElement.getAsJsonObject().get("name").getAsString(), cmd);
 			cachedCommands.put(cmd, jsonElement.getAsJsonObject().get("id").getAsString());
 		});

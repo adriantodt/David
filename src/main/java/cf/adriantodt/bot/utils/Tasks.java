@@ -15,14 +15,16 @@ package cf.adriantodt.bot.utils;
 import cf.adriantodt.bot.base.cmd.Holder;
 import cf.adriantodt.bot.base.gui.QueueLogAppender;
 import cf.adriantodt.bot.handlers.Spy;
+import cf.adriantodt.bot.webinterface.BotWebInterface;
+import cf.adriantodt.utils.ThreadBuilder;
 import cf.brforgers.core.lib.IOHelper;
 import com.sun.management.OperatingSystemMXBean;
-import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.User;
 
 import java.lang.management.ManagementFactory;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
@@ -31,7 +33,12 @@ public class Tasks {
 		var = "Hold up a sec.";
 	}};
 	static final Map<User, Integer> userTimeout = new HashMap<>();
+	private static final ExecutorService threadPool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 5);
 	public static double cpuUsage = 0;
+
+	public static ExecutorService getThreadPool() {
+		return threadPool;
+	}
 
 	public static void startAsyncTask(Runnable scheduled, int everySeconds) {
 		Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(scheduled, 0, everySeconds, TimeUnit.SECONDS);
@@ -53,19 +60,16 @@ public class Tasks {
 			}
 		}, 5);
 
-		Thread thread = new Thread(() -> {
+		new ThreadBuilder().setDaemon(true).setName("Log4j to Discord").build(() -> new Thread(() -> {
 			synchronized (Spy.channels) {
 				Holder<String> s = new Holder<>();
 				while ((s.var = QueueLogAppender.getNextLogEvent("DiscordListeners")) != null)
 					Spy.logs().forEach(channel -> channel.sendMessage(s.var).queue());
 			}
-		});
-		thread.setName("Discord Log Listening");
-		thread.setDaemon(true);
-		thread.start();
+		})).start();
 	}
 
-	public static void startJDAAsyncTasks(JDA jda) {
-
+	public static void startJDAAsyncTasks() {
+		new ThreadBuilder().setDaemon(true).setName("Web-Interface").build(() -> new Thread(BotWebInterface::startWebServer)).start();
 	}
 }

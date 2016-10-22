@@ -12,9 +12,9 @@
 
 package cf.adriantodt.bot.handlers.scripting;
 
-import cf.adriantodt.bot.base.I18n;
 import cf.adriantodt.bot.data.Guilds;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import cf.adriantodt.bot.data.I18n;
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
@@ -37,7 +37,7 @@ public class JS {
 		}
 	}
 
-	public static void eval(Guilds.Data guild, String command, MessageReceivedEvent event) {
+	public static void eval(Guilds.Data guild, String command, GuildMessageReceivedEvent event) {
 		try {
 			engine.put("event", event);
 			engine.put("guild", guild);
@@ -47,9 +47,9 @@ public class JS {
 					command +
 					"}" +
 					"})();");
-			sendCased(event, out == null ? I18n.getLocalized("eval.noOut", event) : out.toString());
+			sendCased(event, out == null ? I18n.getLocalized("eval.noOut", event) : out.toString()).queue();
 		} catch (ScriptException e) {
-			exception(event, e);
+			exception(event, e).queue();
 		}
 	}
 }

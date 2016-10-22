@@ -19,7 +19,7 @@ import cf.adriantodt.bot.data.Guilds;
 import cf.adriantodt.bot.utils.Commands;
 import cf.adriantodt.bot.utils.Statistics;
 import cf.adriantodt.bot.utils.Utils;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.core.hooks.SubscribeEvent;
 
 import java.util.ArrayList;
@@ -33,29 +33,29 @@ import static cf.adriantodt.bot.utils.Utils.splitArgs;
 
 public class CommandHandler {
 	public static boolean toofast = true;
-	private static Map<MessageReceivedEvent, ICommand> map = new HashMap<>();
-	private static Map<MessageReceivedEvent, Guilds.Data> map2 = new HashMap<>();
+	private static Map<GuildMessageReceivedEvent, ICommand> map = new HashMap<>();
+	private static Map<GuildMessageReceivedEvent, Guilds.Data> map2 = new HashMap<>();
 
-	public static void execute(ICommand command, Guilds.Data guild, String arguments, MessageReceivedEvent event) {
+	public static void execute(ICommand command, Guilds.Data guild, String arguments, GuildMessageReceivedEvent event) {
 		if (Permissions.canRunCommand(Guilds.GLOBAL, event, command) || Permissions.canRunCommand(guild, event, command))
 			command.run(guild, arguments, event);
-		else noperm(event);
+		else noperm(event).queue();
 	}
 
-	public static ICommand getSelf(MessageReceivedEvent event) {
+	public static ICommand getSelf(GuildMessageReceivedEvent event) {
 		return map.get(event);
 	}
 
-	public static Guilds.Data getGuild(MessageReceivedEvent event) {
+	public static Guilds.Data getGuild(GuildMessageReceivedEvent event) {
 		return map2.getOrDefault(event, Guilds.fromDiscord(event));
 	}
 
-	public static void onTree(MessageReceivedEvent event, ICommand command) {
+	public static void onTree(GuildMessageReceivedEvent event, ICommand command) {
 		map.put(event, command);
 	}
 
 	@SubscribeEvent
-	public static void onMessageReceived(MessageReceivedEvent event) {
+	public static void onMessageReceived(GuildMessageReceivedEvent event) {
 		if (event.getAuthor() == Bot.SELF) { //Safer
 			asyncSleepThen(15 * 1000, () -> {
 				if (Guilds.fromDiscord(event).getFlag("cleanup")) event.getMessage().deleteMessage();
@@ -98,11 +98,13 @@ public class CommandHandler {
 			ICommand command = Commands.getCommands(target).get(baseCmd.toLowerCase());
 
 			if (command != null) {
+				sendTyping(event).queue();
 				map.put(event, command);
 				map2.put(event, target);
-				if (!Permissions.canRunCommand(target, event, command)) noperm(event);
+				if (!Permissions.canRunCommand(target, event, command)) noperm(event).queue();
 				else if (toofast && !Utils.canExecuteCmd(event)) {
-					toofast(event);
+					toofast(event).queue();
+					;
 					Statistics.toofasts++;
 //					return;
 				} else {
@@ -111,7 +113,8 @@ public class CommandHandler {
 					try {
 						execute(command, target, splitArgs(cmd, 2)[1], event);
 					} catch (Exception e) {
-						exception(event, e);
+						exception(event, e).queue();
+						;
 					}
 				}
 				//remove the map and map2 key removal because WeakHashMap does it now.
@@ -119,11 +122,11 @@ public class CommandHandler {
 		}
 
 //		if (!exec) {
-//			List<String> list = DataManager.data.annoy.get(Permissions.processID(event.getAuthor().getId()));
+//			List<String> list = DataManager.data.annoy.get(Permissions.processId(event.getAuthor().getId()));
 //			if (list != null) {
 //				String r = list.get(Bot.RAND.nextInt(list.size()));
 //				if (r != null && !r.isEmpty()) {
-//					send(event, r);
+//					send(event, r).queue();;
 //				}
 //			}
 //		}

@@ -14,10 +14,10 @@ package cf.adriantodt.bot.base.cmd;
 
 import cf.adriantodt.bot.base.Permissions;
 import cf.adriantodt.bot.data.Guilds;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 
 public interface ICommand extends ITranslatable {
-	void run(Guilds.Data guild, String arguments, MessageReceivedEvent event);
+	void run(Guilds.Data guild, String arguments, GuildMessageReceivedEvent event);
 
 	/**
 	 * Provides Check for Minimal Perm usage.

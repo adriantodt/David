@@ -15,15 +15,20 @@ package cf.adriantodt.bot.utils;
 import cf.adriantodt.bot.Bot;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.User;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
+import org.apache.commons.lang3.NotImplementedException;
 
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Spliterator;
+import java.util.function.Consumer;
+import java.util.regex.Matcher;
 
 import static cf.adriantodt.bot.utils.Tasks.userTimeout;
 
 public class Utils {
-	public static boolean canExecuteCmd(MessageReceivedEvent event) {
+	public static boolean canExecuteCmd(GuildMessageReceivedEvent event) {
 		int count;
 		synchronized (userTimeout) {
 			count = userTimeout.getOrDefault(event.getAuthor(), 0);
@@ -82,7 +87,7 @@ public class Utils {
 	}
 
 	public static String name(User user, Guild guild) {
-		return guild == null ? user.getName() : guild.getMember(user).getEffectiveName();
+		return guild != null && guild.getMember(user) != null && guild.getMember(user).getNickname() != null ? guild.getMember(user).getNickname() : user.getName();
 	}
 
 	public static String nnOrD(String str, String defaultStr) {
@@ -90,14 +95,22 @@ public class Utils {
 		return str;
 	}
 
+	public static Runnable async(final Runnable doAsync) {
+		return new Thread(doAsync)::start;
+	}
+
+	public static void sleep(int milis) {
+		try {
+			Thread.sleep(milis);
+		} catch (Exception ignored) {
+		}
+	}
+
 	public static Runnable asyncSleepThen(final int milis, final Runnable doAfter) {
-		return new Thread(() -> {
-			try {
-				Thread.sleep(milis);
-				if (doAfter != null) doAfter.run();
-			} catch (Exception ignored) {
-			}
-		})::start;
+		return async(() -> {
+			sleep(milis);
+			if (doAfter != null) doAfter.run();
+		});
 	}
 
 	public static String limit(String value, int length) {
@@ -116,5 +129,43 @@ public class Utils {
 
 	public static <T> T random(T[] array) {
 		return array[Bot.RAND.nextInt(array.length)];
+	}
+
+	public static String processId(String string) {
+		if (string.startsWith("<@") && string.endsWith(">")) string = string.substring(2, string.length() - 1);
+		if (string.startsWith("!")) string = string.substring(1);
+		return string.toLowerCase();
+	}
+
+	public static Iterable<String> iterate(Matcher matcher) {
+		return new Iterable<String>() {
+			@Override
+			public Iterator<String> iterator() {
+				return new Iterator<String>() {
+					@Override
+					public boolean hasNext() {
+						return matcher.find();
+					}
+
+					@Override
+					public String next() {
+						return matcher.group();
+					}
+				};
+			}
+
+			@Override
+			public void forEach(Consumer<? super String> action) {
+				while (matcher.find()) {
+					action.accept(matcher.group());
+				}
+			}
+
+			@Override
+			public Spliterator<String> spliterator() {
+				System.out.println("No. No, don't. NO DON'T. DIE.");
+				throw new NotImplementedException("I am too lazy to Implement this.");
+			}
+		};
 	}
 }

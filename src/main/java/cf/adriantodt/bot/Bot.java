@@ -13,20 +13,25 @@
 package cf.adriantodt.bot;
 
 import cf.adriantodt.bot.data.DataManager;
+import cf.adriantodt.bot.data.Guilds;
+import cf.adriantodt.bot.handlers.BotGreeter;
+import cf.adriantodt.bot.handlers.CommandHandler;
 import cf.adriantodt.bot.handlers.ReadyBuilder;
 import cf.adriantodt.bot.hardimpl.CmdsAndInterfaces;
 import cf.adriantodt.bot.hardimpl.I18nHardImpl;
 import cf.adriantodt.bot.utils.Statistics;
 import cf.adriantodt.bot.utils.Tasks;
+import cf.adriantodt.jda.port.AnnotatedEventManager;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDABuilder;
 import net.dv8tion.jda.core.entities.User;
-import net.dv8tion.jda.core.hooks.AnnotatedEventManager;
+import net.dv8tion.jda.core.entities.impl.JDAImpl;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -51,29 +56,36 @@ public class Bot {
 			.setBulkDeleteSplittingEnabled(false)
 			.setAudioEnabled(false)
 			.setEventManager(new AnnotatedEventManager())
-			.addListener(
-				//In order:
-				// ReadyBuilder (Unregisters itself after);
-				// Commands -> BotIntercommns -> BotGreeter -> Guilds
-				new ReadyBuilder()
-					.add(event -> API = event.getJDA())
-					.add(event -> SELF = event.getJDA().getSelfInfo())
-//					.add(event -> event.getJDA().getSelfInfo()..setGame("mention me for help"))
-					.add(event -> DataManager.load())
-					.add(event -> I18nHardImpl.impl())
-					.add(event -> Statistics.startDate = new Date())//,
-//				CommandHandler.class, BotIntercommns.class, BotGreeter.class, Guilds.class
-			).buildBlocking();
+			.addListener(ReadyBuilder.lamdba(event -> {
+				API = event.getJDA();
+				SELF = event.getJDA().getSelfInfo();
+				//API.getSelfInfo().setGame("mention me for help");
+				DataManager.load();
+				I18nHardImpl.impl();
+				I18nHardImpl.implLocal();
+				Statistics.startDate = new Date();
+
+				//TODO WAUT DV8'S IMPL
+				((JDAImpl) API).getClient().send(new JSONObject()
+					.put("op", 3)
+					.put("d", new JSONObject()
+						.put("game", "mention me for help")
+						.put("since", System.currentTimeMillis())
+						.put("afk", false)
+						.put("status", "idle")).toString());
+			}))
+			.addListener(CommandHandler.class)
+			.addListener(BotGreeter.class)
+			.addListener(Guilds.class)
+			.buildBlocking();
 		LOADED = true;
 		onLoaded.forEach(Runnable::run);
 		onLoaded = null;
 		LOGGER = LogManager.getLogger(SELF.getName());
 		LOGGER.info("Bot: " + SELF.getName() + " (#" + SELF.getId() + ")");
 		//LOGGER.info("Configs: " + DataManager.getSaveFile().toAbsolutePath().toString());
-		Tasks.startJDAAsyncTasks(API);
+		Tasks.startJDAAsyncTasks();
 		CmdsAndInterfaces.impl();
-
-
 	}
 
 	public static void stopBot() {
@@ -84,6 +96,7 @@ public class Bot {
 			Thread.sleep(2 * 1000);
 		} catch (Exception ignored) {
 		}
+		API.shutdown();
 		Java.stopApp();
 	}
 

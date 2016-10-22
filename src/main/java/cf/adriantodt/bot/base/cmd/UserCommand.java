@@ -12,12 +12,12 @@
 
 package cf.adriantodt.bot.base.cmd;
 
-import cf.adriantodt.bot.base.I18n;
 import cf.adriantodt.bot.base.Permissions;
 import cf.adriantodt.bot.data.Guilds;
+import cf.adriantodt.bot.data.I18n;
 import cf.adriantodt.bot.handlers.scripting.JS;
 import cf.brforgers.core.lib.IOHelper;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -31,14 +31,14 @@ public class UserCommand implements ICommand, ITranslatable {
 	public List<String> responses = new ArrayList<>();
 
 	@Override
-	public void run(Guilds.Data guild, String arguments, MessageReceivedEvent event) {
+	public void run(Guilds.Data guild, String arguments, GuildMessageReceivedEvent event) {
 		String response = responses.get(RAND.nextInt(responses.size()));
 		if (response.length() > 7) {
 			if (response.substring(0, 6).equals("get://")) {
-				send(event, IOHelper.toString(response.substring(6)));
+				send(event, IOHelper.toString(response.substring(6))).queue();
 				return;
 			} else if (response.substring(0, 6).equals("loc://")) {
-				send(event, I18n.getLocalized(response.substring(6), "en_US"));
+				send(event, I18n.getLocalized(response.substring(6), "en_US")).queue();
 				return;
 				//} else if (response.substring(0, 6).equals("aud://")) {
 				//	Audio.queue(IOHelper.newURL(response.substring(6)), event);
@@ -47,14 +47,13 @@ public class UserCommand implements ICommand, ITranslatable {
 				if (Permissions.havePermsRequired(guild, event, Permissions.RUN_SCT_CMD)) {
 					JS.eval(guild, response.substring(5), event);
 				} else {
-					noperm(event);
+					noperm(event).queue();
 				}
-
 				return;
 			}
 		}
 
-		send(event, response);
+		send(event, response).queue();
 	}
 
 	@Override

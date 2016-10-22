@@ -13,10 +13,10 @@
 package cf.adriantodt.bot.base.interfaces;
 
 import cf.adriantodt.bot.base.Permissions;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 
 public interface IChannelInterface {
-	void onMessageReceivedEvent(MessageReceivedEvent event, IInterfaceData data);
+	void onGuildMessageReceivedEvent(GuildMessageReceivedEvent event, IInterfaceData data);
 
 	/**
 	 * Provides Check for Minimal Perm usage.

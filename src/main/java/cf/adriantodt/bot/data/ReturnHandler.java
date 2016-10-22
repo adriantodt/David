@@ -12,7 +12,6 @@
 
 package cf.adriantodt.bot.data;
 
-import cf.adriantodt.bot.Bot;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.rethinkdb.net.Cursor;
@@ -21,7 +20,11 @@ import java.util.HashMap;
 import java.util.function.BiConsumer;
 
 public class ReturnHandler {
-	private static Gson json = Bot.JSON_INTERNAL;
+	public static final ReturnHandler h = new ReturnHandler();
+	private static final Gson json = new Gson();
+
+	private ReturnHandler() {
+	}
 
 	public CursorHandler cursor(Cursor<HashMap<String, Object>> cursor) {
 		return new CursorHandler(cursor);
@@ -42,7 +45,7 @@ public class ReturnHandler {
 	public static class CursorHandler {
 		private final Cursor<HashMap<String, Object>> cursor;
 
-		public CursorHandler(Cursor<HashMap<String, Object>> cursor) {
+		private CursorHandler(Cursor<HashMap<String, Object>> cursor) {
 			this.cursor = cursor;
 		}
 
@@ -61,7 +64,7 @@ public class ReturnHandler {
 		public static class CursorStreamHandler {
 			private final Cursor<HashMap<String, Object>> cursor;
 
-			public CursorStreamHandler(Cursor<HashMap<String, Object>> cursor) {
+			private CursorStreamHandler(Cursor<HashMap<String, Object>> cursor) {
 				this.cursor = cursor;
 			}
 
@@ -78,7 +81,7 @@ public class ReturnHandler {
 	public static class MapHandler {
 		private final HashMap<String, Object> map;
 
-		public MapHandler(HashMap<String, Object> map) {
+		private MapHandler(HashMap<String, Object> map) {
 			this.map = map;
 		}
 

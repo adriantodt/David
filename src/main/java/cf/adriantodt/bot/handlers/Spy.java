@@ -18,7 +18,7 @@ import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.core.events.guild.GuildLeaveEvent;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.core.hooks.SubscribeEvent;
 
 import java.util.ArrayList;
@@ -58,20 +58,20 @@ public class Spy {
 		nodes().stream().filter(channel -> channel != null).forEach(channel -> channel.sendMessage(message).queue());
 	}
 
-	public static void trigger(MessageReceivedEvent event, SpyType type) {
+	public static void trigger(GuildMessageReceivedEvent event, SpyType type) {
 		if (get(type).contains(event.getChannel())) get(type).remove(event.getChannel());
 		else get(type).add(event.getChannel());
-		bool(event, get(type).contains(event.getChannel()));
+		bool(event, get(type).contains(event.getChannel())).queue();
 	}
 
-	public static void kickSelf(Guilds.Data guild, MessageReceivedEvent event, int channelId) {
+	public static void kickSelf(Guilds.Data guild, GuildMessageReceivedEvent event, int channelId) {
 		MessageChannel channel = getChannels(guild).get(channelId);
 
 		if (channel instanceof TextChannel) {
 			//TODO WAIT DV8 ADD LEAVE
 			//((TextChannel) channel).getGuild().getManager().leave();
 		}
-		bool(event, channel instanceof TextChannel);
+		bool(event, channel instanceof TextChannel).queue();
 	}
 
 	@SubscribeEvent
@@ -80,7 +80,7 @@ public class Spy {
 	}
 
 	@SubscribeEvent
-	public static void onMessageReceived(MessageReceivedEvent event) {
+	public static void onMessageReceived(GuildMessageReceivedEvent event) {
 		if (nodes().contains(event.getChannel()) || ignored().contains(event.getChannel())) return;
 		toNodes("[" + Channels.getChannelName(Guilds.fromDiscord(event), event.getChannel()) + "] <" + event.getAuthor().getName() + "> " + event.getMessage().getContent());
 	}

@@ -12,11 +12,10 @@
 
 package cf.adriantodt.bot.hardimpl;
 
-import cf.adriantodt.bot.base.I18n;
+import cf.adriantodt.bot.Bot;
+import cf.adriantodt.bot.data.I18n;
 
-import static cf.adriantodt.bot.base.I18n.setParent;
-
-//import static cf.adriantodt.bot.base.I18n.localize;
+import static cf.adriantodt.bot.data.I18n.setParent;
 
 /**
  * Hardcoded Impl goes here. Shouldn't be used too much.
@@ -29,10 +28,10 @@ public class I18nHardImpl {
 		setParent("en_SG", "en_US");
 		setParent("en_AU", "en_US");
 
-		localize("en_US", "bot.hello1", "Hello! I'm $(BOTNAME). Someone dropped me here!");
-		localize("pt_BR", "bot.hello1", "Oi! Eu sou o $(BOTNAME). Alguém me jogou aqui!");
-		localize("en_US", "bot.hello2", "Someone call %s to set my Default Language!\n(Because of the Region, I guessed the language as `%s`, but the Guild Owner can set it anytime by executing `$(PREFIX)guild lang <en_US|pt_BR|etc>`)");
-		localize("pt_BR", "bot.hello2", "Alguém chame %s para definir minha Língua Padrão!\n(Por causa da Região, eu adivinhei a língua como `%s`, mas o Guild Owner pode defini-la a qualquer mmomento executando `$(PREFIX)guild lang <en_US|pt_BR|etc>`)");
+		localize("en_US", "bot.hello1", "Hello! I'm $(dynamic.botname). Someone dropped me here!");
+		localize("pt_BR", "bot.hello1", "Oi! Eu sou o $(dynamic.botname). Alguém me jogou aqui!");
+		localize("en_US", "bot.hello2", "Someone call %s to set my Default Language!\n(Because of the Region, I guessed the language as `%s`, but the Guild Owner can set it anytime by executing `$(dynamic.mention) guild lang <en_US|pt_BR|etc>`)");
+		localize("pt_BR", "bot.hello2", "Alguém chame %s para definir minha Língua Padrão!\n(Por causa da Região, eu adivinhei a língua como `%s`, mas o Guild Owner pode defini-la a qualquer mmomento executando `$(dynamic.mention) guild lang <en_US|pt_BR|etc>`)");
 		localize("en_US", "bot.stop", "Stopping...");
 		localize("pt_BR", "bot.stop", "Saindo...");
 		localize("en_US", "bot.restart", "Restarting...");
@@ -55,8 +54,8 @@ public class I18nHardImpl {
 		localize("pt_BR", "bot.stats.usage", "Estatísticas da sessão.");
 		localize("en_US", "bot.info.usage", "Bot Information");
 		localize("pt_BR", "bot.info.usage", "Informações do Bot");
-		localize("en_US", "bot.help", "Hello! I'm $(BOTNAME).\nTo get started with the Commands, send: `$(PREFIX)cmds`\nTo invite me to your Guild, send: `$(PREFIX)inviteme`");
-		localize("pt_BR", "bot.help", "Olá! Eu sou o $(BOTNAME).\nPara começar a usar os Comandos, envie: `$(PREFIX)cmds`\nPara me convidar para a sua Guild, envie: `$(PREFIX)inviteme`");
+		localize("en_US", "bot.help", "Hello! I'm $(dynamic.botname).\nTo get started with the Commands, send: $(dynamic.mention) cmds\nTo invite me to your Guild, send: $(dynamic.mention) inviteme");
+		localize("pt_BR", "bot.help", "Olá! Eu sou o $(dynamic.botname).\nPara começar a usar os Comandos, envie: $(dynamic.mention) cmds\nPara me convidar para a sua Guild, envie: $(dynamic.mention) inviteme");
 
 		localize("en_US", "tree.subcmds", "Sub-Commands");
 		localize("pt_BR", "tree.subcmds", "Sub-Comandos");
@@ -148,7 +147,7 @@ public class I18nHardImpl {
 		localize("en_US", "stats.timeFormat", "%d days, %d hours, %d minutes, %d seconds");
 		localize("pt_BR", "stats.timeFormat", "%d dias, %d horas, %d minutos, %d segundos");
 
-		localize("en_US", "gui.title", "$(BOTNAME) - GUI");
+		localize("en_US", "gui.title", "$(dynamic.botname) - GUI");
 		//pt_BR = en_US
 		localize("en_US", "gui.stats", "Stats");
 		localize("pt_BR", "gui.stats", "Estatísticas");
@@ -190,8 +189,18 @@ public class I18nHardImpl {
 		localize("pt_BR", "gui.done", "Feito.");
 	}
 
+	public static void implLocal() {
+		localizeLocal("botname", Bot.SELF.getName());
+		localizeLocal("mention", Bot.SELF.getAsMention());
+	}
+
 	private static void localize(String lang, String untranslated, String translated) {
-		I18n.localize(lang, untranslated, translated);
-		I18n.getModerated().add(untranslated + "@" + lang);
+		I18n.pushTranslation(untranslated, lang, translated);
+		I18n.setModerated(untranslated, lang, true);
+	}
+
+	private static void localizeLocal(String untranslated, String translated) {
+		I18n.setLocalTranslation("dynamic." + untranslated, "en_US", translated);
+		I18n.setModerated("dynamic." + untranslated, "en_US", true);
 	}
 }

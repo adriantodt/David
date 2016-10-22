@@ -13,7 +13,6 @@
 package cf.adriantodt.bot.data;
 
 import cf.adriantodt.bot.Bot;
-import cf.adriantodt.bot.base.I18n;
 import cf.adriantodt.bot.base.Permissions;
 import cf.adriantodt.bot.utils.Tasks;
 import com.google.gson.JsonElement;
@@ -24,7 +23,7 @@ import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.core.events.guild.GuildLeaveEvent;
 import net.dv8tion.jda.core.events.guild.update.GuildUpdateNameEvent;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.core.hooks.SubscribeEvent;
 
 import java.util.*;
@@ -33,17 +32,14 @@ import static cf.adriantodt.bot.data.DataManager.*;
 
 public class Guilds {
 	public static final String[] DEFAULT_PREFIXES = {"&", "!"};
-	public static final Data PM, GLOBAL;
+	public static final Data GLOBAL;
 	private static List<Data> all = new ArrayList<>();
 	private static Map<Guild, Data> guildMap = new HashMap<>();
 	private static Map<Data, Integer> timeoutUntilDbRemoval = new HashMap<>();
 
 	static { //FakeGuilds Impl
-		PM = new Data();
 		GLOBAL = new Data();
-		PM.id = "-2";
 		GLOBAL.id = "-1";
-		PM.name = "PM";
 		GLOBAL.name = "GLOBAL";
 
 		Tasks.startAsyncTask(() -> {
@@ -76,6 +72,9 @@ public class Guilds {
 		object.get("flags").getAsJsonObject().entrySet().forEach(entry -> data.flags.put(entry.getKey(), entry.getValue().getAsBoolean()));
 		object.get("userPerms").getAsJsonObject().entrySet().forEach(entry -> data.userPerms.put(entry.getKey(), entry.getValue().getAsLong()));
 		guildMap.put(data.getGuild(), data);
+		if (data.getGuild() == null) {
+			timeoutUntilDbRemoval.put(data, 5);
+		}
 		return data;
 	}
 
@@ -96,7 +95,7 @@ public class Guilds {
 	}
 
 	public static Data fromDiscord(Guild guild) {
-		if (guild == null) return PM;
+		if (guild == null) return GLOBAL;
 		if (guildMap.containsKey(guild)) {
 			return guildMap.get(guild);
 		} else {
@@ -134,7 +133,7 @@ public class Guilds {
 		return null;
 	}
 
-	public static Data fromDiscord(MessageReceivedEvent event) {
+	public static Data fromDiscord(GuildMessageReceivedEvent event) {
 		return fromDiscord(event.getGuild());
 	}
 
@@ -151,9 +150,9 @@ public class Guilds {
 		Guild guild = data.getGuild(jda);
 		return I18n.getLocalized("guild.guild", language) + ": " + data.name + (guild != null && !data.name.equals(guild.getName()) ? " (" + guild.getName() + ")" : "")
 			+ "\n - " + I18n.getLocalized("guild.admin", language) + ": " + (guild == null ? Bot.API.getUserById(DataManager.configs.ownerID).getName() : guild.getOwner().getUser().getName())
-			//+ "\n - " + I18n.getLocalized("guild.cmds", language) + ": " + commands.size()
-			+ "\n - " + I18n.getLocalized("guild.channels", language) + ": " + (guild == null ? (data == PM ? Bot.API.getPrivateChannels().size() : Bot.API.getTextChannels().size() + Bot.API.getPrivateChannels().size()) : guild.getTextChannels().size())
-			+ "\n - " + I18n.getLocalized("guild.users", language) + ": " + (guild == null ? (data == PM ? Bot.API.getPrivateChannels().size() : Bot.API.getUsers().size()) : guild.getMembers().size())
+			+ "\n - " + I18n.getLocalized("guild.cmds", language) + ": " + UserCommands.allFrom(data).size()
+			+ "\n - " + I18n.getLocalized("guild.channels", language) + ": " + (guild == null ? (Bot.API.getTextChannels().size() + Bot.API.getPrivateChannels().size()) : guild.getTextChannels().size())
+			+ "\n - " + I18n.getLocalized("guild.users", language) + ": " + (guild == null ? Bot.API.getUsers().size() : guild.getMembers().size())
 			+ "\n - ID: " + data.id;
 	}
 

@@ -13,31 +13,43 @@
 package cf.adriantodt.bot.base.cmd;
 
 import cf.adriantodt.bot.data.Guilds;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
+import org.apache.logging.log4j.LogManager;
 
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
-import static cf.adriantodt.bot.base.I18n.getLocalized;
+import static cf.adriantodt.bot.data.I18n.getLocalized;
 
 public class CommandBuilder {
-	private TriConsumer<Guilds.Data, String, MessageReceivedEvent> action = null;
-	private Supplier<Long> permProvider = () -> 0L;
-	private Function<String, String> usageProvider = (s) -> null;
+	private static final Function<String, String> DEFAULT_NOOP_PROVIDER = (s) -> null;
+	private TriConsumer<Guilds.Data, String, GuildMessageReceivedEvent> action = null;
+	private long permRequired = 0L;
+	private Function<String, String> usageProvider = DEFAULT_NOOP_PROVIDER;
 
-	public CommandBuilder setAction(TriConsumer<Guilds.Data, String, MessageReceivedEvent> consumer) {
+	public CommandBuilder() {
+	}
+
+	public CommandBuilder(Function<String, String> usageProvider) {
+		setDynamicUsage(usageProvider);
+	}
+
+	public CommandBuilder(String translatableUsage) {
+		setTranslatableUsage(translatableUsage);
+	}
+
+	public CommandBuilder setAction(TriConsumer<Guilds.Data, String, GuildMessageReceivedEvent> consumer) {
 		action = consumer;
 		return this;
 	}
 
-	public CommandBuilder setAction(BiConsumer<String, MessageReceivedEvent> consumer) {
+	public CommandBuilder setAction(BiConsumer<String, GuildMessageReceivedEvent> consumer) {
 		action = (guild, s, event) -> consumer.accept(s, event);
 		return this;
 	}
 
-	public CommandBuilder setAction(Consumer<MessageReceivedEvent> consumer) {
+	public CommandBuilder setAction(Consumer<GuildMessageReceivedEvent> consumer) {
 		action = (guild, s, event) -> consumer.accept(event);
 		return this;
 	}
@@ -48,40 +60,39 @@ public class CommandBuilder {
 	}
 
 	public CommandBuilder setPermRequired(long value) {
-		permProvider = () -> value;
+		permRequired = value;
 		return this;
 	}
 
-	public CommandBuilder setUsage(String usage) {
+	@Deprecated
+	public CommandBuilder setUsageDeprecatedMethod(String usage) {
 		usageProvider = (s) -> usage;
 		return this;
 	}
 
-	public CommandBuilder setTranslatableUsage(String usage) {
-		usageProvider = (lang) -> getLocalized(usage, lang);
-		return this;
+	public CommandBuilder setTranslatableUsage(String translatableUsage) {
+		return setDynamicUsage((lang) -> getLocalized(translatableUsage, lang));
 	}
 
-	public CommandBuilder setPermRequired(Supplier<Long> provider) {
-		permProvider = provider;
-		return this;
-	}
-
-	public CommandBuilder setUsage(Function<String, String> provider) {
-		usageProvider = s -> "<TRANSLATION REQUIRED> " + provider;
+	public CommandBuilder setDynamicUsage(Function<String, String> provider) {
+		usageProvider = provider;
 		return this;
 	}
 
 	public ICommand build() {
+		if (usageProvider == DEFAULT_NOOP_PROVIDER) {
+			LogManager.getLogger("CommandBuilder - Deprecated").warn("No Usage was provided to the Command being built!", new Exception("Stacktrace Exception"));
+		}
+
 		return new ICommand() {
 			@Override
-			public void run(Guilds.Data guild, String arguments, MessageReceivedEvent event) {
+			public void run(Guilds.Data guild, String arguments, GuildMessageReceivedEvent event) {
 				action.accept(guild, arguments, event);
 			}
 
 			@Override
 			public long retrievePerm() {
-				return permProvider.get();
+				return permRequired;
 			}
 
 			@Override

@@ -17,11 +17,19 @@ import net.dv8tion.jda.core.events.ReadyEvent;
 import net.dv8tion.jda.core.hooks.SubscribeEvent;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
 
 public class ReadyBuilder {
 	public List<Consumer<ReadyEvent>> l = new ArrayList<>();
+
+	@SafeVarargs
+	public static ReadyBuilder lamdba(Consumer<ReadyEvent>... events) {
+		ReadyBuilder builder = new ReadyBuilder();
+		builder.l.addAll(Arrays.asList(events));
+		return builder;
+	}
 
 	public ReadyBuilder add(Consumer<ReadyEvent> c) {
 		if (c != null) l.add(c);

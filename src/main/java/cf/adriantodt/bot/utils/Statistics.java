@@ -13,8 +13,8 @@
 package cf.adriantodt.bot.utils;
 
 import cf.adriantodt.bot.Bot;
-import cf.adriantodt.bot.base.I18n;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import cf.adriantodt.bot.data.I18n;
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 
 import java.util.Date;
 
@@ -67,8 +67,8 @@ public class Statistics {
 		return onCatch;
 	}
 
-	public static void printStats(MessageReceivedEvent event) {
-		String language = I18n.getLang(event);
+	public static void printStats(GuildMessageReceivedEvent event) {
+		String language = I18n.getLocale(event);
 		int mb = 1024 * 1024;
 		Runtime instance = Runtime.getRuntime();
 		send(event,
@@ -87,6 +87,6 @@ public class Statistics {
 					+ "\n - Uso de RAM(Usando/Total/Máximo): " + ((instance.totalMemory() - instance.freeMemory()) / mb) + " MB/" + (instance.totalMemory() / mb) + " MB/" + (instance.maxMemory() / mb) + " MB"
 					+ "\n - Uso de CPU: " + cpuUsage + "%"
 			)
-		);
+		).queue();
 	}
 }

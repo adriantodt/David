@@ -18,23 +18,24 @@ import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.entities.PrivateChannel;
 import net.dv8tion.jda.core.entities.TextChannel;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.core.exceptions.RateLimitedException;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static cf.adriantodt.bot.utils.Answers.bool;
+import static cf.adriantodt.bot.utils.Answers.send;
 
 public class Channels {
-	public static void getPast(MessageReceivedEvent event, MessageChannel channel) throws RateLimitedException {
+	public static void getPast(GuildMessageReceivedEvent event, MessageChannel channel) throws RateLimitedException {
 		String msgs = "***Past:***";
 		List<Message> msgl = channel.getHistory().retrievePast(10).block();
 		for (int i = Math.min(10, msgl.size() - 1); i > 0; i--) {
 			Message msg = msgl.get(i);
 			msgs += "\n[" + getChannelName(Guilds.fromDiscord(event), channel) + "] <" + msg.getAuthor().getName() + "> " + msg.getContent();
 		}
-		Answers.send(event, msgs);
+		send(event, msgs).queue();
 	}
 
 	public static String getChannelName(Guilds.Data guild, MessageChannel channel) {
@@ -49,22 +50,24 @@ public class Channels {
 
 	public static List<MessageChannel> getChannels(Guilds.Data guild) {
 		List<MessageChannel> r = new ArrayList<>();
-		if (guild == Guilds.PM || guild == Guilds.GLOBAL) r.addAll(Bot.API.getPrivateChannels());
-		if (guild == Guilds.GLOBAL) r.addAll(Bot.API.getTextChannels());
+		if (guild == Guilds.GLOBAL) {
+			r.addAll(Bot.API.getTextChannels());
+			r.addAll(Bot.API.getPrivateChannels());
+		}
 		if (guild.getGuild() != null) r.addAll(guild.getGuild().getTextChannels());
 		return r;
 	}
 
-	public static void broadcast(Guilds.Data guild, String message, MessageReceivedEvent event) {
+	public static void broadcast(Guilds.Data guild, String message, GuildMessageReceivedEvent event) {
 		for (MessageChannel channel : getChannels(guild))
 			try {
 				channel.sendMessage(message).queue();
 			} catch (Exception ignored) {
 			}
-		bool(event, true);
+		bool(event, true).queue();
 	}
 
-	public static void listChannels(Guilds.Data guild, MessageReceivedEvent event) {
+	public static void listChannels(Guilds.Data guild, GuildMessageReceivedEvent event) {
 		String msgs = "***Canais:***";
 		List<MessageChannel> l = Channels.getChannels(guild);
 		for (int i = 0; i < l.size(); i++) {
@@ -75,6 +78,6 @@ public class Channels {
 				msgs += "\n[" + i + "] = " + ((PrivateChannel) channel).getUser().getName() + "'s PM";
 			}
 		}
-		Answers.send(event, msgs);
+		send(event, msgs).queue();
 	}
 }

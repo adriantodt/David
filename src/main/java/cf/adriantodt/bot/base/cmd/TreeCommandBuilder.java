@@ -12,10 +12,10 @@
 
 package cf.adriantodt.bot.base.cmd;
 
-import cf.adriantodt.bot.base.I18n;
 import cf.adriantodt.bot.data.Guilds;
+import cf.adriantodt.bot.data.I18n;
 import cf.adriantodt.bot.handlers.CommandHandler;
-import net.dv8tion.jda.core.events.message.MessageReceivedEvent;
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -92,10 +92,10 @@ public class TreeCommandBuilder {
 	public ICommand build() {
 		return new ICommand() {
 			@Override
-			public void run(Guilds.Data guild, String arguments, MessageReceivedEvent event) {
+			public void run(Guilds.Data guild, String arguments, GuildMessageReceivedEvent event) {
 				String[] args = splitArgs(arguments, 2);
 				ICommand cmd = SUBCMDS.get(args[0].toLowerCase());
-				if (cmd == null) invalidargs(event);
+				if (cmd == null) invalidargs(event).queue();
 				else {
 					CommandHandler.onTree(event, cmd);
 					CommandHandler.execute(cmd, guild, args[1], event);
