@@ -75,7 +75,9 @@ public class Utils {
 
 
 	public static String[] splitArgs(String args, int expectedArgs) {
-		String[] raw = args.split("\\s+", expectedArgs), normalized = new String[expectedArgs];
+		String[] raw = args.split("\\s+", expectedArgs);
+		if (expectedArgs < 1) return raw;
+		String[] normalized = new String[expectedArgs];
 
 		Arrays.fill(normalized, "");
 		for (int i = 0; i < normalized.length; i++) {
@@ -97,6 +99,10 @@ public class Utils {
 
 	public static Runnable async(final Runnable doAsync) {
 		return new Thread(doAsync)::start;
+	}
+
+	public static Runnable async(final String name, final Runnable doAsync) {
+		return new Thread(doAsync, name)::start;
 	}
 
 	public static void sleep(int milis) {

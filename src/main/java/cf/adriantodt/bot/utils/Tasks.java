@@ -22,6 +22,7 @@ import com.sun.management.OperatingSystemMXBean;
 import net.dv8tion.jda.core.entities.User;
 
 import java.lang.management.ManagementFactory;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
@@ -59,17 +60,18 @@ public class Tasks {
 				userTimeout.replaceAll((user, integer) -> Math.max(0, integer - 1));
 			}
 		}, 5);
-
-		new ThreadBuilder().setDaemon(true).setName("Log4j to Discord").build(() -> new Thread(() -> {
-			synchronized (Spy.channels) {
-				Holder<String> s = new Holder<>();
-				while ((s.var = QueueLogAppender.getNextLogEvent("DiscordListeners")) != null)
-					Spy.logs().forEach(channel -> channel.sendMessage(s.var).queue());
-			}
-		})).start();
 	}
 
 	public static void startJDAAsyncTasks() {
 		new ThreadBuilder().setDaemon(true).setName("Web-Interface").build(() -> new Thread(BotWebInterface::startWebServer)).start();
+
+		new ThreadBuilder().setDaemon(true).setName("Log4j2Discord").build(() -> new Thread(() -> {
+			System.out.println("Log4j2Discord Enabled!");
+			Holder<String> s = new Holder<>();
+			while ((s.var = QueueLogAppender.getNextLogEvent("DiscordLogListeners")) != null) {
+				Collections.synchronizedList(Spy.logs()).forEach(channel -> channel.sendMessage(s.var).queue());
+			}
+			System.out.println("Log4j2Discord Disabled...");
+		})).start();
 	}
 }

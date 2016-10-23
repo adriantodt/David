@@ -23,7 +23,6 @@ import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.core.events.guild.GuildLeaveEvent;
 import net.dv8tion.jda.core.events.guild.update.GuildUpdateNameEvent;
-import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.core.hooks.SubscribeEvent;
 
 import java.util.*;
@@ -131,10 +130,6 @@ public class Guilds {
 			if (g.name.equals(name)) return g;
 		}
 		return null;
-	}
-
-	public static Data fromDiscord(GuildMessageReceivedEvent event) {
-		return fromDiscord(event.getGuild());
 	}
 
 	private static String toGuildName(String name) {

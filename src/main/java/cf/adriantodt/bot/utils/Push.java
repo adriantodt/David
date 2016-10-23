@@ -14,7 +14,7 @@ package cf.adriantodt.bot.utils;
 
 import cf.adriantodt.bot.Bot;
 import cf.adriantodt.bot.data.Guilds;
-import net.dv8tion.jda.core.entities.MessageChannel;
+import net.dv8tion.jda.core.entities.TextChannel;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -74,6 +74,6 @@ public class Push {
 
 	public static class PushSubscription {
 		public List<String> subscriptions = new ArrayList<>(), cached = new ArrayList<>();
-		public MessageChannel sendTo;
+		public TextChannel sendTo;
 	}
 }

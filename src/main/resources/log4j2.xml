@@ -7,7 +7,7 @@
         <Queue name="ServerGuiConsole">
             <PatternLayout pattern="[%d{HH:mm:ss}] [%logger(%level)]: %msg%n"/>
         </Queue>
-        <Queue name="DiscordListeners">
+        <Queue name="DiscordLogListeners">
             <PatternLayout pattern="[%d{HH:mm:ss}] [%t/%level] [%logger]: %msg%n"/>
         </Queue>
         <RollingRandomAccessFile name="File" fileName="logs/latest.log" filePattern="logs/%d{yyyy-MM-dd}-%i.log.gz">
@@ -23,7 +23,7 @@
             <AppenderRef ref="ConsoleOut" level="INFO"/>
             <AppenderRef ref="File"/>
             <AppenderRef ref="ServerGuiConsole" level="INFO"/>
-            <AppenderRef ref="DiscordListeners" level="INFO"/>
+            <AppenderRef ref="DiscordLogListeners" level="INFO"/>
         </Root>
     </Loggers>
 </Configuration>

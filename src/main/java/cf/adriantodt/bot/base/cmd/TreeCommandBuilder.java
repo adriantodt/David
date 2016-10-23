@@ -12,18 +12,15 @@
 
 package cf.adriantodt.bot.base.cmd;
 
-import cf.adriantodt.bot.data.Guilds;
+import cf.adriantodt.bot.base.Permissions;
 import cf.adriantodt.bot.data.I18n;
 import cf.adriantodt.bot.handlers.CommandHandler;
-import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 import static cf.adriantodt.bot.utils.Answers.invalidargs;
-import static cf.adriantodt.bot.utils.Utils.splitArgs;
 
 public class TreeCommandBuilder {
 	private final Map<String, ICommand> SUBCMDS = new HashMap<>();
@@ -45,11 +42,16 @@ public class TreeCommandBuilder {
 		if (first.var) return null;
 		return b.var.toString();
 	};
-	private Supplier<Long> permProvider = () -> 0L;
+	private long permRequired = Permissions.RUN_BASECMD;
 	private Function<String, String> usageProvider = USAGE_IMPL;
 
 	public TreeCommandBuilder() {
 		addDefault((ICommand) null);
+	}
+
+	public TreeCommandBuilder(long permRequired) {
+		this();
+		setPermRequired(permRequired);
 	}
 
 	public TreeCommandBuilder addCommand(String cmd, ICommand command) {
@@ -70,48 +72,17 @@ public class TreeCommandBuilder {
 		return addDefault(SUBCMDS.get(alias));
 	}
 
-	public TreeCommandBuilder setPermRequired(long value) {
-		return setPermRequired(() -> value);
-	}
-
-	public TreeCommandBuilder setUsage(String usage) {
-		return setUsage((s) -> usage);
-	}
-
-	public TreeCommandBuilder setPermRequired(Supplier<Long> provider) {
-		permProvider = provider;
-		return this;
-	}
-
-	public TreeCommandBuilder setUsage(Function<String, String> provider) {
-		if (provider == null) usageProvider = USAGE_IMPL;
-		else usageProvider = provider;
+	private TreeCommandBuilder setPermRequired(long value) {
+		permRequired = value;
 		return this;
 	}
 
 	public ICommand build() {
-		return new ICommand() {
-			@Override
-			public void run(Guilds.Data guild, String arguments, GuildMessageReceivedEvent event) {
-				String[] args = splitArgs(arguments, 2);
-				ICommand cmd = SUBCMDS.get(args[0].toLowerCase());
-				if (cmd == null) invalidargs(event).queue();
-				else {
-					CommandHandler.onTree(event, cmd);
-					CommandHandler.execute(cmd, guild, args[1], event);
-					CommandHandler.onTree(event, this);
-				}
-			}
-
-			@Override
-			public long retrievePerm() {
-				return permProvider == null ? 0 : permProvider.get();
-			}
-
-			@Override
-			public String toString(String language) {
-				return usageProvider == null ? null : usageProvider.apply(language);
-			}
-		};
+		return new CommandBuilder(USAGE_IMPL, permRequired).setAction(event -> {
+			String[] args = event.getArgs(2);
+			ICommand cmd = SUBCMDS.get(args[0].toLowerCase());
+			if (cmd == null) invalidargs(event).queue();
+			else CommandHandler.execute(new CommandEvent(event.getEvent(), event.getGuild(), cmd, args[1]));
+		}).build();
 	}
 }

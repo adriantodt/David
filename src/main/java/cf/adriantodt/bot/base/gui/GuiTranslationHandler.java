@@ -57,9 +57,4 @@ public class GuiTranslationHandler {
 		GuiTranslationHandler.lang = lang;
 		update();
 	}
-
-	public static void set(String unlocalized, String localization, String language) {
-		if (!Bot.LOADED) Bot.onLoaded.add(() -> I18n.localize(language, "gui." + unlocalized, localization));
-		else I18n.localize(language, "gui." + unlocalized, localization);
-	}
 }

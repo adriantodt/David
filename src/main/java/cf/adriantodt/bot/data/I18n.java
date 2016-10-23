@@ -12,8 +12,7 @@
 
 package cf.adriantodt.bot.data;
 
-import cf.adriantodt.bot.handlers.CommandHandler;
-import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
+import cf.adriantodt.bot.base.cmd.CommandEvent;
 
 import java.util.*;
 import java.util.regex.Pattern;
@@ -64,13 +63,8 @@ public class I18n {
 		locales.get(unlocalized).put(locale, localized);
 	}
 
-	@Deprecated
-	public static void localize(String unlocalized, String locale, String localized) {
-		pushTranslation(locale, unlocalized, localized);
-	}
-
-	public static String getLocale(GuildMessageReceivedEvent event) {
-		return nnOrD(Users.fromDiscord(event.getAuthor()).getLang(), CommandHandler.getGuild(event).getLang());
+	public static String getLocale(CommandEvent event) {
+		return nnOrD(Users.fromDiscord(event.getAuthor()).getLang(), event.getGuild().getLang());
 	}
 
 	public static void setParent(String locale, String parent) {
@@ -93,7 +87,7 @@ public class I18n {
 		return localized;
 	}
 
-	public static String getLocalized(String unlocalized, GuildMessageReceivedEvent event) {
+	public static String getLocalized(String unlocalized, CommandEvent event) {
 		return getLocalized(unlocalized, getLocale(event));
 	}
 

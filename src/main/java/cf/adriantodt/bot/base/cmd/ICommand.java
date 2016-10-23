@@ -13,11 +13,9 @@
 package cf.adriantodt.bot.base.cmd;
 
 import cf.adriantodt.bot.base.Permissions;
-import cf.adriantodt.bot.data.Guilds;
-import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 
 public interface ICommand extends ITranslatable {
-	void run(Guilds.Data guild, String arguments, GuildMessageReceivedEvent event);
+	void run(CommandEvent event);
 
 	/**
 	 * Provides Check for Minimal Perm usage.
@@ -26,5 +24,9 @@ public interface ICommand extends ITranslatable {
 	 */
 	default long retrievePerm() {
 		return Permissions.RUN_BASECMD;
+	}
+
+	default boolean sendStartTyping() {
+		return true;
 	}
 }

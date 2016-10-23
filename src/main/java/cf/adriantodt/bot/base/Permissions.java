@@ -12,11 +12,11 @@
 
 package cf.adriantodt.bot.base;
 
-import cf.adriantodt.bot.base.cmd.ICommand;
+import cf.adriantodt.bot.base.cmd.CommandEvent;
 import cf.adriantodt.bot.data.DataManager;
 import cf.adriantodt.bot.data.Guilds;
 import cf.adriantodt.bot.utils.Utils;
-import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.core.entities.User;
 
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
@@ -50,7 +50,7 @@ Permissões:
 	MANAGE_SPCS (6) -> Permite a criação de comandos WEB:// ou SCRIPTS://
 	PERMSYSTEM_ASSIST_PERMS (7-9)
 	                -> Protege pessoas de nível maior de serem afetadas por pessoas com nível maior.
-	PLAYING     (a) -> Comando &jogando
+	GUILD_CHANNELS (a) -> Comandos mais complexos de Guild
 	SCRIPTS     (b) -> Comando &eval (JS), &lua (LuaJ)
 	EDIT_GUILD  (c) -> Comando &guild
 	SPY         (d) -> Comando &spy
@@ -76,7 +76,7 @@ public class Permissions {
 		PERMSYS_GM = bits(7),
 		PERMSYS_GO = bits(8),
 		PERMSYS_BO = bits(9),
-		PLAYING = bits(10),
+		GUILD_CHANNELS = bits(10),
 		SCRIPTS = bits(11),
 		EDIT_GUILD = bits(12),
 		SPY = bits(13),
@@ -90,9 +90,9 @@ public class Permissions {
 
 	public static final long
 		BASE_USER = RUN_BASECMD | RUN_USR_CMD | RUN_SCT_CMD | GUILD_PASS | USE_INTERFACES,
-		GUILD_MOD = BASE_USER | MANAGE_USR | MANAGE_SPCS | PERMSYSTEM | PERMSYS_GM | GLOBALS_IMP,
+		GUILD_MOD = BASE_USER | MANAGE_USR | MANAGE_SPCS | PERMSYSTEM | PERMSYS_GM | GLOBALS_IMP | GUILD_CHANNELS,
 		GUILD_OWNER = GUILD_MOD | GLOBALS_EXP | SCRIPTS | EDIT_GUILD | PERMSYS_GO,
-		BOT_OWNER = GUILD_OWNER | PLAYING | LUAENV_FULL | SPY | STOP_RESET | PERMSYS_BO | ANNOY;
+		BOT_OWNER = GUILD_OWNER | LUAENV_FULL | SPY | STOP_RESET | PERMSYS_BO | ANNOY;
 
 	public static Map<String, Long> perms = new HashMap<String, Long>() {{
 		Arrays.stream(Permissions.class.getDeclaredFields()) //This Reflection is used to HashMap-fy all the Fields above.
@@ -113,11 +113,11 @@ public class Permissions {
 		return mask;
 	}
 
-	public static long getSenderPerm(Guilds.Data guild, GuildMessageReceivedEvent event) {
+	public static long getSenderPerm(Guilds.Data guild, CommandEvent event) {
 		return getPermFor(guild, event.getAuthor().getId());
 	}
 
-	public static boolean setPerms(Guilds.Data guild, GuildMessageReceivedEvent event, String target, long permsToAdd, long permsToTake) {
+	public static boolean setPerms(Guilds.Data guild, CommandEvent event, String target, long permsToAdd, long permsToTake) {
 		target = Utils.processId(target); //Un-mention ID
 		if (target.equals(event.getAuthor().getId())) return false; //Disable changing itself
 		long senderPerm = getSenderPerm(guild, event), targetPerm = getPermFor(guild, target); //Get perrms
@@ -144,12 +144,12 @@ public class Permissions {
 		//this will merge the Global Perms, the Local Perms, and Unrevokeable Perms (BOT_OWNER or GUILD_OWNER)
 	}
 
-	public static boolean canRunCommand(Guilds.Data guild, GuildMessageReceivedEvent event, ICommand cmd) {
-		return havePermsRequired(guild, event, cmd.retrievePerm());
+	public static boolean canRunCommand(Guilds.Data guild, CommandEvent event) {
+		return havePermsRequired(guild, event.getAuthor(), event.getCommand().retrievePerm());
 	}
 
-	public static boolean havePermsRequired(Guilds.Data guild, GuildMessageReceivedEvent event, long perms) {
-		return (perms & getSenderPerm(guild, event)) == perms;
+	public static boolean havePermsRequired(Guilds.Data guild, User user, long perms) {
+		return (perms & getPermFor(guild, user.getId())) == perms;
 	}
 
 	public static List<String> toCollection(long userPerms) {

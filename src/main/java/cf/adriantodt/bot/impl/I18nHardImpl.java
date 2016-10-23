@@ -10,7 +10,7 @@
  * File Created @ [28/09/16 22:15]
  */
 
-package cf.adriantodt.bot.hardimpl;
+package cf.adriantodt.bot.impl;
 
 import cf.adriantodt.bot.Bot;
 import cf.adriantodt.bot.data.I18n;
@@ -54,6 +54,8 @@ public class I18nHardImpl {
 		localize("pt_BR", "bot.stats.usage", "Estatísticas da sessão.");
 		localize("en_US", "bot.info.usage", "Bot Information");
 		localize("pt_BR", "bot.info.usage", "Informações do Bot");
+		localize("en_US", "bot.info.usage", "Bot (and Libs) Version");
+		localize("pt_BR", "bot.info.usage", "Versão do Bot (e Libs)");
 		localize("en_US", "bot.help", "Hello! I'm $(dynamic.botname).\nTo get started with the Commands, send: $(dynamic.mention) cmds\nTo invite me to your Guild, send: $(dynamic.mention) inviteme");
 		localize("pt_BR", "bot.help", "Olá! Eu sou o $(dynamic.botname).\nPara começar a usar os Comandos, envie: $(dynamic.mention) cmds\nPara me convidar para a sua Guild, envie: $(dynamic.mention) inviteme");
 
@@ -187,6 +189,22 @@ public class I18nHardImpl {
 		localize("pt_BR", "gui.save", "$$=bot.save;");
 		localize("en_US", "gui.done", "Done.");
 		localize("pt_BR", "gui.done", "Feito.");
+
+		localize("en_US", "mcdrama.usage", "Generate Minecraft Modding Drama, pumped from https://drama.thog.eu/drama. Specify a number to generate multiple.");
+		localize("pt_BR", "mcdrama.usage", "Gera Minecraft Modding Drama, gerado pelo site https://drama.thog.eu/drama. Especifique um número para gerar múltiplos.");
+		localize("en_US", "user.usage", "Gets information about the User. Multiple IDs/Mentions can be used and each will be processed.");
+		localize("pt_BR", "user.usage", "Mostra informação sobre o Usuário. Multipos IDs/Menções podem ser usados e cada um será processado.");
+		localize("en_US", "sutheory.usage", "Generate Edgy Steven Universe Theories, based on http://www.generatorland.com/usergenerator.aspx?id=10737 data. Specify a number to generate multiple.");
+		localize("pt_BR", "sutheory.usage", "Gera Teorias Aletórias de Steven Universo, baseado nos dados em http://www.generatorland.com/usergenerator.aspx?id=10737. Especifique um número para gerar múltiplos.");
+
+		//"cmds.list.usage"
+		//"cmds.detailed.usage"
+		//"cmds.add.usage" "Adiciona um Comando de Usuário"
+		//"cmds.rm.usage" "Remove um Comando de Usuário"
+		//"cmds.debug.usage"
+		//"spy.trigger.usage" "Ativa/Desativa a Espionagem no Canal."
+		//"spy.log.usage" "Ativa/Desativa a Leitura de Logs no Canal."
+		//"spy.send.usage" "Envia uma Mensagem para o canal especificado.\n(Parâmetros: <channel_id> <message>)\nO channel_id pode ser visto através do (#NUM) das mensagens de espionagem."
 	}
 
 	public static void implLocal() {

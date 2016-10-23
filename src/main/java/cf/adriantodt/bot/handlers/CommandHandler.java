@@ -14,6 +14,7 @@ package cf.adriantodt.bot.handlers;
 
 import cf.adriantodt.bot.Bot;
 import cf.adriantodt.bot.base.Permissions;
+import cf.adriantodt.bot.base.cmd.CommandEvent;
 import cf.adriantodt.bot.base.cmd.ICommand;
 import cf.adriantodt.bot.data.Guilds;
 import cf.adriantodt.bot.utils.Commands;
@@ -23,9 +24,7 @@ import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.core.hooks.SubscribeEvent;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import static cf.adriantodt.bot.utils.Answers.*;
 import static cf.adriantodt.bot.utils.Utils.asyncSleepThen;
@@ -33,38 +32,24 @@ import static cf.adriantodt.bot.utils.Utils.splitArgs;
 
 public class CommandHandler {
 	public static boolean toofast = true;
-	private static Map<GuildMessageReceivedEvent, ICommand> map = new HashMap<>();
-	private static Map<GuildMessageReceivedEvent, Guilds.Data> map2 = new HashMap<>();
 
-	public static void execute(ICommand command, Guilds.Data guild, String arguments, GuildMessageReceivedEvent event) {
-		if (Permissions.canRunCommand(Guilds.GLOBAL, event, command) || Permissions.canRunCommand(guild, event, command))
-			command.run(guild, arguments, event);
+	public static void execute(CommandEvent event) {
+		if (Permissions.canRunCommand(Guilds.GLOBAL, event) || Permissions.canRunCommand(event.getGuild(), event))
+			event.getCommand().run(event);
 		else noperm(event).queue();
-	}
-
-	public static ICommand getSelf(GuildMessageReceivedEvent event) {
-		return map.get(event);
-	}
-
-	public static Guilds.Data getGuild(GuildMessageReceivedEvent event) {
-		return map2.getOrDefault(event, Guilds.fromDiscord(event));
-	}
-
-	public static void onTree(GuildMessageReceivedEvent event, ICommand command) {
-		map.put(event, command);
 	}
 
 	@SubscribeEvent
 	public static void onMessageReceived(GuildMessageReceivedEvent event) {
-		if (event.getAuthor() == Bot.SELF) { //Safer
+		if (event.getAuthor().equals(Bot.SELF)) {
 			asyncSleepThen(15 * 1000, () -> {
-				if (Guilds.fromDiscord(event).getFlag("cleanup")) event.getMessage().deleteMessage();
+				if (Guilds.fromDiscord(event.getGuild()).getFlag("cleanup")) event.getMessage().deleteMessage();
 			}).run();
 			return;
 		}
 
 		Guilds.Data local = Guilds.fromDiscord(event.getGuild()), global = Guilds.GLOBAL, target = local;
-		if (!Permissions.havePermsRequired(global, event, Permissions.RUN_BASECMD) || !Permissions.havePermsRequired(local, event, Permissions.RUN_BASECMD))
+		if (!Permissions.havePermsRequired(global, event.getAuthor(), Permissions.RUN_BASECMD) || !Permissions.havePermsRequired(local, event.getAuthor(), Permissions.RUN_BASECMD))
 			return;
 
 		String cmd = event.getMessage().getRawContent();
@@ -81,8 +66,7 @@ public class CommandHandler {
 			}
 		}
 
-		//boolean exec = false;
-		if (isCmd) { //Is Command
+		if (isCmd) {
 			String baseCmd = splitArgs(cmd, 2)[0];
 			//GuildWorksTM
 			if (baseCmd.indexOf(':') != -1) {
@@ -90,45 +74,30 @@ public class CommandHandler {
 				baseCmd = baseCmd.substring(baseCmd.indexOf(':') + 1);
 
 				Guilds.Data guild = Guilds.fromName(guildname);
-				if (guild != null && (Permissions.havePermsRequired(guild, event, Permissions.GUILD_PASS) || Permissions.havePermsRequired(global, event, Permissions.GUILD_PASS)))
+				if (guild != null && (Permissions.havePermsRequired(guild, event.getAuthor(), Permissions.GUILD_PASS) || Permissions.havePermsRequired(global, event.getAuthor(), Permissions.GUILD_PASS)))
 					target = guild;
 			}
 
-			//Oldest code that exists
 			ICommand command = Commands.getCommands(target).get(baseCmd.toLowerCase());
 
 			if (command != null) {
-				sendTyping(event).queue();
-				map.put(event, command);
-				map2.put(event, target);
-				if (!Permissions.canRunCommand(target, event, command)) noperm(event).queue();
-				else if (toofast && !Utils.canExecuteCmd(event)) {
-					toofast(event).queue();
-					;
-					Statistics.toofasts++;
-//					return;
-				} else {
+				CommandEvent cmdEvent = new CommandEvent(event, target, command, splitArgs(cmd, 2)[1]);
+				if (!Permissions.canRunCommand(target, cmdEvent)) noperm(cmdEvent).queue();
+				else if (toofast && !Utils.canExecuteCmd(event)) toofast(cmdEvent).queue();
+				else {
+					if (cmdEvent.getCommand().sendStartTyping()) cmdEvent.sendAwaitableTyping();
 					Statistics.cmds++;
-					//exec = true;
-					try {
-						execute(command, target, splitArgs(cmd, 2)[1], event);
-					} catch (Exception e) {
-						exception(event, e).queue();
-						;
-					}
+					Guilds.Data finalTarget = target;
+					String finalCmd = cmd;
+					Utils.async(cmdEvent.getAuthor().getName() + ">" + baseCmd, () -> {
+						try {
+							execute(cmdEvent);
+						} catch (Exception e) {
+							exception(cmdEvent, e).queue();
+						}
+					}).run();
 				}
-				//remove the map and map2 key removal because WeakHashMap does it now.
 			}
 		}
-
-//		if (!exec) {
-//			List<String> list = DataManager.data.annoy.get(Permissions.processId(event.getAuthor().getId()));
-//			if (list != null) {
-//				String r = list.get(Bot.RAND.nextInt(list.size()));
-//				if (r != null && !r.isEmpty()) {
-//					send(event, r).queue();;
-//				}
-//			}
-//		}
 	}
 }

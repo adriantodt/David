@@ -12,19 +12,30 @@
 
 package cf.adriantodt.bot.handlers;
 
+import cf.adriantodt.bot.base.cmd.Holder;
 import cf.adriantodt.bot.data.Guilds;
 import cf.adriantodt.bot.data.I18n;
+import cf.adriantodt.bot.data.Users;
+import cf.adriantodt.bot.utils.Statistics;
 import cf.adriantodt.bot.utils.Utils;
+import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.core.hooks.SubscribeEvent;
 
-import static cf.adriantodt.bot.utils.Answers.sendTyping;
+import java.util.Optional;
+
+import static cf.adriantodt.bot.utils.Utils.nnOrD;
 
 public class BotGreeter {
-	public static void greet(GuildMessageReceivedEvent event) {
-		sendTyping(event).queue();
-		event.getChannel().sendMessage(I18n.getLocalized("bot.help", event)).queue();
+	public static void greet(TextChannel channel, Optional<User> optionalUser) {
+		Holder<String> lang = new Holder<>(Guilds.fromDiscord(channel.getGuild()).getLang());
+		optionalUser.ifPresent(user -> lang.var = nnOrD(Users.fromDiscord(user).getLang(), lang.var));
+		channel.sendTyping().queue(success -> {
+			Statistics.restActions++;
+			channel.sendMessage(I18n.getLocalized("bot.help", lang.var)).queue();
+		});
 	}
 
 	@SubscribeEvent
@@ -37,13 +48,13 @@ public class BotGreeter {
 			event.getGuild().getPublicChannel().sendMessage(String.format(I18n.getLocalized("bot.hello2", guild.getLang()), event.getGuild().getOwner().getAsMention(), guild.getLang())).queue();
 		} catch (Exception e) {
 			//TODO WAIT DV8 TO ADD LEAVE
-			//event.getGuild();
+			//event.getOriginGuild();
 		}
 	}
 
 	@SubscribeEvent
 	public static void onMessageReceived(GuildMessageReceivedEvent event) {
 		if (event.getMessage().getRawContent().trim().matches("<@!?" + event.getJDA().getSelfInfo().getId() + ">"))
-			greet(event);
+			greet(event.getChannel(), Optional.of(event.getAuthor()));
 	}
 }

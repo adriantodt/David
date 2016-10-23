@@ -13,11 +13,8 @@
 package cf.adriantodt.bot.base.cmd;
 
 import cf.adriantodt.bot.base.Permissions;
-import cf.adriantodt.bot.data.Guilds;
 import cf.adriantodt.bot.data.I18n;
-import cf.adriantodt.bot.handlers.scripting.JS;
 import cf.brforgers.core.lib.IOHelper;
-import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -27,11 +24,13 @@ import static cf.adriantodt.bot.Bot.RAND;
 import static cf.adriantodt.bot.utils.Answers.noperm;
 import static cf.adriantodt.bot.utils.Answers.send;
 
+//import cf.adriantodt.bot.handlers.scripting.JS;
+
 public class UserCommand implements ICommand, ITranslatable {
 	public List<String> responses = new ArrayList<>();
 
 	@Override
-	public void run(Guilds.Data guild, String arguments, GuildMessageReceivedEvent event) {
+	public void run(CommandEvent event) {
 		String response = responses.get(RAND.nextInt(responses.size()));
 		if (response.length() > 7) {
 			if (response.substring(0, 6).equals("get://")) {
@@ -44,8 +43,8 @@ public class UserCommand implements ICommand, ITranslatable {
 				//	Audio.queue(IOHelper.newURL(response.substring(6)), event);
 				//	return;
 			} else if (response.substring(0, 5).equals("js://")) {
-				if (Permissions.havePermsRequired(guild, event, Permissions.RUN_SCT_CMD)) {
-					JS.eval(guild, response.substring(5), event);
+				if (Permissions.havePermsRequired(event.getGuild(), event.getAuthor(), Permissions.RUN_SCT_CMD)) {
+					//JS.eval(event.getGuild(), response.substring(5), event.getEvent());
 				} else {
 					noperm(event).queue();
 				}

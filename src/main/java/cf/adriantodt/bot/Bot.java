@@ -17,8 +17,9 @@ import cf.adriantodt.bot.data.Guilds;
 import cf.adriantodt.bot.handlers.BotGreeter;
 import cf.adriantodt.bot.handlers.CommandHandler;
 import cf.adriantodt.bot.handlers.ReadyBuilder;
-import cf.adriantodt.bot.hardimpl.CmdsAndInterfaces;
-import cf.adriantodt.bot.hardimpl.I18nHardImpl;
+import cf.adriantodt.bot.handlers.Spy;
+import cf.adriantodt.bot.impl.CmdsAndInterfaces;
+import cf.adriantodt.bot.impl.I18nHardImpl;
 import cf.adriantodt.bot.utils.Statistics;
 import cf.adriantodt.bot.utils.Tasks;
 import cf.adriantodt.jda.port.AnnotatedEventManager;
@@ -64,19 +65,11 @@ public class Bot {
 				I18nHardImpl.impl();
 				I18nHardImpl.implLocal();
 				Statistics.startDate = new Date();
-
-				//TODO WAUT DV8'S IMPL
-				((JDAImpl) API).getClient().send(new JSONObject()
-					.put("op", 3)
-					.put("d", new JSONObject()
-						.put("game", "mention me for help")
-						.put("since", System.currentTimeMillis())
-						.put("afk", false)
-						.put("status", "idle")).toString());
 			}))
 			.addListener(CommandHandler.class)
 			.addListener(BotGreeter.class)
 			.addListener(Guilds.class)
+			.addListener(Spy.class)
 			.buildBlocking();
 		LOADED = true;
 		onLoaded.forEach(Runnable::run);
@@ -86,6 +79,18 @@ public class Bot {
 		//LOGGER.info("Configs: " + DataManager.getSaveFile().toAbsolutePath().toString());
 		Tasks.startJDAAsyncTasks();
 		CmdsAndInterfaces.impl();
+
+		//TODO WAIT DV8'S IMPL
+		((JDAImpl) API).getClient().send(new JSONObject()
+			.put("op", 3)
+			.put("d", new JSONObject()
+				.put("game", new JSONObject()
+					.put("name", "mention me for help")
+					.put("type", 0))
+				.put("since", System.currentTimeMillis())
+				.put("afk", false)
+				.put("status", "online")).toString()
+		);
 	}
 
 	public static void stopBot() {

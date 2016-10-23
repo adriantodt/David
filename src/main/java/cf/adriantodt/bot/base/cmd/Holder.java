@@ -14,4 +14,11 @@ package cf.adriantodt.bot.base.cmd;
 
 public class Holder<T> {
 	public T var;
+
+	public Holder() {
+	}
+
+	public Holder(T object) {
+		var = object;
+	}
 }

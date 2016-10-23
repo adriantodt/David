@@ -14,7 +14,6 @@ package cf.adriantodt.bot.handlers;
 
 import cf.adriantodt.bot.data.Guilds;
 import cf.adriantodt.bot.utils.Channels;
-import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.core.events.guild.GuildLeaveEvent;
@@ -26,11 +25,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static cf.adriantodt.bot.utils.Answers.bool;
 import static cf.adriantodt.bot.utils.Channels.getChannels;
 
 public class Spy {
-	public static final Map<SpyType, List<MessageChannel>> channels = new HashMap<>();
+	public static final Map<SpyType, List<TextChannel>> channels = new HashMap<>();
 
 	static {
 		channels.put(SpyType.NODES, new ArrayList<>());
@@ -38,20 +36,20 @@ public class Spy {
 		channels.put(SpyType.LOG, new ArrayList<>());
 	}
 
-	public static List<MessageChannel> get(SpyType type) {
+	public static List<TextChannel> get(SpyType type) {
 		return channels.get(type);
 	}
 
-	public static List<MessageChannel> nodes() {
+	public static List<TextChannel> nodes() {
 		return get(SpyType.NODES);
 	}
 
-	public static List<MessageChannel> logs() {
-		return get(SpyType.NODES);
+	public static List<TextChannel> logs() {
+		return get(SpyType.LOG);
 	}
 
-	public static List<MessageChannel> ignored() {
-		return get(SpyType.NODES);
+	public static List<TextChannel> ignored() {
+		return get(SpyType.IGNORE);
 	}
 
 	public static void toNodes(String message) {
@@ -59,19 +57,20 @@ public class Spy {
 	}
 
 	public static void trigger(GuildMessageReceivedEvent event, SpyType type) {
-		if (get(type).contains(event.getChannel())) get(type).remove(event.getChannel());
-		else get(type).add(event.getChannel());
-		bool(event, get(type).contains(event.getChannel())).queue();
+		TextChannel channel = event.getChannel();
+		List<TextChannel> channels = get(type);
+		if (channels.contains(channel)) channels.remove(channel);
+		else channels.add(channel);
+		//bool(event, channels.contains(channel)).queue();
 	}
 
 	public static void kickSelf(Guilds.Data guild, GuildMessageReceivedEvent event, int channelId) {
-		MessageChannel channel = getChannels(guild).get(channelId);
+		TextChannel channel = getChannels(guild).get(channelId);
 
-		if (channel instanceof TextChannel) {
-			//TODO WAIT DV8 ADD LEAVE
-			//((TextChannel) channel).getGuild().getManager().leave();
+		if (channel != null) {
+			channel.getGuild().leave().queue();
 		}
-		bool(event, channel instanceof TextChannel).queue();
+		//bool(event, channel != null).queue();
 	}
 
 	@SubscribeEvent
@@ -82,7 +81,7 @@ public class Spy {
 	@SubscribeEvent
 	public static void onMessageReceived(GuildMessageReceivedEvent event) {
 		if (nodes().contains(event.getChannel()) || ignored().contains(event.getChannel())) return;
-		toNodes("[" + Channels.getChannelName(Guilds.fromDiscord(event), event.getChannel()) + "] <" + event.getAuthor().getName() + "> " + event.getMessage().getContent());
+		toNodes("[" + Channels.getChannelName(Guilds.fromDiscord(event.getGuild()), event.getChannel()) + "] <" + event.getAuthor().getName() + "> " + event.getMessage().getContent());
 	}
 
 	@SubscribeEvent

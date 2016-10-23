@@ -30,13 +30,15 @@ public class Commands {
 	}
 
 	public static Map<String, ICommand> getCommands(Guilds.Data guild) {
-		HashMap<String, ICommand> usercmds = new HashMap<>();
-		usercmds.putAll(concatMaps(getGlobalUserCommands(), getLocalUserCommands(guild)));
-		return concatMaps(getBaseCommands(), usercmds);
+		return concatMaps(getBaseCommands(), new HashMap<>(getUserCommands(guild)));
 	}
 
 	public static Map<String, ICommand> getBaseCommands() {
 		return Commands.COMMANDS;
+	}
+
+	public static Map<String, UserCommand> getUserCommands(Guilds.Data guild) {
+		return concatMaps(getGlobalUserCommands(), getLocalUserCommands(guild));
 	}
 
 	public static Map<String, UserCommand> getGlobalUserCommands() {
