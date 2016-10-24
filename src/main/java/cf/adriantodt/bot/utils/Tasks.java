@@ -14,15 +14,14 @@ package cf.adriantodt.bot.utils;
 
 import cf.adriantodt.bot.base.cmd.Holder;
 import cf.adriantodt.bot.base.gui.QueueLogAppender;
-import cf.adriantodt.bot.handlers.Spy;
 import cf.adriantodt.bot.webinterface.BotWebInterface;
 import cf.adriantodt.utils.ThreadBuilder;
 import cf.brforgers.core.lib.IOHelper;
 import com.sun.management.OperatingSystemMXBean;
+import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.entities.User;
 
 import java.lang.management.ManagementFactory;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
@@ -69,7 +68,7 @@ public class Tasks {
 			System.out.println("Log4j2Discord Enabled!");
 			Holder<String> s = new Holder<>();
 			while ((s.var = QueueLogAppender.getNextLogEvent("DiscordLogListeners")) != null) {
-				Collections.synchronizedList(Spy.logs()).forEach(channel -> channel.sendMessage(s.var).queue());
+				Push.push("log", channel -> new MessageBuilder().appendString(s.var).build());
 			}
 			System.out.println("Log4j2Discord Disabled...");
 		})).start();

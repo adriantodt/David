@@ -24,7 +24,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.Date;
 
-import static cf.adriantodt.bot.utils.Answers.send;
 import static cf.adriantodt.bot.utils.Formatter.boldAndItalic;
 import static cf.adriantodt.bot.utils.Formatter.encase;
 import static cf.adriantodt.bot.utils.Tasks.cpuUsage;
@@ -46,7 +45,6 @@ public class Statistics {
 			modifiersField.setInt(field, field.getModifiers() & ~Modifier.FINAL);
 			field.set(null, RestAction.DEFAULT_SUCCESS.andThen(o -> Statistics.restActions++));
 		} catch (Exception ignored) {
-
 		}
 	}
 
@@ -99,7 +97,7 @@ public class Statistics {
 		String language = I18n.getLocale(event);
 		int mb = 1024 * 1024;
 		Runtime instance = Runtime.getRuntime();
-		send(event,
+		event.getAnswers().send(
 			boldAndItalic("Estatísticas da sessão") + "\n" + encase(
 				"- Ligado à " + Statistics.calculate(Statistics.startDate, new Date(), language)
 					+ "\n - " + Statistics.restActions + " Rest Actions enviadas"

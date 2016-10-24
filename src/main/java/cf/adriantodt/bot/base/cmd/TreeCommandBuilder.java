@@ -20,8 +20,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
-import static cf.adriantodt.bot.utils.Answers.invalidargs;
-
 public class TreeCommandBuilder {
 	private final Map<String, ICommand> SUBCMDS = new HashMap<>();
 	private final Function<String, String> USAGE_IMPL = (lang) -> {
@@ -81,7 +79,7 @@ public class TreeCommandBuilder {
 		return new CommandBuilder(USAGE_IMPL, permRequired).setAction(event -> {
 			String[] args = event.getArgs(2);
 			ICommand cmd = SUBCMDS.get(args[0].toLowerCase());
-			if (cmd == null) invalidargs(event).queue();
+			if (cmd == null) event.getAnswers().invalidargs().queue();
 			else CommandHandler.execute(new CommandEvent(event.getEvent(), event.getGuild(), cmd, args[1]));
 		}).build();
 	}

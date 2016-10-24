@@ -14,36 +14,61 @@ package cf.adriantodt.bot.utils;
 
 import cf.adriantodt.bot.Bot;
 import cf.adriantodt.bot.data.Guilds;
+import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.TextChannel;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 public class Push {
-	private static Map<String, String> pushParenting = new HashMap<>(), pushAliases = new HashMap<>();
+	private static Map<String, String> pushParenting = new HashMap<>();
 	private static Map<Supplier<List<String>>, String> dynamicParenting = new HashMap<>();
-	private static List<PushSubscription> subscriptions = new ArrayList<>();
+	private static Map<String, List<TextChannel>> subscripted = new HashMap<>();
 
 	static {
-		registerType("*", null);
+		pushParenting.put("*", null);
 
-		registerType("bot", "*");
-		registerType("stop", "bot");
-		registerType("restart", "bot");
-		registerType("save", "bot");
-		registerType("load", "bot");
+		pushParenting.put("bot", "*");
+		pushParenting.put("stop", "bot");
+		pushParenting.put("restart", "bot");
+		pushParenting.put("save", "bot");
+		pushParenting.put("load", "bot");
 
-		registerType("update", "*");
-		registerType("changelog", "update");
+		pushParenting.put("update", "*");
+		pushParenting.put("changelog", "update");
 
-		registerType("ownerID", "*");
+		pushParenting.put("log", "*");
 
-		registerType("guild", "*");
-		registerDynamicTypes(() -> Bot.API.getGuilds().stream().map(guild -> "guild_" + Guilds.fromDiscord(guild).getName()).collect(Collectors.toList()), "guild");
+		pushParenting.put("ownerID", "*");
+
+		pushParenting.put("guild", "*");
+		dynamicParenting.put(() -> Bot.API.getGuilds().stream().map(guild -> "guild_" + Guilds.fromDiscord(guild).getName()).collect(Collectors.toList()), "guild");
+	}
+
+	public static void subscribe(TextChannel channel, List<String> types) {
+		Set<String> valid = resolveTypeSet();
+		types.removeIf(s -> !valid.contains(s));
+		Set<String> typeSet = new HashSet<>(types);
+		for (String type : typeSet) {
+			if (!subscripted.containsKey(type)) subscripted.put(type, new ArrayList<>());
+			List<TextChannel> subscriptedToType = subscripted.get(type);
+			if (!subscriptedToType.contains(channel)) subscriptedToType.add(channel);
+		}
+	}
+
+	public static void unsubscribe(TextChannel channel, List<String> types) {
+		Set<String> valid = resolveTypeSet();
+		types.removeIf(s -> !valid.contains(s));
+		Set<String> typeSet = new HashSet<>(types);
+		for (String type : typeSet) {
+			if (subscripted.containsKey(type)) {
+				List<TextChannel> subscriptedToType = subscripted.get(type);
+				if (subscriptedToType.contains(channel)) subscriptedToType.remove(channel);
+				if (subscriptedToType.size() == 0) subscripted.remove(type);
+			}
+		}
 	}
 
 	public static void registerType(String type, String parent) {
@@ -54,26 +79,40 @@ public class Push {
 		dynamicParenting.put(supplier, parent.toLowerCase());
 	}
 
-	public static void push(String type, Supplier<String> pushSupplier) {
-
+	public static void push(String type, Function<TextChannel, Message> pushSupplier) {
+		Set<String> appliable = resolve(type);
+		Set<TextChannel> channels = new HashSet<>();
+		appliable.stream().filter(s -> subscripted.containsKey(s)).forEach(s -> channels.addAll(subscripted.get(s)));
+		channels.forEach(channel -> channel.sendMessage(pushSupplier.apply(channel)).queue());
 	}
 
-	public static List<String> resolve(String type) {
+	public static Map<String, String> resolveTypeMap() {
 		Map<String, String> resolvedMap = new HashMap<>(pushParenting);
 		dynamicParenting.forEach((supplier, s) -> supplier.get().forEach(s1 -> resolvedMap.put(s1, s)));
+		return resolvedMap;
+	}
 
-		List<String> r = new ArrayList<>();
+	public static Set<String> resolveTypeSet() {
+		Map<String, String> resolvedMap = resolveTypeMap();
+		Set<String> set = new HashSet<>();
+		set.addAll(resolvedMap.values());
+		set.addAll(resolvedMap.keySet());
+		set.remove(null);
+		return set;
+	}
+
+
+	public static Set<String> resolve(String type) {
+		Map<String, String> resolvedMap = resolveTypeMap();
+
+		Set<String> r = new HashSet<>();
 
 		do {
 			r.add(type);
-			type = type.equals("*") ? resolvedMap.getOrDefault(type, "*") : "*";
+			type = resolvedMap.getOrDefault(type, "*");
+			if (type == null) type = "*";
 		} while (!type.equals("*"));
 
 		return r;
-	}
-
-	public static class PushSubscription {
-		public List<String> subscriptions = new ArrayList<>(), cached = new ArrayList<>();
-		public TextChannel sendTo;
 	}
 }

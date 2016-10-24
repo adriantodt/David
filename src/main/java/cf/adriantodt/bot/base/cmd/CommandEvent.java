@@ -31,14 +31,23 @@ public class CommandEvent {
 	private final Guilds.Data targetGuild;
 	private final ICommand command;
 	private final String args;
+	private final FastAnswers answers;
 	private Future<Void> awaitableTyping = null;
-
 	public CommandEvent(GuildMessageReceivedEvent event, Guilds.Data targetGuild, ICommand command, String args) {
 		Statistics.cmds++;
 		this.event = event;
 		this.targetGuild = targetGuild;
 		this.command = command;
 		this.args = args;
+		this.answers = new FastAnswers(this);
+	}
+
+	public FastAnswers getAnswersForChannel(MessageChannel channel) {
+		return getAnswers().forChannel(channel);
+	}
+
+	public FastAnswers getAnswers() {
+		return answers;
 	}
 
 	public String getArgs() {
@@ -113,11 +122,12 @@ public class CommandEvent {
 		return new CommandEvent(getEvent(), getGuild(), command, args);
 	}
 
-	public void awaitTyping() {
-		Future<Void> typingTask = awaitableTyping;
-		if (typingTask == null) return;
-		while (!typingTask.isDone()) {
+	public CommandEvent awaitTyping() {
+		if (awaitableTyping == null) return this;
+		while (!awaitableTyping.isDone()) {
 			sleep(100);
 		}
+
+		return this;
 	}
 }

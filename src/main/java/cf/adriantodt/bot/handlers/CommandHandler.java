@@ -26,7 +26,6 @@ import net.dv8tion.jda.core.hooks.SubscribeEvent;
 import java.util.ArrayList;
 import java.util.List;
 
-import static cf.adriantodt.bot.utils.Answers.*;
 import static cf.adriantodt.bot.utils.Utils.asyncSleepThen;
 import static cf.adriantodt.bot.utils.Utils.splitArgs;
 
@@ -36,23 +35,23 @@ public class CommandHandler {
 	public static void execute(CommandEvent event) {
 		if (Permissions.canRunCommand(Guilds.GLOBAL, event) || Permissions.canRunCommand(event.getGuild(), event))
 			event.getCommand().run(event);
-		else noperm(event).queue();
+		else event.getAnswers().noperm().queue();
 	}
 
 	@SubscribeEvent
-	public static void onMessageReceived(GuildMessageReceivedEvent event) {
-		if (event.getAuthor().equals(Bot.SELF)) {
+	public static void onMessageReceived(GuildMessageReceivedEvent msgEvent) {
+		if (msgEvent.getAuthor().equals(Bot.SELF)) {
 			asyncSleepThen(15 * 1000, () -> {
-				if (Guilds.fromDiscord(event.getGuild()).getFlag("cleanup")) event.getMessage().deleteMessage();
+				if (Guilds.fromDiscord(msgEvent.getGuild()).getFlag("cleanup")) msgEvent.getMessage().deleteMessage();
 			}).run();
 			return;
 		}
 
-		Guilds.Data local = Guilds.fromDiscord(event.getGuild()), global = Guilds.GLOBAL, target = local;
-		if (!Permissions.havePermsRequired(global, event.getAuthor(), Permissions.RUN_BASECMD) || !Permissions.havePermsRequired(local, event.getAuthor(), Permissions.RUN_BASECMD))
+		Guilds.Data local = Guilds.fromDiscord(msgEvent.getGuild()), global = Guilds.GLOBAL, target = local;
+		if (!Permissions.havePermsRequired(global, msgEvent.getAuthor(), Permissions.RUN_BASECMD) || !Permissions.havePermsRequired(local, msgEvent.getAuthor(), Permissions.RUN_BASECMD))
 			return;
 
-		String cmd = event.getMessage().getRawContent();
+		String cmd = msgEvent.getMessage().getRawContent();
 
 		List<String> prefixes = new ArrayList<>(local.getCmdPrefixes());
 		prefixes.add("<@!" + Bot.SELF.getId() + "> ");
@@ -74,26 +73,24 @@ public class CommandHandler {
 				baseCmd = baseCmd.substring(baseCmd.indexOf(':') + 1);
 
 				Guilds.Data guild = Guilds.fromName(guildname);
-				if (guild != null && (Permissions.havePermsRequired(guild, event.getAuthor(), Permissions.GUILD_PASS) || Permissions.havePermsRequired(global, event.getAuthor(), Permissions.GUILD_PASS)))
+				if (guild != null && (Permissions.havePermsRequired(guild, msgEvent.getAuthor(), Permissions.GUILD_PASS) || Permissions.havePermsRequired(global, msgEvent.getAuthor(), Permissions.GUILD_PASS)))
 					target = guild;
 			}
 
 			ICommand command = Commands.getCommands(target).get(baseCmd.toLowerCase());
 
 			if (command != null) {
-				CommandEvent cmdEvent = new CommandEvent(event, target, command, splitArgs(cmd, 2)[1]);
-				if (!Permissions.canRunCommand(target, cmdEvent)) noperm(cmdEvent).queue();
-				else if (toofast && !Utils.canExecuteCmd(event)) toofast(cmdEvent).queue();
+				CommandEvent event = new CommandEvent(msgEvent, target, command, splitArgs(cmd, 2)[1]);
+				if (!Permissions.canRunCommand(target, event)) event.getAnswers().noperm().queue();
+				else if (toofast && !Utils.canExecuteCmd(msgEvent)) event.getAnswers().toofast().queue();
 				else {
-					if (cmdEvent.getCommand().sendStartTyping()) cmdEvent.sendAwaitableTyping();
+					if (event.getCommand().sendStartTyping()) event.sendAwaitableTyping();
 					Statistics.cmds++;
-					Guilds.Data finalTarget = target;
-					String finalCmd = cmd;
-					Utils.async(cmdEvent.getAuthor().getName() + ">" + baseCmd, () -> {
+					Utils.async(event.getAuthor().getName() + ">" + baseCmd, () -> {
 						try {
-							execute(cmdEvent);
+							execute(event);
 						} catch (Exception e) {
-							exception(cmdEvent, e).queue();
+							event.getAnswers().exception(e).queue();
 						}
 					}).run();
 				}

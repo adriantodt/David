@@ -17,7 +17,6 @@ import cf.adriantodt.bot.data.Guilds;
 import cf.adriantodt.bot.handlers.BotGreeter;
 import cf.adriantodt.bot.handlers.CommandHandler;
 import cf.adriantodt.bot.handlers.ReadyBuilder;
-import cf.adriantodt.bot.handlers.Spy;
 import cf.adriantodt.bot.impl.CmdsAndInterfaces;
 import cf.adriantodt.bot.impl.I18nHardImpl;
 import cf.adriantodt.bot.utils.Statistics;
@@ -69,7 +68,6 @@ public class Bot {
 			.addListener(CommandHandler.class)
 			.addListener(BotGreeter.class)
 			.addListener(Guilds.class)
-			.addListener(Spy.class)
 			.buildBlocking();
 		LOADED = true;
 		onLoaded.forEach(Runnable::run);
@@ -101,7 +99,7 @@ public class Bot {
 			Thread.sleep(2 * 1000);
 		} catch (Exception ignored) {
 		}
-		API.shutdown();
+		API.shutdownNow(true);
 		Java.stopApp();
 	}
 

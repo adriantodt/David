@@ -21,8 +21,8 @@
 //import javax.script.ScriptEngineManager;
 //import javax.script.ScriptException;
 //
-//import static cf.adriantodt.bot.utils.Answers.exception;
-//import static cf.adriantodt.bot.utils.Answers.sendCased;
+//import static cf.adriantodt.bot.base.cmd.FastAnswers.exception;
+//import static cf.adriantodt.bot.base.cmd.FastAnswers.sendCased;
 //
 //public class JS {
 //	private static final ScriptEngine engine, unsafeEngine;

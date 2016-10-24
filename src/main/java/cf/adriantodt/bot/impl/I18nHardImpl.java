@@ -36,18 +36,10 @@ public class I18nHardImpl {
 		localize("pt_BR", "bot.stop", "Saindo...");
 		localize("en_US", "bot.restart", "Restarting...");
 		localize("pt_BR", "bot.restart", "Reiniciando...");
-		localize("en_US", "bot.save", "Saving...");
-		localize("pt_BR", "bot.save", "Salvando...");
-		localize("en_US", "bot.load", "Loading...");
-		localize("pt_BR", "bot.load", "Carregando...");
 		localize("en_US", "bot.stop.usage", "Stops the Bot");
 		localize("pt_BR", "bot.stop.usage", "Desliga o Bot");
 		localize("en_US", "bot.restart.usage", "Restarts the Bot");
 		localize("pt_BR", "bot.restart.usage", "Reinicia o Bot");
-		localize("en_US", "bot.save.usage", "Saves the Data to Disk");
-		localize("pt_BR", "bot.save.usage", "Salva os Dados no Disco");
-		localize("en_US", "bot.load.usage", "Loads the Data from Disk");
-		localize("pt_BR", "bot.load.usage", "Carrega os Dados atuais do Disco");
 		localize("en_US", "bot.toofast.usage", "Toggles \"TooFast\" SpamProtection.");
 		localize("pt_BR", "bot.toofast.usage", "Ativa ou Desativa o \"Toofast\" SpamProtection.");
 		localize("en_US", "bot.stats.usage", "Session Statistics.");
@@ -56,8 +48,8 @@ public class I18nHardImpl {
 		localize("pt_BR", "bot.info.usage", "Informações do Bot");
 		localize("en_US", "bot.info.usage", "Bot (and Libs) Version");
 		localize("pt_BR", "bot.info.usage", "Versão do Bot (e Libs)");
-		localize("en_US", "bot.help", "Hello! I'm $(dynamic.botname).\nTo get started with the Commands, send: $(dynamic.mention) cmds\nTo invite me to your Guild, send: $(dynamic.mention) inviteme");
-		localize("pt_BR", "bot.help", "Olá! Eu sou o $(dynamic.botname).\nPara começar a usar os Comandos, envie: $(dynamic.mention) cmds\nPara me convidar para a sua Guild, envie: $(dynamic.mention) inviteme");
+		localize("en_US", "bot.help", "Hello! I'm $(dynamic.botname).\nTo get started with the Commands, send: $(dynamic.mention) cmds\nTo invite me to your Guild, send: $(dynamic.mention) bot inviteme");
+		localize("pt_BR", "bot.help", "Olá! Eu sou o $(dynamic.botname).\nPara começar a usar os Comandos, envie: $(dynamic.mention) cmds\nPara me convidar para a sua Guild, envie: $(dynamic.mention) bot inviteme");
 
 		localize("en_US", "tree.subcmds", "Sub-Commands");
 		localize("pt_BR", "tree.subcmds", "Sub-Comandos");
@@ -85,6 +77,8 @@ public class I18nHardImpl {
 		localize("en_US", "guild.cleanup.usage", "Toggles Message Cleanup (Messages from the bot are deleted after 15s).");
 		localize("pt_BR", "guild.cleanup.usage", "Ativa ou Desativa o \"Cleanup\" de mensagens (Mensagens do bot são deletadas após 15s).");
 
+		localize("en_US", "user.info.usage", "Gets information about the User. Multiple IDs/Mentions can be used and each will be processed.");
+		localize("pt_BR", "user.info.usage", "Mostra informação sobre o Usuário. Multipos IDs/Menções podem ser usados e cada um será processado.");
 		localize("en_US", "user.none", "none");
 		localize("pt_BR", "user.none", "nenhum");
 		localize("en_US", "user.avatar", "Avatar");
@@ -104,12 +98,12 @@ public class I18nHardImpl {
 		localize("en_US", "user.playing", "Playing");
 		localize("pt_BR", "user.playing", "Jogando");
 
-		localize("en_US", "lang.set", "Now I'll speak in %s to you!");
-		localize("pt_BR", "lang.set", "Agora eu vou falar em %s para você!");
-		localize("en_US", "lang.setNone", "Now I'll speak the Guild's Default Language!");
-		localize("pt_BR", "lang.setNone", "Agora eu vou falar na lingua padrão da Guild!");
-		localize("en_US", "lang.usage", "Define the language the bot will talk with you");
-		localize("pt_br", "lang.usage", "Define a língua que o Bot vai falar com você");
+		localize("en_US", "user.lang.set", "Now I'll speak in %s to you!");
+		localize("pt_BR", "user.lang.set", "Agora eu vou falar em %s para você!");
+		localize("en_US", "user.lang.setNone", "Now I'll speak the Guild's Default Language!");
+		localize("pt_BR", "user.lang.setNone", "Agora eu vou falar na lingua padrão da Guild!");
+		localize("en_US", "user.lang.usage", "Define the language the bot will talk with you");
+		localize("pt_br", "user.lang.usage", "Define a língua que o Bot vai falar com você");
 
 		localize("en_US", "inviteme.link", "Click the Link to invite the Bot to your Guild");
 		localize("pt_BR", "inviteme.link", "Clique no Link para convidar o Bot para a sua Guild");
@@ -161,10 +155,6 @@ public class I18nHardImpl {
 		localize("pt_BR", "gui.logAndChat", "Log e Chat");
 		localize("en_US", "gui.cmds.help", "Show all Console Commands");
 		localize("pt_BR", "gui.cmds.help", "Mostra todos os Comandos de Console");
-		localize("en_US", "gui.cmds.save", "$$=bot.save.usage;");
-		localize("pt_BR", "gui.cmds.save", "$$=bot.save.usage;");
-		localize("en_US", "gui.cmds.load", "$$=bot.load.usage;");
-		localize("pt_BR", "gui.cmds.load", "$$=bot.load.usage;");
 		localize("en_US", "gui.cmds.stop", "$$=bot.stop.usage;");
 		localize("pt_BR", "gui.cmds.stop", "$$=bot.stop.usage;");
 		localize("en_US", "gui.cmds.restart", "$$=bot.restart.usage;");
@@ -190,13 +180,14 @@ public class I18nHardImpl {
 		localize("en_US", "gui.done", "Done.");
 		localize("pt_BR", "gui.done", "Feito.");
 
-		localize("en_US", "mcdrama.usage", "Generate Minecraft Modding Drama, pumped from https://drama.thog.eu/drama. Specify a number to generate multiple.");
-		localize("pt_BR", "mcdrama.usage", "Gera Minecraft Modding Drama, gerado pelo site https://drama.thog.eu/drama. Especifique um número para gerar múltiplos.");
-		localize("en_US", "user.usage", "Gets information about the User. Multiple IDs/Mentions can be used and each will be processed.");
-		localize("pt_BR", "user.usage", "Mostra informação sobre o Usuário. Multipos IDs/Menções podem ser usados e cada um será processado.");
-		localize("en_US", "sutheory.usage", "Generate Edgy Steven Universe Theories, based on http://www.generatorland.com/usergenerator.aspx?id=10737 data. Specify a number to generate multiple.");
-		localize("pt_BR", "sutheory.usage", "Gera Teorias Aletórias de Steven Universo, baseado nos dados em http://www.generatorland.com/usergenerator.aspx?id=10737. Especifique um número para gerar múltiplos.");
+		localize("en_US", "funny.minecraft.drama.usage", "Generate Minecraft Modding Drama, pumped from https://drama.thog.eu/drama. Specify a number to generate multiple.");
+		localize("pt_BR", "funny.minecraft.drama.usage", "Gera Minecraft Modding Drama, gerado pelo site https://drama.thog.eu/drama. Especifique um número para gerar múltiplos.");
+		localize("en_US", "funny.stevenuniverse.theorygenerator.usage", "Generate Edgy Steven Universe Theories, based on http://www.generatorland.com/usergenerator.aspx?id=10737 data. Specify a number to generate multiple.");
+		localize("pt_BR", "funny.stevenuniverse.theorygenerator.usage", "Gera Teorias Aletórias de Steven Universo, baseado nos dados em http://www.generatorland.com/usergenerator.aspx?id=10737. Especifique um número para gerar múltiplos.");
+		localize("en_US", "funny.skyrim.guard.usage", "Say random Skyrim Guard quotes, pumped from http://www.uesp.net/wiki/Skyrim:Guard_Dialogue. Specify a number to generate multiple.");
+		localize("pt_BR", "funny.skyrim.guard.usage", "Envia frases aleatórias dos guardas de Skyrim, usando os dados de http://www.uesp.net/wiki/Skyrim:Guard_Dialogue. Especifique um número para gerar múltiplos.");
 
+		//
 		//"cmds.list.usage"
 		//"cmds.detailed.usage"
 		//"cmds.add.usage" "Adiciona um Comando de Usuário"

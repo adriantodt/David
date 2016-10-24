@@ -21,8 +21,6 @@ import java.util.Arrays;
 import java.util.List;
 
 import static cf.adriantodt.bot.Bot.RAND;
-import static cf.adriantodt.bot.utils.Answers.noperm;
-import static cf.adriantodt.bot.utils.Answers.send;
 
 //import cf.adriantodt.bot.handlers.scripting.JS;
 
@@ -34,10 +32,10 @@ public class UserCommand implements ICommand, ITranslatable {
 		String response = responses.get(RAND.nextInt(responses.size()));
 		if (response.length() > 7) {
 			if (response.substring(0, 6).equals("get://")) {
-				send(event, IOHelper.toString(response.substring(6))).queue();
+				event.getAnswers().send(IOHelper.toString(response.substring(6))).queue();
 				return;
 			} else if (response.substring(0, 6).equals("loc://")) {
-				send(event, I18n.getLocalized(response.substring(6), "en_US")).queue();
+				event.getAnswers().send(I18n.getLocalized(response.substring(6), "en_US")).queue();
 				return;
 				//} else if (response.substring(0, 6).equals("aud://")) {
 				//	Audio.queue(IOHelper.newURL(response.substring(6)), event);
@@ -46,13 +44,13 @@ public class UserCommand implements ICommand, ITranslatable {
 				if (Permissions.havePermsRequired(event.getGuild(), event.getAuthor(), Permissions.RUN_SCT_CMD)) {
 					//JS.eval(event.getGuild(), response.substring(5), event.getEvent());
 				} else {
-					noperm(event).queue();
+					event.getAnswers().noperm().queue();
 				}
 				return;
 			}
 		}
 
-		send(event, response).queue();
+		event.getAnswers().send(response).queue();
 	}
 
 	@Override
