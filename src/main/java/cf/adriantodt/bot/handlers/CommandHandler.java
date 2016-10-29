@@ -47,8 +47,13 @@ public class CommandHandler {
 			return;
 		}
 
+		Utils.async(() -> onCommand(msgEvent)).run();
+		;
+	}
+
+	public static void onCommand(GuildMessageReceivedEvent msgEvent) {
 		Guilds.Data local = Guilds.fromDiscord(msgEvent.getGuild()), global = Guilds.GLOBAL, target = local;
-		if (!Permissions.havePermsRequired(global, msgEvent.getAuthor(), Permissions.RUN_BASECMD) || !Permissions.havePermsRequired(local, msgEvent.getAuthor(), Permissions.RUN_BASECMD))
+		if (!Permissions.havePermsRequired(global, msgEvent.getAuthor(), Permissions.RUN_CMDS) || !Permissions.havePermsRequired(local, msgEvent.getAuthor(), Permissions.RUN_CMDS))
 			return;
 
 		String cmd = msgEvent.getMessage().getRawContent();
@@ -86,13 +91,12 @@ public class CommandHandler {
 				else {
 					if (event.getCommand().sendStartTyping()) event.sendAwaitableTyping();
 					Statistics.cmds++;
-					Utils.async(event.getAuthor().getName() + ">" + baseCmd, () -> {
-						try {
-							execute(event);
-						} catch (Exception e) {
-							event.getAnswers().exception(e).queue();
-						}
-					}).run();
+					Thread.currentThread().setName(event.getAuthor().getName() + ">" + baseCmd);
+					try {
+						execute(event);
+					} catch (Exception e) {
+						event.getAnswers().exception(e).queue();
+					}
 				}
 			}
 		}

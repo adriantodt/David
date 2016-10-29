@@ -37,8 +37,7 @@ public class ConsoleHandler {
 		CMDS.put("stop", (s, in) -> Bot.stopBot());
 		HELP.put(CMDS.get("stop"), "stop");
 
-		CMDS.put("restart", (s, in) -> Bot.restartBot());
-		HELP.put(CMDS.get("restart"), "restart");
+		CMDS.put("threads", (s, in) -> Thread.getAllStackTraces().keySet().forEach(t -> in.accept(t.getName())));
 
 //		CMDS.put("load", (s, in) -> {
 //			in.accept(get("load"));

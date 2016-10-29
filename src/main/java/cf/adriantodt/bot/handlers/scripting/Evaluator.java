@@ -12,17 +12,13 @@
 
 package cf.adriantodt.bot.handlers.scripting;
 
-import cf.adriantodt.bot.data.Guilds;
-import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
+import cf.adriantodt.bot.base.cmd.CommandEvent;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.HashMap;
+import java.util.Map;
 
 public interface Evaluator {
 	Map<String, Evaluator> EVALUATOR_REGISTER = new HashMap<>();
-	List<String> BLACKLISTED_ACCESS = new ArrayList<>(Arrays.asList(
-		"java.io.*", "java.nio.*", "cf.adriantodt.bot"
-	)).stream().map(s -> s.replace("*", "[\\S\\s]+?")).collect(Collectors.toList());
 
-	void eval(Guilds.Data guild, String command, GuildMessageReceivedEvent event);
+	void eval(CommandEvent event);
 }

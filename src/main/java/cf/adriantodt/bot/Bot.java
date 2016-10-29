@@ -14,11 +14,13 @@ package cf.adriantodt.bot;
 
 import cf.adriantodt.bot.data.DataManager;
 import cf.adriantodt.bot.data.Guilds;
+import cf.adriantodt.bot.data.I18n;
 import cf.adriantodt.bot.handlers.BotGreeter;
 import cf.adriantodt.bot.handlers.CommandHandler;
 import cf.adriantodt.bot.handlers.ReadyBuilder;
 import cf.adriantodt.bot.impl.CmdsAndInterfaces;
 import cf.adriantodt.bot.impl.I18nHardImpl;
+import cf.adriantodt.bot.utils.Push;
 import cf.adriantodt.bot.utils.Statistics;
 import cf.adriantodt.bot.utils.Tasks;
 import cf.adriantodt.jda.port.AnnotatedEventManager;
@@ -37,6 +39,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
+
+import static cf.adriantodt.bot.utils.Formatter.boldAndItalic;
 
 public class Bot {
 	public static final Random RAND = new Random();
@@ -89,28 +93,20 @@ public class Bot {
 				.put("afk", false)
 				.put("status", "online")).toString()
 		);
+
+		Push.pushSimple("startup", channel -> I18n.getLocalized("bot.startup", channel));
 	}
 
 	public static void stopBot() {
 		//API.getSelfInfo().setIdle(true);
 		//API.getAccountManager().update();
 		LOGGER.info("Bot exiting...");
+		Push.pushSimple("stop", channel -> boldAndItalic(I18n.getLocalized("bot.stop", channel)));
 		try {
 			Thread.sleep(2 * 1000);
 		} catch (Exception ignored) {
 		}
 		API.shutdownNow(true);
 		Java.stopApp();
-	}
-
-	public static void restartBot() {
-		//API.getAccountManager().setIdle(true);
-		//API.getAccountManager().update();
-		LOGGER.info("Bot restarting...");
-		try {
-			Thread.sleep(2 * 1000);
-		} catch (Exception ignored) {
-		}
-		Java.restartApp();
 	}
 }

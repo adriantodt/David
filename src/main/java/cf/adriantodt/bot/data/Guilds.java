@@ -41,7 +41,7 @@ public class Guilds {
 		GLOBAL.id = "-1";
 		GLOBAL.name = "GLOBAL";
 
-		Tasks.startAsyncTask(() -> {
+		Tasks.startAsyncTask("GuildTimeoutCleanup", () -> {
 			timeoutUntilDbRemoval.replaceAll((guild, integer) -> Math.min(integer - 1, 0));
 			timeoutUntilDbRemoval.entrySet().stream().filter(entry -> entry.getValue() == 0).map(Map.Entry::getKey).forEach(data -> {
 				r.table("commands").filter(r.row("gid").eq(data.id)).delete().runNoReply(conn);
@@ -159,6 +159,7 @@ public class Guilds {
 
 		private Data() {
 			flags.put("cleanup", true);
+			flags.put("vip", true);
 			userPerms.put("default", Permissions.BASE_USER);
 			all.add(this);
 		}

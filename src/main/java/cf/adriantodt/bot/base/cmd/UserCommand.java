@@ -14,7 +14,6 @@ package cf.adriantodt.bot.base.cmd;
 
 import cf.adriantodt.bot.base.Permissions;
 import cf.adriantodt.bot.data.I18n;
-import cf.brforgers.core.lib.IOHelper;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -31,31 +30,32 @@ public class UserCommand implements ICommand, ITranslatable {
 	public void run(CommandEvent event) {
 		String response = responses.get(RAND.nextInt(responses.size()));
 		if (response.length() > 7) {
-			if (response.substring(0, 6).equals("get://")) {
-				event.getAnswers().send(IOHelper.toString(response.substring(6))).queue();
-				return;
-			} else if (response.substring(0, 6).equals("loc://")) {
-				event.getAnswers().send(I18n.getLocalized(response.substring(6), "en_US")).queue();
+//			if (response.substring(0, 6).equals("get://")) {
+//				event.getAnswers().send(IOHelper.toString(response.substring(6))).queue();
+//				return;
+//			} else
+			if (response.substring(0, 6).equals("loc://")) {
+				event.awaitTyping().getAnswers().send(I18n.getLocalized(response.substring(6), event)).queue();
 				return;
 				//} else if (response.substring(0, 6).equals("aud://")) {
 				//	Audio.queue(IOHelper.newURL(response.substring(6)), event);
 				//	return;
 			} else if (response.substring(0, 5).equals("js://")) {
-				if (Permissions.havePermsRequired(event.getGuild(), event.getAuthor(), Permissions.RUN_SCT_CMD)) {
+				if (Permissions.havePermsRequired(event.getGuild(), event.getAuthor(), Permissions.RUN_SCRIPT_CMDS)) {
 					//JS.eval(event.getGuild(), response.substring(5), event.getEvent());
 				} else {
-					event.getAnswers().noperm().queue();
+					event.awaitTyping().getAnswers().noperm().queue();
 				}
 				return;
 			}
 		}
 
-		event.getAnswers().send(response).queue();
+		event.awaitTyping().getAnswers().send(response).queue();
 	}
 
 	@Override
 	public long retrievePerm() {
-		return Permissions.RUN_BASECMD | Permissions.RUN_USR_CMD;
+		return Permissions.RUN_CMDS | Permissions.RUN_USER_CMDS;
 	}
 
 	@Override

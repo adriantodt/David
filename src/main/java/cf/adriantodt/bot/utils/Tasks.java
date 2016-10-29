@@ -16,9 +16,7 @@ import cf.adriantodt.bot.base.cmd.Holder;
 import cf.adriantodt.bot.base.gui.QueueLogAppender;
 import cf.adriantodt.bot.webinterface.BotWebInterface;
 import cf.adriantodt.utils.ThreadBuilder;
-import cf.brforgers.core.lib.IOHelper;
 import com.sun.management.OperatingSystemMXBean;
-import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.entities.User;
 
 import java.lang.management.ManagementFactory;
@@ -29,9 +27,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 public class Tasks {
-	public static final Holder<String> latestDrama = new Holder<String>() {{
-		var = "Hold up a sec.";
-	}};
 	static final Map<User, Integer> userTimeout = new HashMap<>();
 	private static final ExecutorService threadPool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 5);
 	public static double cpuUsage = 0;
@@ -40,21 +35,16 @@ public class Tasks {
 		return threadPool;
 	}
 
-	public static void startAsyncTask(Runnable scheduled, int everySeconds) {
-		Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(scheduled, 0, everySeconds, TimeUnit.SECONDS);
+	public static void startAsyncTask(String task, Runnable scheduled, int everySeconds) {
+		Executors.newSingleThreadScheduledExecutor(r -> new Thread(r, task + "Executor")).scheduleAtFixedRate(scheduled, 0, everySeconds, TimeUnit.SECONDS);
 	}
 
 	public static void startAsyncTasks() {
-		startAsyncTask(() -> {
-			synchronized (latestDrama) {
-				latestDrama.var = IOHelper.toString("https://drama.thog.eu/api/drama");
-			}
-		}, 10);
 
 		final OperatingSystemMXBean os = ((OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean());
-		startAsyncTask(() -> cpuUsage = (Math.floor(os.getProcessCpuLoad() * 10000) / 100), 2);
+		startAsyncTask("CPU Usage", () -> cpuUsage = (Math.floor(os.getProcessCpuLoad() * 10000) / 100), 2);
 
-		startAsyncTask(() -> {
+		startAsyncTask("User Timeout", () -> {
 			synchronized (userTimeout) {
 				userTimeout.replaceAll((user, integer) -> Math.max(0, integer - 1));
 			}
@@ -68,7 +58,7 @@ public class Tasks {
 			System.out.println("Log4j2Discord Enabled!");
 			Holder<String> s = new Holder<>();
 			while ((s.var = QueueLogAppender.getNextLogEvent("DiscordLogListeners")) != null) {
-				Push.push("log", channel -> new MessageBuilder().appendString(s.var).build());
+				Push.pushSimple("log", channel -> "[LOG] " + s.var);
 			}
 			System.out.println("Log4j2Discord Disabled...");
 		})).start();

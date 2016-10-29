@@ -40,7 +40,7 @@ public class TreeCommandBuilder {
 		if (first.var) return null;
 		return b.var.toString();
 	};
-	private long permRequired = Permissions.RUN_BASECMD;
+	private long permRequired = Permissions.RUN_CMDS;
 	private Function<String, String> usageProvider = USAGE_IMPL;
 
 	public TreeCommandBuilder() {
@@ -58,16 +58,36 @@ public class TreeCommandBuilder {
 	}
 
 	public TreeCommandBuilder addDefault(ICommand command) {
-		SUBCMDS.put("", command);
-		return this;
+		return addCommand("", command);
 	}
 
 	public TreeCommandBuilder addCommand(String cmd, String alias) {
-		return addCommand(cmd, SUBCMDS.get(alias));
+		ICommand base = SUBCMDS.get(alias);
+		return addCommand(cmd, base == null ? null : new ICommand() {
+			@Override
+			public void run(CommandEvent event) {
+				base.run(event.createChild(base, event.getArgs()));
+			}
+
+			@Override
+			public long retrievePerm() {
+				return base.retrievePerm();
+			}
+
+			@Override
+			public boolean sendStartTyping() {
+				return base.sendStartTyping();
+			}
+
+			@Override
+			public String toString(String language) {
+				return "Alias of " + alias;
+			}
+		});
 	}
 
 	public TreeCommandBuilder addDefault(String alias) {
-		return addDefault(SUBCMDS.get(alias));
+		return addCommand("", alias);
 	}
 
 	private TreeCommandBuilder setPermRequired(long value) {

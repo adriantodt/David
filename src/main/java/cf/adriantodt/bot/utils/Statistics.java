@@ -19,6 +19,7 @@ import cf.adriantodt.bot.data.Guilds;
 import cf.adriantodt.bot.data.I18n;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.requests.RestAction;
+import org.apache.logging.log4j.LogManager;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
@@ -44,7 +45,8 @@ public class Statistics {
 			modifiersField.setAccessible(true);
 			modifiersField.setInt(field, field.getModifiers() & ~Modifier.FINAL);
 			field.set(null, RestAction.DEFAULT_SUCCESS.andThen(o -> Statistics.restActions++));
-		} catch (Exception ignored) {
+		} catch (Exception e) {
+			LogManager.getLogger("Statistics-BruteReflections").error("The hacky heavy reflection static code block crashed. #BlameSpong and #BlameMinn", e);
 		}
 	}
 

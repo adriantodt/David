@@ -43,7 +43,7 @@ public class Users {
 
 	static {
 
-		Tasks.startAsyncTask(() -> {
+		Tasks.startAsyncTask("UserTimeoutCleanup", () -> {
 			timeoutUntilDbRemoval.replaceAll((guild, integer) -> Math.min(integer - 1, 0));
 			timeoutUntilDbRemoval.entrySet().stream().filter(entry -> entry.getValue() == 0).map(Map.Entry::getKey).forEach(data -> {
 				//TODO IMPL DB REMOVAL

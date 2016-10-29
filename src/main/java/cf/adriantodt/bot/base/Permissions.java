@@ -41,58 +41,62 @@ Guia de Referência:
 	- [a-z] = Bits para permissões especiais menores (Comandos específicos em geral).
 	- [A-Z] = Bits para permissões especiais maiores (Opções geralmente perigosas/insegurasS).
 Permissões:
-	RUN_BASECMD (0) -> Permissão básica. Sem ela o Bot ignora seus comandos.
-	RUN_USR_CMD (1) -> Executar Comandos de Usuário.
-	RUN_SCT_CMD (2) -> TO BE IMPL. Executar Comandos de Usuário em Lua.
-	PERMSYSTEM  (3) -> Sistema de Permissões.
-	GUILD_PASS  (4) -> Permite o acesso a comandos dessa Guild por meio de &GUILD:<command>
-	MANAGE_CMDS (5) -> Criação e Exclusão de comandos na Guild.
-	MANAGE_SPCS (6) -> Permite a criação de comandos WEB:// ou SCRIPTS://
-	PERMSYSTEM_ASSIST_PERMS (7-9)
-	                -> Protege pessoas de nível maior de serem afetadas por pessoas com nível maior.
-	GUILD_CHANNELS (a) -> Comandos mais complexos de Guild
-	SCRIPTS     (b) -> Comando &eval (JS), &lua (LuaJ)
-	EDIT_GUILD  (c) -> Comando &guild
-	SPY         (d) -> Comando &spy
-	GLOBALS_IMP (e) -> Comando &globals e subcomando import
-	GLOBALS_EXP (f) -> Subcomando export
-	ANNOY       (g) -> Annoy command
-	(h-z) -> Free Slots
-	USE_INTERFACES  (A) -> Usar as Interfaces
-	LUAENV_FULL (B) -> Lua pode ser executado/compilado no Ambiente Inseguro
-	(C-X) -> Free Slots
-	SAVE_LOAD   (Y) -> Salvar ou Carregar do Disco os Comandos/Guilds/Permissões (Unused)
-	STOP_RESET  (Z) -> Parar ou Reiniciar o Bot
+	(0)		RUN_CMDS
+				Basic Permission. If took from User, the Bot will ignore any commands.
+	(1)		RUN_USER_CMDS
+				Execute User Coomands. May be took from User because of spam.
+	(2)		RUN_SCRIPT_CMDS
+				Run Script Commands. Disabled from everyone until proper Sandboxing.
+	(3)		SET_PERMS
+				Set others users Permissions (using &guild perms set)
+	(4)		GUILD_PASS
+				Access the Guild in another using &GUILD:<command>
+	(5)		MANAGE_USER_CMDS
+				Allows creating and removing User Commands using &cmds add/rm
+	(6)		MANAGE_SPECIAL_USER_CMDS
+				Allows creating and removing User Commands that do special things
+	(7-9)	PERMSYS_GM/PERMSYS_GO/PERMSYS_BO
+				Assist Perms. Protects people with higher perms from being affected by lower rank people
+	(10/a)	PUSH_SUBSCRIBE
+				Subscribe the channel to Push Notifications.
+	(11/b)	SCRIPTS
+				Run Scripts
+	(12/c)	SET_GUILD
+				Set Guild configs
+	(13/d)	PUSH_SEND
+				Send Push Notifications
+	(36/A)	USE_INTERFACES
+				Use Interfaces (Currently broken)
+	(37/B)	SCRIPTS_UNSAFEENV
+				Run Commands in a unsafe environiment (Disabled until proper Sandboxing)
+	(62/Z)	STOP_BOT
+				Stops/Resets the Bot
  */
 public class Permissions {
 	public static final long
-		RUN_BASECMD = bits(0),
-		RUN_USR_CMD = bits(1),
-		RUN_SCT_CMD = bits(2), //SCripT
-		PERMSYSTEM = bits(3),
+		RUN_CMDS = bits(0),
+		RUN_USER_CMDS = bits(1),
+		RUN_SCRIPT_CMDS = bits(2), //SCripT
+		SET_PERMS = bits(3),
 		GUILD_PASS = bits(4),
-		MANAGE_USR = bits(5),
-		MANAGE_SPCS = bits(6),
+		MANAGE_USER_CMDS = bits(5),
+		MANAGE_SPECIAL_USER_CMDS = bits(6),
 		PERMSYS_GM = bits(7),
 		PERMSYS_GO = bits(8),
 		PERMSYS_BO = bits(9),
-		GUILD_CHANNELS = bits(10),
+		PUSH_SUBSCRIBE = bits(10),
 		SCRIPTS = bits(11),
-		EDIT_GUILD = bits(12),
-		SPY = bits(13),
-		GLOBALS_IMP = bits(14),
-		GLOBALS_EXP = bits(15),
-		ANNOY = bits(16),
+		SET_GUILD = bits(12),
+		PUSH_SEND = bits(13),
 		USE_INTERFACES = bits(36),
-		LUAENV_FULL = bits(37),
-	//		SAVE_LOAD = bits(61),
-	STOP_RESET = bits(62);
+		SCRIPTS_UNSAFEENV = bits(37),
+		STOP_BOT = bits(62);
 
 	public static final long
-		BASE_USER = RUN_BASECMD | RUN_USR_CMD | RUN_SCT_CMD | GUILD_PASS | USE_INTERFACES,
-		GUILD_MOD = BASE_USER | MANAGE_USR | MANAGE_SPCS | PERMSYSTEM | PERMSYS_GM | GLOBALS_IMP | GUILD_CHANNELS,
-		GUILD_OWNER = GUILD_MOD | GLOBALS_EXP | SCRIPTS | EDIT_GUILD | PERMSYS_GO,
-		BOT_OWNER = GUILD_OWNER | LUAENV_FULL | SPY | STOP_RESET | PERMSYS_BO | ANNOY;
+		BASE_USER = RUN_CMDS | RUN_USER_CMDS | GUILD_PASS | USE_INTERFACES,
+		GUILD_MOD = BASE_USER | MANAGE_USER_CMDS | MANAGE_SPECIAL_USER_CMDS | SET_PERMS | PERMSYS_GM | PUSH_SUBSCRIBE,
+		GUILD_OWNER = GUILD_MOD | SCRIPTS | SET_GUILD | PERMSYS_GO,
+		BOT_OWNER = GUILD_OWNER | SCRIPTS_UNSAFEENV | PUSH_SEND | STOP_BOT | PERMSYS_BO | RUN_SCRIPT_CMDS;
 
 	public static Map<String, Long> perms = new HashMap<String, Long>() {{
 		Arrays.stream(Permissions.class.getDeclaredFields()) //This Reflection is used to HashMap-fy all the Fields above.

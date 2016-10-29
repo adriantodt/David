@@ -23,7 +23,7 @@ public interface ICommand extends ITranslatable {
 	 * @return the Permission Required
 	 */
 	default long retrievePerm() {
-		return Permissions.RUN_BASECMD;
+		return Permissions.RUN_CMDS;
 	}
 
 	default boolean sendStartTyping() {

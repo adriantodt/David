@@ -59,8 +59,8 @@ public class StatsComponent extends JComponent {
 			this.msgs[0] = String.format(get("stats0"), calculate(startDate == null ? new Date() : startDate, new Date(), GuiTranslationHandler.getLang()));
 			this.msgs[1] = String.format(get("stats1"), Statistics.restActions, cmds, crashes, toofasts, noperm, invalidargs);
 			this.msgs[2] = String.format(get("stats2"), wgets, Thread.activeCount());
-			this.msgs[4] = String.format(get("stats4"), (instance.totalMemory() - instance.freeMemory()) / mb, instance.totalMemory() / mb, instance.maxMemory() / mb);
-			this.msgs[5] = String.format(get("stats5"), Tasks.cpuUsage);
+			this.msgs[3] = String.format(get("stats3"), (instance.totalMemory() - instance.freeMemory()) / mb, instance.totalMemory() / mb, instance.maxMemory() / mb);
+			this.msgs[4] = String.format(get("stats4"), Tasks.cpuUsage);
 		}
 		addToArray(Statistics.restActions - lastValue);
 		lastValue = Statistics.restActions;

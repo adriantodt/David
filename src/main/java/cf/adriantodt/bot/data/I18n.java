@@ -13,6 +13,7 @@
 package cf.adriantodt.bot.data;
 
 import cf.adriantodt.bot.base.cmd.CommandEvent;
+import net.dv8tion.jda.core.entities.TextChannel;
 
 import java.util.*;
 import java.util.regex.Pattern;
@@ -89,6 +90,10 @@ public class I18n {
 
 	public static String getLocalized(String unlocalized, CommandEvent event) {
 		return getLocalized(unlocalized, getLocale(event));
+	}
+
+	public static String getLocalized(String unlocalized, TextChannel channel) {
+		return getLocalized(unlocalized, Guilds.fromDiscord(channel.getGuild()).getLang());
 	}
 
 	private static String getBaseLocalized(String unlocalized, String locale) {

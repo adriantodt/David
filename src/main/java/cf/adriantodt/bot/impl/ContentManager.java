@@ -21,40 +21,38 @@ import org.apache.logging.log4j.Logger;
 import java.util.stream.StreamSupport;
 
 public class ContentManager {
-	public static final String[][] SU_THEORIES;
-	public static final String[] TESV_GUARDS;
-	public static final boolean SU_THEORIES_LOADED, TESV_GUARDS_LOADED;
-
 	private static final Logger LOGGER = LogManager.getLogger("ContentManager");
+	public static String[][] SU_THEORIES;
+	public static String[] TESV_GUARDS, SU_STEVONNIE;
+	public static boolean SU_THEORIES_LOADED = false, TESV_GUARDS_LOADED = false, SU_STEVONNIE_LOADED;
 
 	static {
-		String[] TESV_GUARDS_IN = new String[0];
-		boolean TESV_GUARDS_LOAD = false;
+		reload();
+	}
+
+	public static void reload() {
 		try {
-			String TESV_GUARDS_RAW = resource("/skyrim_guards.txt");
-			TESV_GUARDS_IN = TESV_GUARDS_RAW.split("\\r?\\n");
-			TESV_GUARDS_LOAD = true;
+			TESV_GUARDS = resource("/skyrim_guards.txt").split("\\r?\\n");
+			SU_THEORIES_LOADED = true;
 		} catch (Exception e) {
 			LOGGER.error("Error while parsing \"skyrim_guards.txt\" resource.", e);
 		}
-		TESV_GUARDS = TESV_GUARDS_IN;
-		TESV_GUARDS_LOADED = TESV_GUARDS_LOAD;
 
-		String[][] SU_THEORIES_IN = new String[0][0];
-		boolean SU_THEORIES_LOAD = false;
 		try {
-			SU_THEORIES_IN = StreamSupport.stream(
-				new JsonParser().parse(resource("/stevenuniverse_theories.json")).getAsJsonArray().spliterator(), false
-			).map(
-				jsonElement -> StreamSupport.stream(jsonElement.getAsJsonArray().spliterator(), false)
-					.map(JsonElement::getAsString).toArray(String[]::new)
-			).toArray(String[][]::new);
-			SU_THEORIES_LOAD = true;
+			SU_THEORIES = StreamSupport.stream(new JsonParser().parse(resource("/stevenuniverse_theories.json")).getAsJsonArray().spliterator(), false)
+				.map(jsonElement -> StreamSupport.stream(jsonElement.getAsJsonArray().spliterator(), false).map(JsonElement::getAsString).toArray(String[]::new))
+				.toArray(String[][]::new);
+			SU_THEORIES_LOADED = true;
 		} catch (Exception e) {
 			LOGGER.error("Error while parsing \"stevenuniverse_theories.json\" resource.", e);
 		}
-		SU_THEORIES = SU_THEORIES_IN;
-		SU_THEORIES_LOADED = SU_THEORIES_LOAD;
+
+		try {
+			SU_STEVONNIE = resource("/stevenuniverse_stevonnie.txt").split("\\r?\\n");
+			SU_STEVONNIE_LOADED = true;
+		} catch (Exception e) {
+			LOGGER.error("Error while parsing \"stevenuniverse_stevonnie.txt\" resource.", e);
+		}
 	}
 
 	public static String resource(String file) {

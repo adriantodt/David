@@ -23,7 +23,7 @@ import static cf.adriantodt.bot.data.I18n.getLocalized;
 public class CommandBuilder {
 	private static final Function<String, String> DEFAULT_NOOP_PROVIDER = (s) -> null;
 	private Consumer<CommandEvent> action = null;
-	private long permRequired = Permissions.RUN_BASECMD;
+	private long permRequired = Permissions.RUN_CMDS;
 	private Function<String, String> usageProvider = DEFAULT_NOOP_PROVIDER;
 
 	public CommandBuilder() {

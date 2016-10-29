@@ -19,10 +19,10 @@ import cf.adriantodt.bot.base.cmd.*;
 import cf.adriantodt.bot.data.*;
 import cf.adriantodt.bot.handlers.BotGreeter;
 import cf.adriantodt.bot.handlers.CommandHandler;
+import cf.adriantodt.bot.handlers.scripting.JS;
 import cf.adriantodt.bot.utils.*;
 import cf.brforgers.core.lib.IOHelper;
 import net.dv8tion.jda.core.JDAInfo;
-import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.entities.User;
 import org.apache.logging.log4j.LogManager;
@@ -30,13 +30,14 @@ import org.apache.logging.log4j.LogManager;
 import java.util.*;
 import java.util.concurrent.Future;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static cf.adriantodt.bot.base.Permissions.*;
 import static cf.adriantodt.bot.data.I18n.getLocale;
 import static cf.adriantodt.bot.data.I18n.getLocalized;
-import static cf.adriantodt.bot.impl.ContentManager.SU_THEORIES;
-import static cf.adriantodt.bot.impl.ContentManager.TESV_GUARDS;
+import static cf.adriantodt.bot.impl.ContentManager.*;
 import static cf.adriantodt.bot.utils.Commands.*;
+import static cf.adriantodt.bot.utils.Formatter.encase;
 import static cf.adriantodt.bot.utils.Formatter.italic;
 import static cf.adriantodt.bot.utils.Statistics.clampIfNotOwner;
 import static cf.adriantodt.bot.utils.Statistics.parseInt;
@@ -119,6 +120,16 @@ public class CmdsAndInterfaces {
 						event.getAnswers().send("[#" + (i + 1) + "] What if " + result.substring(0, result.length() - 1) + "?").queue();
 					}
 				}).build())
+				.addCommand("theorygen", "theorygenerator")
+				.addCommand("stevonnie", new CommandBuilder("funny.stevenuniverse.stevonnie.usage").setAction(event -> {
+					if (!ContentManager.SU_STEVONNIE_LOADED) {
+						event.awaitTyping();
+						event.getAnswers().sendTranslated("error.contentmanager").queue();
+						return;
+					}
+					for (int i = 0, amount = clampIfNotOwner(parseInt(event.getArgs(), 1), 0, 10, event.getAuthor()); i < amount; i++)
+						event.getAnswers().send("[#" + (i + 1) + "] " + SU_STEVONNIE[(int) Math.floor(Math.random() * SU_STEVONNIE.length)]).queue();
+				}).build())
 				.build()
 			)
 			.addCommand("su", "stevenuniverse")
@@ -166,10 +177,7 @@ public class CmdsAndInterfaces {
 //			.build()
 //		);
 
-		//implLang
-		;
-
-		addCommand("guild", new TreeCommandBuilder(RUN_BASECMD)
+		addCommand("guild", new TreeCommandBuilder()
 			.addCommand("info",
 				new CommandBuilder("guild.info.usage")
 					.setAction(event -> event.getAnswers().sendCased(Guilds.toString(event.getGuild(), event.getJDA(), I18n.getLocale(event))).queue())
@@ -177,19 +185,19 @@ public class CmdsAndInterfaces {
 			)
 			.addDefault("info")
 			.addCommand("lang",
-				new CommandBuilder("guild.lang.usage", EDIT_GUILD)
+				new CommandBuilder("guild.lang.usage", SET_GUILD)
 					.setAction(event -> {
 						event.getGuild().setLang(event.getArgs().isEmpty() ? "en_US" : event.getArgs());
 						event.getAnswers().announce(String.format(getLocalized("guild.lang.set", event), event.getGuild().getLang())).queue();
 					}).build()
 			)
 			.addCommand("cleanup",
-				new CommandBuilder("guild.cleanup.usage", EDIT_GUILD)
+				new CommandBuilder("guild.cleanup.usage", SET_GUILD)
 					.setAction(event -> event.getAnswers().bool(event.getGuild().toggleFlag("cleanup")).queue())
 					.build()
 			)
 			.addCommand("prefixes",
-				new CommandBuilder("perms.set.usage", EDIT_GUILD)
+				new CommandBuilder("perms.set.usage", SET_GUILD)
 					.setAction(event -> {
 						if (event.getArgs().trim().isEmpty()) {
 							event.getAnswers().invalidargs().queue();
@@ -224,7 +232,7 @@ public class CmdsAndInterfaces {
 						if (arg.isEmpty()) arg = event.getAuthor().getId();
 						event.getAnswers().send("**" + getLocalized("perms.get.userPerms", event) + ":**\n *" + String.join(", ", toCollection(getPermFor(event.getGuild(), arg)).stream().toArray(String[]::new)) + "*").queue();
 					}).build())
-				.addCommand("set", new CommandBuilder("perms.set.usage", PERMSYSTEM)
+				.addCommand("set", new CommandBuilder("perms.set.usage", SET_PERMS)
 					.setAction(event -> {
 						String[] args = event.getArgs(2); //!setlevel USER LEVEL
 						if (args[0].isEmpty() || args[1].isEmpty()) event.getAnswers().invalidargs().queue();
@@ -260,25 +268,17 @@ public class CmdsAndInterfaces {
 		);
 
 		addCommand("bot",
-			new TreeCommandBuilder(RUN_BASECMD)
+			new TreeCommandBuilder(RUN_CMDS)
 				.addCommand("info",
 					new CommandBuilder("bot.info.usage").setAction((event) -> BotGreeter.greet(event.getChannel(), Optional.of(event.getAuthor()))).build()
 				)
 				.addDefault("info")
 				.addCommand("version", new CommandBuilder("bot.version.usage").setAction(e -> e.getAnswers().send("**Bot Version:** " + BotInfo.VERSION + "\n**JDA Version** " + JDAInfo.VERSION).queue()).build())
 				.addCommand("stop",
-					new CommandBuilder("bot.stop.usage", STOP_RESET)
+					new CommandBuilder("bot.stop.usage", STOP_BOT)
 						.setAction(event -> {
 							event.getAnswers().announce(I18n.getLocalized("bot.stop", event)).queue();
 							Bot.stopBot();
-						})
-						.build()
-				)
-				.addCommand("restart",
-					new CommandBuilder("bot.restart.usage", STOP_RESET)
-						.setAction(event -> {
-							event.getAnswers().announce(I18n.getLocalized("bot.restart", event)).queue();
-							Bot.restartBot();
 						})
 						.build()
 				)
@@ -294,35 +294,40 @@ public class CmdsAndInterfaces {
 						.setAction(event -> event.getAnswers().send("**" + getLocalized("inviteme.link", event) + ":**\nhttps://discordapp.com/oauth2/authorize?client_id=" + event.getJDA().getSelfInfo().getId() + "&scope=bot").queue())
 						.build()
 				)
-				.addCommand("push", new TreeCommandBuilder()
-					.addCommand("subscribe", new CommandBuilder(Permissions.EDIT_GUILD)
-						.setAction(event -> {
-							Push.subscribe(event.getChannel(), Arrays.asList(event.getArgs(0)));
-							event.awaitTyping().getAnswers().bool(true).queue();
-						})
-						.build()
-					)
-					.addCommand("unsubscribe", new CommandBuilder(Permissions.EDIT_GUILD)
-						.setAction(event -> {
-							Push.unsubscribe(event.getChannel(), Arrays.asList(event.getArgs(0)));
-							event.awaitTyping().getAnswers().bool(true).queue();
-						})
-						.build()
-					)
-					.addCommand("send", new CommandBuilder(Permissions.EDIT_GUILD)
-						.setAction(event -> {
-							Push.push(event.getArgument(2, 0), (channel) -> new MessageBuilder().appendString(event.getArgument(2, 1)).build());
-							event.awaitTyping().getAnswers().bool(true).queue();
-						})
-						.build()
-					)
+				.addCommand("administration", new TreeCommandBuilder()
 					.build()
 				)
-//				.addCommand("eval",
-//					new CommandBuilder("eval.usage", SCRIPTS | RUN_SCT_CMD)
-//						.setAction(event -> JS.eval(event.getGuild(), event.getArgs(), event.getEvent()))
-//						.build()
-//				)
+				.addCommand("eval",
+					new CommandBuilder("eval.usage", SCRIPTS | RUN_SCRIPT_CMDS | SCRIPTS_UNSAFEENV)
+						.setAction(JS::eval)
+						.build()
+				)
+				.build()
+		);
+
+		addCommand("push",
+			new TreeCommandBuilder()
+				.addCommand("subscribe", new CommandBuilder(PUSH_SUBSCRIBE)
+					.setAction(event -> {
+						Push.subscribe(event.getChannel(), Arrays.asList(event.getArgs(0)));
+						event.awaitTyping().getAnswers().bool(true).queue();
+					})
+					.build()
+				)
+				.addCommand("unsubscribe", new CommandBuilder(PUSH_SUBSCRIBE)
+					.setAction(event -> {
+						Push.unsubscribe(event.getChannel(), Arrays.asList(event.getArgs(0)));
+						event.awaitTyping().getAnswers().bool(true).queue();
+					})
+					.build()
+				)
+				.addCommand("send", new CommandBuilder(PUSH_SEND)
+					.setAction(event -> {
+						Push.pushSimple(event.getArgument(2, 0), (channel) -> event.getArgument(2, 1));
+						event.awaitTyping().getAnswers().bool(true).queue();
+					})
+					.build()
+				)
 				.build()
 		);
 
@@ -405,33 +410,36 @@ public class CmdsAndInterfaces {
 					Holder<StringBuilder> b = new Holder<>();
 					Holder<Boolean> first = new Holder<>();
 
-					b.var = new StringBuilder("**Comandos:**\n```");
+					b.var = new StringBuilder("**Comandos:**\n");
 					first.var = true;
 					cmds.forEach(s -> {
+						String v = encase(s);
 						if (first.var) {
 							first.var = false;
-							b.var.append(s);
+							b.var.append(v);
 						} else {
-							String a = "\n" + s;
-							if (b.var.length() + a.length() >= 1995) {
-								b.var.append("```");
+							if (b.var.length() + v.length() >= 1995) {
 								channel.sendMessage(b.var.toString()).queue();
-								b.var = new StringBuilder("```");
+								b.var = new StringBuilder();
 							}
-							b.var.append(a);
+							b.var.append(v);
 						}
 
 					});
 					if (first.var) b.var.append("(nenhum comando disponível)");
-					b.var.append("```");
 					channel.sendMessage(b.var.toString()).queue();
 					event.getAnswers().send(event.getAuthor().getAsMention() + " :mailbox_with_mail:").queue();
 				}).build())
-				.addCommand("add", new CommandBuilder("cmds.add.usage", MANAGE_USR)
+				.addCommand("add", new CommandBuilder("cmds.add.usage", MANAGE_USER_CMDS)
 					.setAction(event -> {
 						String[] args = event.getArgs(2); //COMMAND_NAME RESPONSE
 						if (args[0].isEmpty() | args[1].isEmpty()) event.getAnswers().invalidargs().queue();
 						else {
+							if (Stream.of("loc://", "js://", "aud://").anyMatch(args[1]::startsWith) && !Permissions.havePermsRequired(event.getGuild(), event.getAuthor(), MANAGE_SPECIAL_USER_CMDS)) {
+								event.awaitTyping().getAnswers().noperm(MANAGE_SPECIAL_USER_CMDS).queue();
+								return;
+							}
+
 							UserCommand cmd = getLocalUserCommands(event.getGuild()).get(args[0].toLowerCase());
 							if (cmd == null) {
 								UserCommand ncmd = new UserCommand();
@@ -445,7 +453,7 @@ public class CmdsAndInterfaces {
 							}
 						}
 					}).build())
-				.addCommand("rm", new CommandBuilder("cmds.add.usage", MANAGE_USR)
+				.addCommand("rm", new CommandBuilder("cmds.add.usage", MANAGE_USER_CMDS)
 					.setAction(event -> {
 						if (event.getArgs().trim().isEmpty()) event.getAnswers().invalidargs().queue();
 						else {
@@ -457,7 +465,7 @@ public class CmdsAndInterfaces {
 							}
 						}
 					}).build())
-				.addCommand("debug", new CommandBuilder("cmds.debug.usage", MANAGE_USR).setAction(event -> {
+				.addCommand("debug", new CommandBuilder("cmds.debug.usage", MANAGE_USER_CMDS).setAction(event -> {
 					if (event.getArgs().trim().isEmpty()) event.getAnswers().invalidargs().queue();
 					else {
 						ICommand cmd = Commands.getCommands(event.getGuild()).get(event.getArgs());

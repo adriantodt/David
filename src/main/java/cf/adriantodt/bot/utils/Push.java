@@ -14,6 +14,7 @@ package cf.adriantodt.bot.utils;
 
 import cf.adriantodt.bot.Bot;
 import cf.adriantodt.bot.data.Guilds;
+import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.TextChannel;
 
@@ -32,9 +33,7 @@ public class Push {
 
 		pushParenting.put("bot", "*");
 		pushParenting.put("stop", "bot");
-		pushParenting.put("restart", "bot");
-		pushParenting.put("save", "bot");
-		pushParenting.put("load", "bot");
+		pushParenting.put("start", "bot");
 
 		pushParenting.put("update", "*");
 		pushParenting.put("changelog", "update");
@@ -79,11 +78,15 @@ public class Push {
 		dynamicParenting.put(supplier, parent.toLowerCase());
 	}
 
-	public static void push(String type, Function<TextChannel, Message> pushSupplier) {
+	public static void pushMessage(String type, Function<TextChannel, Message> pushSupplier) {
 		Set<String> appliable = resolve(type);
 		Set<TextChannel> channels = new HashSet<>();
 		appliable.stream().filter(s -> subscripted.containsKey(s)).forEach(s -> channels.addAll(subscripted.get(s)));
 		channels.forEach(channel -> channel.sendMessage(pushSupplier.apply(channel)).queue());
+	}
+
+	public static void pushSimple(String type, Function<TextChannel, String> pushSupplier) {
+		pushMessage(type, channel -> new MessageBuilder().appendString(pushSupplier.apply(channel)).build());
 	}
 
 	public static Map<String, String> resolveTypeMap() {

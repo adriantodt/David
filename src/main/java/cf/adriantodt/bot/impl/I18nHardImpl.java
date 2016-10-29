@@ -28,6 +28,8 @@ public class I18nHardImpl {
 		setParent("en_SG", "en_US");
 		setParent("en_AU", "en_US");
 
+		localize("en_US", "bot.startup", "Hello! I'm now Online and ready to receive commands!");
+		localize("pt_BR", "bot.startup", "Olá! Agora eu estou Online e pronto para receber comandos!");
 		localize("en_US", "bot.hello1", "Hello! I'm $(dynamic.botname). Someone dropped me here!");
 		localize("pt_BR", "bot.hello1", "Oi! Eu sou o $(dynamic.botname). Alguém me jogou aqui!");
 		localize("en_US", "bot.hello2", "Someone call %s to set my Default Language!\n(Because of the Region, I guessed the language as `%s`, but the Guild Owner can set it anytime by executing `$(dynamic.mention) guild lang <en_US|pt_BR|etc>`)");
@@ -167,12 +169,10 @@ public class I18nHardImpl {
 		//pt_BR = en_US
 		localize("en_US", "gui.stats2", "%d wgets; %d active threads.");
 		localize("pt_BR", "gui.stats2", "%d wgets; %d threads ativas.");
-		localize("en_US", "gui.stats3", "%d saves; %d loads.");
-		//pt_BR = en_US
-		localize("en_US", "gui.stats4", "RAM(Using/Total/Max): %s MB/%d MB/%d MB.");
-		localize("en_US", "gui.stats4", "RAM(Usando/Total/Max): %s MB/%d MB/%d MB.");
-		localize("en_US", "gui.stats5", "CPU Usage: %.2f%%.");
-		localize("en_US", "gui.stats5", "CPU Usage: %.2f%%.");
+		localize("en_US", "gui.stats3", "RAM(Using/Total/Max): %s MB/%d MB/%d MB.");
+		localize("en_US", "gui.stats3", "RAM(Usando/Total/Max): %s MB/%d MB/%d MB.");
+		localize("en_US", "gui.stats4", "CPU Usage: %.2f%%.");
+		localize("en_US", "gui.stats4", "CPU Usage: %.2f%%.");
 		localize("en_US", "gui.load", "$$=bot.load;");
 		localize("pt_BR", "gui.load", "$$=bot.load;");
 		localize("en_US", "gui.save", "$$=bot.save;");
@@ -186,8 +186,10 @@ public class I18nHardImpl {
 		localize("pt_BR", "funny.stevenuniverse.theorygenerator.usage", "Gera Teorias Aletórias de Steven Universo, baseado nos dados em http://www.generatorland.com/usergenerator.aspx?id=10737. Especifique um número para gerar múltiplos.");
 		localize("en_US", "funny.skyrim.guard.usage", "Say random Skyrim Guard quotes, pumped from http://www.uesp.net/wiki/Skyrim:Guard_Dialogue. Specify a number to generate multiple.");
 		localize("pt_BR", "funny.skyrim.guard.usage", "Envia frases aleatórias dos guardas de Skyrim, usando os dados de http://www.uesp.net/wiki/Skyrim:Guard_Dialogue. Especifique um número para gerar múltiplos.");
+		localize("en_US", "funny.stevenuniverse.stevonnie.usage", "Say random Stevonnie quotes, pumped from http://steven-universe.wikia.com/wiki/Stevonnie/Quotes (No Spoilers besides themselves). Specify a number to generate multiple.");
+		localize("pt_BR", "funny.stevenuniverse.stevonnie.usage", "Envia frases aleatórias da Stevonnie, usando os dados de http://steven-universe.wikia.com/wiki/Stevonnie/Quotes (Sem Spoilers além dela própria). Especifique um número para gerar múltiplos.");
 
-		//
+		//"error.contentmanager"
 		//"cmds.list.usage"
 		//"cmds.detailed.usage"
 		//"cmds.add.usage" "Adiciona um Comando de Usuário"
