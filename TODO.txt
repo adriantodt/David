@@ -1,0 +1,16 @@
+!user info
+	Game(IntelliJ IDEA 2016.2.4) -> IntelliJ IDEA 2016.2.4
+
+Statistics
+
+I18n Warn: Detected an untranslated String: cmds.detailed.usage:pt_BR
+I18n Warn: Detected an untranslated String: cmds.add.usage:pt_BR
+I18n Warn: Detected an untranslated String: cmds.debug.usage:pt_BR
+I18n Warn: Detected an untranslated String: cmds.rm.usage:pt_BR
+I18n Warn: Detected an untranslated String: cmds.list.usage:pt_BR
+I18n Warn: Detected an untranslated String: bot.version.usage:pt_BR
+I18n Warn: Detected an untranslated String: push.send:pt_BR
+I18n Warn: Detected an untranslated String: push.subscribe:pt_BR
+I18n Warn: Detected an untranslated String: push.unsubscribe:pt_BR
+I18n Warn: Detected an untranslated String: cmds.commandsAvailable:pt_BR
+I18n Warn: Detected an untranslated String: cmds.userCommandsAvailable:pt_BR

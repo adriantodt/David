@@ -45,10 +45,11 @@ public class CommandHandler {
 				if (Guilds.fromDiscord(msgEvent.getGuild()).getFlag("cleanup")) msgEvent.getMessage().deleteMessage();
 			}).run();
 			return;
+		} else if (msgEvent.getAuthor().isBot()) {
+			return;
 		}
 
 		Utils.async(() -> onCommand(msgEvent)).run();
-		;
 	}
 
 	public static void onCommand(GuildMessageReceivedEvent msgEvent) {

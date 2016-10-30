@@ -23,8 +23,8 @@ import java.util.stream.StreamSupport;
 public class ContentManager {
 	private static final Logger LOGGER = LogManager.getLogger("ContentManager");
 	public static String[][] SU_THEORIES;
-	public static String[] TESV_GUARDS, SU_STEVONNIE;
-	public static boolean SU_THEORIES_LOADED = false, TESV_GUARDS_LOADED = false, SU_STEVONNIE_LOADED;
+	public static String[] TESV_GUARDS, SU_STEVONNIE, TESV_LYDIA;
+	public static boolean SU_THEORIES_LOADED = false, TESV_GUARDS_LOADED = false, SU_STEVONNIE_LOADED = false, TESV_LYDIA_LOADED = false;
 
 	static {
 		reload();
@@ -33,9 +33,16 @@ public class ContentManager {
 	public static void reload() {
 		try {
 			TESV_GUARDS = resource("/skyrim_guards.txt").split("\\r?\\n");
-			SU_THEORIES_LOADED = true;
+			TESV_GUARDS_LOADED = true;
 		} catch (Exception e) {
 			LOGGER.error("Error while parsing \"skyrim_guards.txt\" resource.", e);
+		}
+
+		try {
+			TESV_LYDIA = resource("/skyrim_lydia.txt").split("\\r?\\n");
+			TESV_LYDIA_LOADED = true;
+		} catch (Exception e) {
+			LOGGER.error("Error while parsing \"skyrim_lydia.txt\" resource.", e);
 		}
 
 		try {

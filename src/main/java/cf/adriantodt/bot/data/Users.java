@@ -127,11 +127,11 @@ public class Users {
 			getLocalized("user.commonGuilds", language) + ": " + nnOrD(String.join(", ", jda.getGuilds().stream().filter(guild -> guild.isMember(user)).map(Guild::getName).toArray(String[]::new)), "(" + getLocalized("user.none", language) + ")") + "\n" +
 			"ID: " + user.getId() + "\n" +
 			getLocalized("user.status", language) + ": " + member.getOnlineStatus() + "\n" +
-			getLocalized("user.playing", language) + ": " + (member.getGame() == null ? "(" + getLocalized("user.none", language) + ")" : member.getGame().toString());
+			getLocalized("user.playing", language) + ": " + (member.getGame() == null ? "(" + getLocalized("user.none", language) + ")" : member.getGame().getName());
 	}
 
 	public static class Data {
-		private String id = "-1", lang = "en_US";
+		private String id = "-1", lang = null;
 
 		private static void pushUpdate(Users.Data data, MapObject changes) {
 			r.table("users").get(data.id).update(arg -> changes).runNoReply(conn);

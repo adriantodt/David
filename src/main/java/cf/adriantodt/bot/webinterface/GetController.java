@@ -13,7 +13,7 @@
 package cf.adriantodt.bot.webinterface;
 
 import cf.adriantodt.bot.Bot;
-import cf.adriantodt.bot.data.DataManager;
+import cf.adriantodt.bot.data.Configs;
 import cf.adriantodt.bot.data.Guilds;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -29,34 +29,33 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
+import static cf.adriantodt.bot.webinterface.WebInterfaceHelper.*;
+
 @RestController
 public class GetController {
 	public static final Map<String, Function<Map<String, String>, JsonElement>> api = new HashMap<>();
-	public static final Function<Map<String, String>, JsonElement> error;
 
 	static {
-		error = map -> error("Not found");
-
 		api.put("user", map -> {
 			String id = map.getOrDefault("id", "");
-			if (id.isEmpty()) return error("Not found");
+			if (id.isEmpty()) return error("Invalid User");
 			User user = Bot.API.getUserById(id);
-			if (user == null) return error("Invalid User");
-			JsonObject object = new JsonObject();
+			if (user == null) return error("User not found");
+			JsonObject object = object();
 			JsonArray array = new JsonArray();
 			Bot.API.getGuilds().stream().filter(guild -> guild.getOwner().getUser().equals(user)).forEach(g -> {
 				if (map.containsKey("detailed")) array.add(toJson(g));
 				else array.add(new JsonPrimitive(g.getId()));
 			});
 			object.add("guildsOwned", array);
-			object.addProperty("owner", DataManager.configs.ownerID.equals(id));
+			object.addProperty("owner", Configs.getConfigs().ownerID.equals(id));
 			return object;
 		});
 
 		api.put("me", map -> {
-			JsonObject object = new JsonObject();
+			JsonObject object = object();
 			object.addProperty("avatar", Bot.SELF.getAvatarUrl());
-			object.addProperty("owner", DataManager.configs.ownerID);
+			object.addProperty("owner", Configs.getConfigs().ownerID);
 			return object;
 		});
 	}
@@ -70,15 +69,8 @@ public class GetController {
 		return guild;
 	}
 
-	public static JsonObject error(String error) {
-		JsonObject object = new JsonObject();
-		object.addProperty("fine", false);
-		object.addProperty("error", error);
-		return object;
-	}
-
 	@RequestMapping("/get")
 	public String api(@RequestParam Map<String, String> params) {
-		return api.getOrDefault(params.getOrDefault("type", ""), error).apply(params).toString();
+		return api.getOrDefault(params.getOrDefault("type", ""), API_CALL_NOT_FOUND).apply(params).toString();
 	}
 }

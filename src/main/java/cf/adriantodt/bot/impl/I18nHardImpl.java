@@ -66,6 +66,8 @@ public class I18nHardImpl {
 		localize("pt_BR", "guild.cmds", "Comandos");
 		localize("en_US", "guild.channels", "Channels");
 		localize("pt_BR", "guild.channels", "Canais");
+		localize("en_US", "guild.id", "ID");
+		//pt_BR = en_US
 		localize("en_US", "guild.users", "Users");
 		localize("pt_BR", "guild.users", "Usuários");
 		localize("en_US", "guild.info.usage", "Show Guild info.");
@@ -78,13 +80,17 @@ public class I18nHardImpl {
 		localize("pt_BR", "guild.broadcast.usage", "Envie uma mensagem para todos os canais da Guild.");
 		localize("en_US", "guild.cleanup.usage", "Toggles Message Cleanup (Messages from the bot are deleted after 15s).");
 		localize("pt_BR", "guild.cleanup.usage", "Ativa ou Desativa o \"Cleanup\" de mensagens (Mensagens do bot são deletadas após 15s).");
+		localize("en_US", "guild.prefixes.usage", "Set, Clear and Get the Current Guild Prefixes.");
+		localize("pt_BR", "guild.prefixes.usage", "Define, Limpa ou Mostra os Prefixos Atuais da Guild.");
+		localize("en_US", "guild.lang.usage", "Define the language the bot will speak at the Guild");
+		localize("pt_br", "guild.lang.usage", "Define a língua que o Bot vai falar na Guild");
 
 		localize("en_US", "user.info.usage", "Gets information about the User. Multiple IDs/Mentions can be used and each will be processed.");
 		localize("pt_BR", "user.info.usage", "Mostra informação sobre o Usuário. Multipos IDs/Menções podem ser usados e cada um será processado.");
 		localize("en_US", "user.none", "none");
 		localize("pt_BR", "user.none", "nenhum");
 		localize("en_US", "user.avatar", "Avatar");
-		localize("pt_BR", "user.avatar", "Avatar");
+		//pt_BR = en_US
 		localize("en_US", "user.name", "Name");
 		localize("pt_BR", "user.name", "Nome");
 		localize("en_US", "user.nick", "Nick");
@@ -96,9 +102,11 @@ public class I18nHardImpl {
 		localize("en_US", "user.commonGuilds", "Common Guilds");
 		localize("pt_BR", "user.commonGuilds", "Guilds em Comum");
 		localize("en_US", "user.status", "Status");
-		localize("pt_BR", "user.status", "Status");
+		//pt_BR = en_US
 		localize("en_US", "user.playing", "Playing");
 		localize("pt_BR", "user.playing", "Jogando");
+		localize("en_US", "user.id", "ID");
+		//pt_BR = en_US
 
 		localize("en_US", "user.lang.set", "Now I'll speak in %s to you!");
 		localize("pt_BR", "user.lang.set", "Agora eu vou falar em %s para você!");
@@ -111,9 +119,6 @@ public class I18nHardImpl {
 		localize("pt_BR", "inviteme.link", "Clique no Link para convidar o Bot para a sua Guild");
 		localize("en_US", "inviteme.usage", "Sends an Link to Invite the Bot to your Guild");
 		localize("pt_br", "inviteme.usage", "Envia um Link para Conviar o Bot para a sua Guild");
-
-		localize("en_US", "lang.usage", "Define the language the bot will speak at the Guild");
-		localize("pt_br", "lang.usage", "Define a língua que o Bot vai falar na Guild");
 
 		localize("en_US", "perms.get.usage", "Show the current User Permissions.\n(Parameters: [user])\nIf executed without arguments, return the sender's permissions.\nIf a user is specified, the user's permissions is returned instead.");
 		localize("pt_BR", "perms.get.usage", "Mostrar as Permissões que o Usuário tem.\n(Parâmetros: [user])\nSe executado sem argumentos, retorna as suas permissões.\nSe um usuário for suprido, retorna as permissões do usuário.");
@@ -139,6 +144,8 @@ public class I18nHardImpl {
 
 		localize("en_US", "eval.noOut", "Executed successfully (No output was provided)");
 		localize("pt_BR", "eval.noOut", "Executou com sucesso (Nenhum objeto foi retornado)");
+		localize("en_US", "eval.usage", "Executes Scripts in JVM (Owner-only)");
+		localize("pt_BR", "eval.usage", "Executa Scripts na JVM (Apenas-Owner)");
 
 		localize("en_US", "stats.negativeTime", "<Negative difference of time>");
 		localize("pt_BR", "stats.negativeTime", "<Diferença negativa de tempo>");
@@ -188,8 +195,14 @@ public class I18nHardImpl {
 		localize("pt_BR", "funny.skyrim.guard.usage", "Envia frases aleatórias dos guardas de Skyrim, usando os dados de http://www.uesp.net/wiki/Skyrim:Guard_Dialogue. Especifique um número para gerar múltiplos.");
 		localize("en_US", "funny.stevenuniverse.stevonnie.usage", "Say random Stevonnie quotes, pumped from http://steven-universe.wikia.com/wiki/Stevonnie/Quotes (No Spoilers besides themselves). Specify a number to generate multiple.");
 		localize("pt_BR", "funny.stevenuniverse.stevonnie.usage", "Envia frases aleatórias da Stevonnie, usando os dados de http://steven-universe.wikia.com/wiki/Stevonnie/Quotes (Sem Spoilers além dela própria). Especifique um número para gerar múltiplos.");
+		localize("en_US", "funny.skyrim.lydia.usage", "Say random Lydia quotes, pumped from http://elderscrolls.wikia.com/wiki/Lydia. Specify a number to generate multiple.");
+		localize("pt_BR", "funny.skyrim.lydia.usage", "Envia frases aleatórias da Lydia, usando os dados de http://elderscrolls.wikia.com/wiki/Lydia. Especifique um número para gerar múltiplos.");
 
-		//"error.contentmanager"
+		localize("en_US", "error.contentmanager", "The ContentManager failed at loading the content. Please report it to the devs.");
+		localize("pt_BR", "error.contentmanager", "O ContentManager falhou ao carregar o conteúdo. Por favor reporte isso ao desenvolvedores.");
+
+		localize("en_US", "alias.of", "Alias of %s");
+		localize("pt_BR", "alias.of", "Alias de %s");
 		//"cmds.list.usage"
 		//"cmds.detailed.usage"
 		//"cmds.add.usage" "Adiciona um Comando de Usuário"

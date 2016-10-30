@@ -40,7 +40,7 @@ repositories {
 dependencies {
     //compile 'net.dv8tion:JDA:2.2.1_373'
     //compile fileTree(dir: 'libs', include: '*.jar') //JDA3 is in /libs
-    compile name: 'JDA-withDependencies-3.0.ALPHA_42'
+    compile name: 'JDA-withDependencies-3.0.ALPHA_49'
     //compile name: 'ModularServer-1.0'
     //source name: 'JDA-3.0.ALPHA_34-sources'
     //javadoc name: 'JDA-3.0.ALPHA_34-javadoc'

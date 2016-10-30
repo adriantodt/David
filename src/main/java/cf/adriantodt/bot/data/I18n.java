@@ -13,14 +13,15 @@
 package cf.adriantodt.bot.data;
 
 import cf.adriantodt.bot.base.cmd.CommandEvent;
+import cf.adriantodt.bot.utils.Push;
+import com.google.gson.JsonObject;
 import net.dv8tion.jda.core.entities.TextChannel;
 
 import java.util.*;
 import java.util.regex.Pattern;
 
 import static cf.adriantodt.bot.data.DataManager.*;
-import static cf.adriantodt.bot.utils.Utils.iterate;
-import static cf.adriantodt.bot.utils.Utils.nnOrD;
+import static cf.adriantodt.bot.utils.Utils.*;
 
 /*
  * LOCALES:
@@ -32,6 +33,24 @@ public class I18n {
 	private static List<String> syncedLocalizations = new ArrayList<>(), moderated = new ArrayList<>();
 	private static Map<String, Map<String, String>> locales = new HashMap<>();
 	private static Map<String, String> parents = new HashMap<>();
+
+	public static String generateJsonDump() {
+		System.out.println();
+		JsonObject json = new JsonObject();
+		JsonObject parents = new JsonObject();
+		JsonObject localizations = new JsonObject();
+
+		I18n.parents.forEach(parents::addProperty);
+		locales.forEach((k, v) -> {
+			JsonObject localization = new JsonObject();
+			v.forEach(localization::addProperty);
+			localizations.add(k, localization);
+		});
+
+		json.add("parents", parents);
+		json.add("localizations", localizations);
+		return json.toString();
+	}
 
 	public static void pushTranslation(String unlocalized, String locale, String localized) {
 		String localeId = unlocalized + ":" + locale;
@@ -72,20 +91,47 @@ public class I18n {
 		parents.put(locale, parent);
 	}
 
+//	public static String getLocalized(String unlocalized, String locale) {
+//		String localized = getBaseLocalized(unlocalized, locale);
+//		if (!localized.contains("$(")) return localized;
+//
+//		Set<String> skipIfIterated = new HashSet<>();
+//		for (String key : iterate(compiledPattern.matcher(localized))) {
+//			if (skipIfIterated.contains(key)) continue;
+//			String unlocalizedKey = key.substring(2, key.length() - 1);
+//			localized = localized.replace(key, getLocalized(unlocalizedKey, locale));
+//			if (!localized.contains("$(")) break;
+//			skipIfIterated.add(key);
+//		}
+//
+//		return localized;
+//	}
+
+
 	public static String getLocalized(String unlocalized, String locale) {
-		String localized = getBaseLocalized(unlocalized, locale);
-		if (!localized.contains("$(")) return localized;
+		return dynamicTranslate(getBaseLocalized(unlocalized, locale), locale, null);
+	}
+
+	public static String dynamicTranslate(String string, String locale, Optional<Map<String, String>> dynamicMap) {
+		if (dynamicMap == null) dynamicMap = Optional.empty();
+		if (!string.contains("$(")) return string;
 
 		Set<String> skipIfIterated = new HashSet<>();
-		for (String key : iterate(compiledPattern.matcher(localized))) {
+		for (String key : iterate(compiledPattern.matcher(string))) {
 			if (skipIfIterated.contains(key)) continue;
 			String unlocalizedKey = key.substring(2, key.length() - 1);
-			localized = localized.replace(key, getLocalized(unlocalizedKey, locale));
-			if (!localized.contains("$(")) break;
+
+			if (dynamicMap.isPresent()) {
+				string = string.replace(key, Optional.ofNullable(dynamicMap.get().get(unlocalizedKey)).orElseGet(() -> getLocalized(unlocalizedKey, locale)));
+			} else {
+				string = string.replace(key, getLocalized(unlocalizedKey, locale));
+			}
+
+			if (!string.contains("$(")) break;
 			skipIfIterated.add(key);
 		}
 
-		return localized;
+		return string;
 	}
 
 	public static String getLocalized(String unlocalized, CommandEvent event) {
@@ -96,22 +142,27 @@ public class I18n {
 		return getLocalized(unlocalized, Guilds.fromDiscord(channel.getGuild()).getLang());
 	}
 
-	private static String getBaseLocalized(String unlocalized, String locale) {
-		String localized = unlocalized;
-		Map<String, String> locales = I18n.locales.get(unlocalized);
-		while (unlocalized.equals(localized) && locale != null) {
-			localized = locales != null ? locales.getOrDefault(locale, unlocalized) : unlocalized;
-			if (unlocalized.equals(localized)) locale = parents.get(locale);
+	private static String getBaseLocalized(final String unlocalized, final String locale) {
+		String unlocalizing = unlocalized, localed = locale, localized = unlocalizing;
+		Map<String, String> locales = I18n.locales.get(unlocalizing);
+		while (unlocalizing.equals(localized) && localed != null) {
+			localized = locales != null ? locales.getOrDefault(localed, unlocalizing) : unlocalizing;
+			if (unlocalizing.equals(localized)) localed = parents.get(localed);
 			else if (localized.length() > 1 && localized.startsWith("$$=") && localized.endsWith(";")) { //This won't change the parent
 				localized = localized.substring(3, localized.length() - 1); //Substring localized
-				if (unlocalized.equals(localized)) {//unlocalized = localized -> LOOP
-					return localized;
+				if (unlocalizing.equals(localized)) {//unlocalized = localized -> LOOP
+					break;
 				} else {
-					unlocalized = localized;
-					locales = I18n.locales.get(unlocalized);
+					unlocalizing = localized;
+					locales = I18n.locales.get(unlocalizing);
 				}
 			}
 		}
+
+		if (unlocalizing.equals(localized) || localed == null) {
+			async(() -> Push.pushSimple("i18n", channel -> "I18n Warn: Detected an untranslated String: " + unlocalized + ":" + locale)).run();
+		}
+
 		return localized;
 	}
 }

@@ -13,11 +13,12 @@
 package cf.adriantodt.bot.data;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.rethinkdb.net.Cursor;
 
 import java.util.HashMap;
-import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 public class ReturnHandler {
 	public static final ReturnHandler h = new ReturnHandler();
@@ -49,8 +50,12 @@ public class ReturnHandler {
 			this.cursor = cursor;
 		}
 
-		public JsonElement list() {
-			return json.toJsonTree(cursor.toList());
+		public JsonArray list() {
+			return json.toJsonTree(cursor.toList()).getAsJsonArray();
+		}
+
+		public void forEach(Consumer<? super JsonElement> consumer) {
+			list().forEach(consumer);
 		}
 
 		public MapHandler first() {
@@ -63,17 +68,37 @@ public class ReturnHandler {
 
 		public static class CursorStreamHandler {
 			private final Cursor<HashMap<String, Object>> cursor;
-
 			private CursorStreamHandler(Cursor<HashMap<String, Object>> cursor) {
 				this.cursor = cursor;
 			}
 
-			public Runnable handle(BiConsumer<Cursor, JsonElement> onStreamed) {
+			public Runnable onStream(Consumer<StreamHandler> streamConsumer) {
 				return () -> {
 					for (Object next : cursor) {
-						onStreamed.accept(cursor, json.toJsonTree(next));
+						StreamHandler handler = new StreamHandler(cursor, json.toJsonTree(next));
+						streamConsumer.accept(handler);
+						if (handler.breakAfter()) break;
 					}
 				};
+			}
+
+			public static class StreamHandler {
+				private final JsonElement element;
+				private final Cursor<HashMap<String, Object>> cursor;
+				private boolean breakAfter = false;
+
+				public StreamHandler(Cursor<HashMap<String, Object>> cursor, JsonElement element) {
+					this.element = element;
+					this.cursor = cursor;
+				}
+
+				public boolean breakAfter() {
+					return breakAfter;
+				}
+
+				public void doBreak(boolean breakAfter) {
+					this.breakAfter = breakAfter;
+				}
 			}
 		}
 	}

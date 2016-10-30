@@ -19,7 +19,13 @@
         </RollingRandomAccessFile>
     </Appenders>
     <Loggers>
-        <Root level="DEBUG">
+        <Logger name="org.springframework.boot.context.embedded.AnnotationConfigEmbeddedWebApplicationContext"
+                level="ERROR"/>
+        <Logger name="org.springframework.boot.context.embedded.tomcat.TomcatEmbeddedServletContainer" level="ERROR"/>
+        <Logger name="org.springframework.boot.web.servlet.ServletRegistrationBean" level="ERROR"/>
+        <Logger name="org.springframework.boot.web.servlet.FilterRegistrationBean" level="ERROR"/>
+        <Logger name="org.springframework.jmx.export.annotation.AnnotationMBeanExporter" level="ERROR"/>
+        <Root level="ALL">
             <AppenderRef ref="ConsoleOut" level="INFO"/>
             <AppenderRef ref="File"/>
             <AppenderRef ref="ServerGuiConsole" level="INFO"/>

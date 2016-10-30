@@ -63,27 +63,7 @@ public class TreeCommandBuilder {
 
 	public TreeCommandBuilder addCommand(String cmd, String alias) {
 		ICommand base = SUBCMDS.get(alias);
-		return addCommand(cmd, base == null ? null : new ICommand() {
-			@Override
-			public void run(CommandEvent event) {
-				base.run(event.createChild(base, event.getArgs()));
-			}
-
-			@Override
-			public long retrievePerm() {
-				return base.retrievePerm();
-			}
-
-			@Override
-			public boolean sendStartTyping() {
-				return base.sendStartTyping();
-			}
-
-			@Override
-			public String toString(String language) {
-				return "Alias of " + alias;
-			}
-		});
+		return addCommand(cmd, AliasCommand.of(base, alias));
 	}
 
 	public TreeCommandBuilder addDefault(String alias) {

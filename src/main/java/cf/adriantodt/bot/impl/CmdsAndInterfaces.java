@@ -49,16 +49,33 @@ public class CmdsAndInterfaces {
 			.addCommand("info", new CommandBuilder("user.info.usage")
 				.setAction(event -> {
 					String[] users = event.getArgs(0);
+					if (users.length == 0) {
+						users = new String[]{event.getAuthor().getId()};
+					}
+
+					Holder<Boolean> any = new Holder<>(false);
+
 					for (String userId : users) {
 						User user = event.getJDA().getUserById(Utils.processId(userId));
 						if (user == null) continue;
+						any.var = true;
+						event.awaitTyping().getAnswers().send(
+							user.getAsMention() + ": \n" + getLocalized("user.avatar", event) + ": " + user.getAvatarUrl() + "\n```" +
+								Users.toString(Users.fromDiscord(user), Bot.API, getLocale(event), event.getGuild().getGuild()) +
+								"\n```"
+						).queue();
+					}
 
-						event.getAnswers().send(
+					if (!any.var) {
+						User user = event.getAuthor();
+						any.var = true;
+						event.awaitTyping().getAnswers().send(
 							user.getAsMention() + ": \n" + getLocalized("user.avatar", event) + ": " + user.getAvatarUrl() + "\n```" +
 								Users.toString(Users.fromDiscord(user), Bot.API, getLocale(event), event.getOriginGuild()) +
 								"\n```"
 						).queue();
 					}
+
 				}).build()
 			)
 			.addCommand("lang",
@@ -143,15 +160,19 @@ public class CmdsAndInterfaces {
 					for (int i = 0, amount = clampIfNotOwner(parseInt(event.getArgs(), 1), 0, 10, event.getAuthor()); i < amount; i++)
 						event.getAnswers().send("[#" + (i + 1) + "] " + TESV_GUARDS[(int) Math.floor(Math.random() * TESV_GUARDS.length)]).queue();
 				}).build())
+				.addCommand("lydia", new CommandBuilder("funny.skyrim.lydia.usage").setAction(event -> {
+					if (!ContentManager.TESV_LYDIA_LOADED) {
+						event.awaitTyping();
+						event.getAnswers().sendTranslated("error.contentmanager").queue();
+						return;
+					}
+					for (int i = 0, amount = clampIfNotOwner(parseInt(event.getArgs(), 1), 0, 10, event.getAuthor()); i < amount; i++)
+						event.getAnswers().send("[#" + (i + 1) + "] " + TESV_LYDIA[(int) Math.floor(Math.random() * TESV_LYDIA.length)]).queue();
+				}).build())
 				.build()
 			)
 			.build()
 		);
-
-		//implDrama
-		;
-
-		//implSUTheory
 
 		//implAnnoy
 //		addCommand("annoy", new CommandBuilder()
@@ -180,7 +201,7 @@ public class CmdsAndInterfaces {
 		addCommand("guild", new TreeCommandBuilder()
 			.addCommand("info",
 				new CommandBuilder("guild.info.usage")
-					.setAction(event -> event.getAnswers().sendCased(Guilds.toString(event.getGuild(), event.getJDA(), I18n.getLocale(event))).queue())
+					.setAction(event -> event.awaitTyping().getAnswers().sendCased(Guilds.toString(event.getGuild(), event.getJDA(), I18n.getLocale(event))).queue())
 					.build()
 			)
 			.addDefault("info")
@@ -188,19 +209,19 @@ public class CmdsAndInterfaces {
 				new CommandBuilder("guild.lang.usage", SET_GUILD)
 					.setAction(event -> {
 						event.getGuild().setLang(event.getArgs().isEmpty() ? "en_US" : event.getArgs());
-						event.getAnswers().announce(String.format(getLocalized("guild.lang.set", event), event.getGuild().getLang())).queue();
+						event.awaitTyping().getAnswers().announce(String.format(getLocalized("guild.lang.set", event), event.getGuild().getLang())).queue();
 					}).build()
 			)
 			.addCommand("cleanup",
 				new CommandBuilder("guild.cleanup.usage", SET_GUILD)
-					.setAction(event -> event.getAnswers().bool(event.getGuild().toggleFlag("cleanup")).queue())
+					.setAction(event -> event.awaitTyping().getAnswers().bool(event.getGuild().toggleFlag("cleanup")).queue())
 					.build()
 			)
 			.addCommand("prefixes",
-				new CommandBuilder("perms.set.usage", SET_GUILD)
+				new CommandBuilder("guild.prefixes.usage", SET_GUILD)
 					.setAction(event -> {
 						if (event.getArgs().trim().isEmpty()) {
-							event.getAnswers().invalidargs().queue();
+							event.awaitTyping().getAnswers().invalidargs().queue();
 							return;
 						}
 						Commitable<List<String>> cmdPrefixesHandler = event.getGuild().modifyCmdPrefixes();
@@ -217,11 +238,11 @@ public class CmdsAndInterfaces {
 							} else if (each.toLowerCase().equals("clear")) {
 								cmdPrefixes.clear();
 							} else if (each.toLowerCase().equals("list") || each.toLowerCase().equals("get")) {
-								event.getAnswers().send(Arrays.toString(cmdPrefixes.toArray())).queue();
+								event.awaitTyping().getAnswers().send(Arrays.toString(cmdPrefixes.toArray())).queue();
 							}
 						}
 						cmdPrefixesHandler.pushChanges();
-						event.getAnswers().bool(true).queue();
+						event.awaitTyping().getAnswers().bool(true).queue();
 					})
 					.build()
 			)
@@ -307,27 +328,55 @@ public class CmdsAndInterfaces {
 
 		addCommand("push",
 			new TreeCommandBuilder()
-				.addCommand("subscribe", new CommandBuilder(PUSH_SUBSCRIBE)
+				.addCommand("subscribe", new CommandBuilder("push.subscribe.usage", PUSH_SUBSCRIBE)
 					.setAction(event -> {
 						Push.subscribe(event.getChannel(), Arrays.asList(event.getArgs(0)));
 						event.awaitTyping().getAnswers().bool(true).queue();
 					})
 					.build()
 				)
-				.addCommand("unsubscribe", new CommandBuilder(PUSH_SUBSCRIBE)
+				.addCommand("unsubscribe", new CommandBuilder("push.unsubscribe.usage", PUSH_SUBSCRIBE)
 					.setAction(event -> {
 						Push.unsubscribe(event.getChannel(), Arrays.asList(event.getArgs(0)));
 						event.awaitTyping().getAnswers().bool(true).queue();
 					})
 					.build()
 				)
-				.addCommand("send", new CommandBuilder(PUSH_SEND)
+				.addCommand("send", new CommandBuilder("push.send.usage", PUSH_SEND)
 					.setAction(event -> {
 						Push.pushSimple(event.getArgument(2, 0), (channel) -> event.getArgument(2, 1));
 						event.awaitTyping().getAnswers().bool(true).queue();
 					})
 					.build()
 				)
+				.addCommand("list", new CommandBuilder("push.list.usage", PUSH_SEND)
+					.setAction(event -> {
+						Set<String> subscribed = new TreeSet<>(Push.subscriptionsFor(event.getChannel())), all = new TreeSet<>(Push.resolveTypeSet());
+						Holder<StringBuilder> b = new Holder<>(new StringBuilder().append("**").append(getLocalized("push.list", event)).append(":**\n "));
+						Holder<Boolean> first = new Holder<>(true);
+						first.var = true;
+						all.forEach(s -> {
+							if (subscribed.contains(s)) s = "**" + s + "**";
+							if ("*****".equals(s)) s = "*";
+
+							if (first.var) {
+								first.var = false;
+								b.var.append(s);
+							} else {
+								String a = " " + s;
+								if (b.var.length() + a.length() >= 1999) {
+									event.awaitTyping().getAnswers().send(b.var.toString()).queue();
+									b.var = new StringBuilder();
+								}
+								b.var.append(a);
+							}
+						});
+						if (first.var) b.var.append("(").append(getLocalized("push.none", event)).append(")");
+						event.awaitTyping().getAnswers().send(b.var.toString()).queue();
+					})
+					.build()
+				)
+				.addDefault("list")
 				.build()
 		);
 
@@ -350,7 +399,7 @@ public class CmdsAndInterfaces {
 						Holder<StringBuilder> b = new Holder<>();
 						Holder<Boolean> first = new Holder<>();
 
-						b.var = new StringBuilder("**Comandos Disponíveis:**\n *");
+						b.var = new StringBuilder().append("**").append(getLocalized("cmds.commandsAvailable", event)).append(":**\n *");
 						first.var = true;
 						cmds.forEach(s -> {
 							if (first.var) {
@@ -367,11 +416,11 @@ public class CmdsAndInterfaces {
 							}
 
 						});
-						if (first.var) b.var.append("(nenhum comando disponível)");
+						if (first.var) b.var.append("(").append(getLocalized("cmds.noneAvailable", event)).append(")");
 						b.var.append("*");
 						event.getAnswers().send(b.var.toString()).queue();
 
-						b.var = new StringBuilder("**Comandos de Usuário Disponíveis:**\n *");
+						b.var = new StringBuilder().append("**").append(getLocalized("cmds.userCommandsAvailable", event)).append(":**\n *");
 						first.var = true;
 
 						userCmds.forEach(s -> {
@@ -389,7 +438,7 @@ public class CmdsAndInterfaces {
 							}
 
 						});
-						if (first.var) b.var.append("(nenhum comando disponível)");
+						if (first.var) b.var.append("(").append(getLocalized("cmds.noneAvailable", event)).append(")");
 						b.var.append("*");
 						event.getAnswers().send(b.var.toString()).queue();
 					}).build())
@@ -407,11 +456,9 @@ public class CmdsAndInterfaces {
 					List<String> cmds = getBaseCommands().entrySet().stream().filter(entry -> canRunCommand(event.getGuild(), event.createChild(entry.getValue(), event.getArgs()))).map(
 						(entry) -> entry.getKey() + " - " + entry.getValue().toString(I18n.getLocale(event))).sorted(String::compareTo).collect(Collectors.toList());
 
-					Holder<StringBuilder> b = new Holder<>();
-					Holder<Boolean> first = new Holder<>();
+					Holder<StringBuilder> b = new Holder<>(new StringBuilder().append("**").append(getLocalized("cmds.commandsAvailable", event)).append(":**\n"));
+					Holder<Boolean> first = new Holder<>(true);
 
-					b.var = new StringBuilder("**Comandos:**\n");
-					first.var = true;
 					cmds.forEach(s -> {
 						String v = encase(s);
 						if (first.var) {
@@ -426,7 +473,7 @@ public class CmdsAndInterfaces {
 						}
 
 					});
-					if (first.var) b.var.append("(nenhum comando disponível)");
+					if (first.var) b.var.append("(").append(getLocalized("cmds.noneAvailable", event)).append(")");
 					channel.sendMessage(b.var.toString()).queue();
 					event.getAnswers().send(event.getAuthor().getAsMention() + " :mailbox_with_mail:").queue();
 				}).build())
@@ -453,7 +500,7 @@ public class CmdsAndInterfaces {
 							}
 						}
 					}).build())
-				.addCommand("rm", new CommandBuilder("cmds.add.usage", MANAGE_USER_CMDS)
+				.addCommand("rm", new CommandBuilder("cmds.rm.usage", MANAGE_USER_CMDS)
 					.setAction(event -> {
 						if (event.getArgs().trim().isEmpty()) event.getAnswers().invalidargs().queue();
 						else {
@@ -471,7 +518,7 @@ public class CmdsAndInterfaces {
 						ICommand cmd = Commands.getCommands(event.getGuild()).get(event.getArgs());
 						if (cmd == null) event.getAnswers().invalidargs().queue();
 						else
-							event.getAnswers().send("***Debug do Comando `" + event.getArgs() + "`:*** " + cmd.toString(I18n.getLocale(event))).queue();
+							event.getAnswers().send("***`" + event.getArgs() + "`:*** " + cmd.toString(I18n.getLocale(event))).queue();
 					}
 				}).build())
 				.build()

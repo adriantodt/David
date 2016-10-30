@@ -14,10 +14,9 @@ package cf.adriantodt.bot.base.cmd;
 
 import cf.adriantodt.bot.base.Permissions;
 import cf.adriantodt.bot.data.I18n;
+import cf.adriantodt.bot.utils.Utils;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 import static cf.adriantodt.bot.Bot.RAND;
 
@@ -34,9 +33,6 @@ public class UserCommand implements ICommand, ITranslatable {
 //				event.getAnswers().send(IOHelper.toString(response.substring(6))).queue();
 //				return;
 //			} else
-			if (response.substring(0, 6).equals("loc://")) {
-				event.awaitTyping().getAnswers().send(I18n.getLocalized(response.substring(6), event)).queue();
-				return;
 				//} else if (response.substring(0, 6).equals("aud://")) {
 				//	Audio.queue(IOHelper.newURL(response.substring(6)), event);
 				//	return;
@@ -48,9 +44,15 @@ public class UserCommand implements ICommand, ITranslatable {
 				}
 				return;
 			}
-		}
 
-		event.awaitTyping().getAnswers().send(response).queue();
+		Map<String, String> dynamicMap = new HashMap<>();
+		dynamicMap.put("event.username", event.getAuthor().getName());
+		dynamicMap.put("event.nickname", event.getMember().getNickname());
+		dynamicMap.put("event.name", Utils.name(event.getAuthor(), event.getGuild().getGuild()));
+		dynamicMap.put("event.mentionUser", event.getAuthor().getAsMention());
+		dynamicMap.put("event.args", event.getArgs());
+		dynamicMap.put("event.guild", event.getGuild().getName());
+		event.awaitTyping().getAnswers().send(I18n.dynamicTranslate(response, I18n.getLocale(event), Optional.of(dynamicMap))).queue();
 	}
 
 	@Override

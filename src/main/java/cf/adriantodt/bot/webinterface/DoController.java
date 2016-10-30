@@ -7,7 +7,7 @@
  * GNU Lesser General Public License v2.1:
  * https://github.com/adriantodt/David/blob/master/LICENSE
  *
- * File Created @ [29/10/16 00:36]
+ * File Created @ [29/10/16 09:35]
  */
 
 package cf.adriantodt.bot.webinterface;
@@ -22,15 +22,17 @@ import java.util.Map;
 import java.util.function.Function;
 
 import static cf.adriantodt.bot.webinterface.WebInterfaceHelper.API_CALL_NOT_FOUND;
+import static cf.adriantodt.bot.webinterface.WebInterfaceHelper.error;
 
 @RestController
-public class SetController {
+public class DoController {
 	public static final Map<String, Function<Map<String, String>, JsonElement>> api = new HashMap<>();
 
 	static {
+		api.put("music", map -> error("Not implemented"));
 	}
 
-	@RequestMapping("/set")
+	@RequestMapping("/do")
 	public String api(@RequestParam Map<String, String> params) {
 		return api.getOrDefault(params.getOrDefault("type", ""), API_CALL_NOT_FOUND).apply(params).toString();
 	}

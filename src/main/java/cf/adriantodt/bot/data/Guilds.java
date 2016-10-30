@@ -15,6 +15,7 @@ package cf.adriantodt.bot.data;
 import cf.adriantodt.bot.Bot;
 import cf.adriantodt.bot.base.Permissions;
 import cf.adriantodt.bot.utils.Tasks;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.rethinkdb.model.MapObject;
@@ -33,7 +34,25 @@ public class Guilds {
 	public static final String[] DEFAULT_PREFIXES = {"&", "!"};
 	public static final Data GLOBAL;
 	private static List<Data> all = new ArrayList<>();
-	private static Map<Guild, Data> guildMap = new HashMap<>();
+	private static Map<Guild, Data> guildMap = new HashMap<Guild, Data>() {
+		@Override
+		public Data put(Guild key, Data value) {
+			if (key == null) return null;
+			return super.put(key, value);
+		}
+
+		@Override
+		public void putAll(Map<? extends Guild, ? extends Data> m) {
+			m.remove(null);
+			super.putAll(m);
+		}
+
+		@Override
+		public Data putIfAbsent(Guild key, Data value) {
+			if (key == null) return null;
+			return super.putIfAbsent(key, value);
+		}
+	};
 	private static Map<Data, Integer> timeoutUntilDbRemoval = new HashMap<>();
 
 	static { //FakeGuilds Impl
@@ -55,10 +74,6 @@ public class Guilds {
 		return Collections.unmodifiableList(all);
 	}
 
-	public static void loadAll() {
-		h.query(r.table("guilds").getAll().run(conn)).list().getAsJsonArray().forEach(Guilds::unpack);
-	}
-
 	private static Data unpack(JsonElement element) {
 		JsonObject object = element.getAsJsonObject();
 		Data data = all.stream().filter(dataPredicate -> object.get("id").getAsString().equals(dataPredicate.id)).findFirst().orElseGet(Data::new);
@@ -70,10 +85,6 @@ public class Guilds {
 		data.flags.clear();
 		object.get("flags").getAsJsonObject().entrySet().forEach(entry -> data.flags.put(entry.getKey(), entry.getValue().getAsBoolean()));
 		object.get("userPerms").getAsJsonObject().entrySet().forEach(entry -> data.userPerms.put(entry.getKey(), entry.getValue().getAsLong()));
-		guildMap.put(data.getGuild(), data);
-		if (data.getGuild() == null) {
-			timeoutUntilDbRemoval.put(data, 5);
-		}
 		return data;
 	}
 
@@ -98,31 +109,41 @@ public class Guilds {
 		if (guildMap.containsKey(guild)) {
 			return guildMap.get(guild);
 		} else {
-			Data data = new Data();
-			guildMap.put(guild, data);
-			data.id = guild.getId();
-			data.name = toGuildName(guild.getName());
+			return getOrGen(Optional.of(guild), Optional.empty(), Optional.empty());
+		}
+	}
+
+	@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
+	private static Data getOrGen(Optional<Guild> guildOptional, Optional<String> optionalId, Optional<String> optionalName) {
+		RuntimeException ex = new IllegalStateException("Id and/or Name can't be Optional if Guild isn't returned");
+		String id = optionalId.orElseGet(() -> guildOptional.orElseThrow(() -> ex).getId());
+		String name = optionalName.orElseGet(() -> guildOptional.orElseThrow(() -> ex).getName());
+
+		Data data = null;
+
+		JsonArray array = h.query(r.db("bot").table("guilds").filter(r.hashMap("id", id)).run(conn)).list().getAsJsonArray();
+		if (array.size() == 0) {
+			data = new Data();
+
+			data.id = id;
+			data.name = toGuildName(name);
 
 			MapObject m =
 				r.hashMap("id", data.id)
 					.with("name", data.name)
-					.with("cmdPrefixes", r.array(data.cmdPrefixes.toArray()))
+					.with("cmdPrefixes", data.cmdPrefixes)
 					.with("lang", data.lang)
 					.with("userPerms", data.userPerms)
 					.with("flags", data.flags);
 
 			r.table("guilds").insert(m).runNoReply(conn);
-
-			return data;
+		} else {
+			data = unpack(array.get(0));
 		}
-	}
-
-	public static Data fromId(String id) {
-		for (Data g : all) {
-			if (g.id.equals(id)) return g;
-		}
-
-		return null;
+		Data finalData = data;
+		guildOptional.ifPresent(guild -> guildMap.put(guild, finalData));
+		UserCommands.loadAllFrom(data);
+		return data;
 	}
 
 	public static Data fromName(String name) {
@@ -144,11 +165,11 @@ public class Guilds {
 	public static String toString(Data data, JDA jda, String language) {
 		Guild guild = data.getGuild(jda);
 		return I18n.getLocalized("guild.guild", language) + ": " + data.name + (guild != null && !data.name.equals(guild.getName()) ? " (" + guild.getName() + ")" : "")
-			+ "\n - " + I18n.getLocalized("guild.admin", language) + ": " + (guild == null ? Bot.API.getUserById(DataManager.configs.ownerID).getName() : guild.getOwner().getUser().getName())
+			+ "\n - " + I18n.getLocalized("guild.admin", language) + ": " + (guild == null ? Bot.API.getUserById(Configs.getConfigs().ownerID).getName() : guild.getOwner().getUser().getName())
 			+ "\n - " + I18n.getLocalized("guild.cmds", language) + ": " + UserCommands.allFrom(data).size()
 			+ "\n - " + I18n.getLocalized("guild.channels", language) + ": " + (guild == null ? (Bot.API.getTextChannels().size() + Bot.API.getPrivateChannels().size()) : guild.getTextChannels().size())
 			+ "\n - " + I18n.getLocalized("guild.users", language) + ": " + (guild == null ? Bot.API.getUsers().size() : guild.getMembers().size())
-			+ "\n - ID: " + data.id;
+			+ "\n - " + I18n.getLocalized("guild.id", language) + ": " + data.id;
 	}
 
 	public static class Data {

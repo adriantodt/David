@@ -27,21 +27,14 @@ import java.util.stream.Collectors;
 
 public class DataManager {
 	public static final RethinkDB r = RethinkDB.r;
-	public static Configs configs;
+
 	public static Connection conn;
 	public static Gson json = Bot.JSON_INTERNAL;
 	public static ReturnHandler h = ReturnHandler.h;
 
 	public static void init() {
-		Configs.loadConfig();
-		conn = r.connection().hostname(configs.hostname).port(configs.port).db("bot").connect();
+		conn = r.connection().hostname(Configs.getConfigs().hostname).port(Configs.getConfigs().port).db("bot").connect();
 	}
-
-	public static void load() {
-		Guilds.loadAll();
-		Guilds.all().forEach(UserCommands::loadAllFrom);
-	}
-
 
 	public static Path getPath(String file, String ext) {
 		try {

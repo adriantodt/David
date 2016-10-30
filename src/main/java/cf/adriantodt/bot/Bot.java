@@ -12,6 +12,7 @@
 
 package cf.adriantodt.bot;
 
+import cf.adriantodt.bot.data.Configs;
 import cf.adriantodt.bot.data.DataManager;
 import cf.adriantodt.bot.data.Guilds;
 import cf.adriantodt.bot.data.I18n;
@@ -52,11 +53,22 @@ public class Bot {
 	public static boolean LOADED = false;
 	public static List<Runnable> onLoaded = new ArrayList<>();
 
+	static {
+		onLoaded.add(() -> {
+			User user = API.getUserById(Configs.getConfigs().ownerID);
+			if (user == null) {
+				LOGGER.warn("Owner not regognized. This WILL cause issues (specially PermSystem)");
+			} else {
+				LOGGER.info("Owner recognized: " + user.getName() + "#" + user.getDiscriminator() + " (ID: " + user.getId() + ")");
+			}
+		});
+	}
+
 	public static void init() throws Exception {
 		DataManager.init();
 		Tasks.startAsyncTasks();
 		new JDABuilder(AccountType.BOT)
-			.setToken(DataManager.configs.token)
+			.setToken(Configs.getConfigs().token)
 			.setBulkDeleteSplittingEnabled(false)
 			.setAudioEnabled(false)
 			.setEventManager(new AnnotatedEventManager())
@@ -64,7 +76,6 @@ public class Bot {
 				API = event.getJDA();
 				SELF = event.getJDA().getSelfInfo();
 				//API.getSelfInfo().setGame("mention me for help");
-				DataManager.load();
 				I18nHardImpl.impl();
 				I18nHardImpl.implLocal();
 				Statistics.startDate = new Date();
@@ -94,7 +105,7 @@ public class Bot {
 				.put("status", "online")).toString()
 		);
 
-		Push.pushSimple("startup", channel -> I18n.getLocalized("bot.startup", channel));
+		Push.pushSimple("start", channel -> I18n.getLocalized("bot.startup", channel));
 	}
 
 	public static void stopBot() {

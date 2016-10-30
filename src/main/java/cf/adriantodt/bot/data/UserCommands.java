@@ -36,52 +36,62 @@ public class UserCommands {
 		if (!guildCommands.containsKey(guild)) guildCommands.put(guild, new HashMap<>());
 		guildCommands.get(guild).put(name, command);
 
-		//Base64-fy
-		List list = r.array();
-		command.responses.forEach(s -> list.add(Base64.getEncoder().encodeToString(s.getBytes(Charset.forName("UTF-8")))));
-
 		//Insert
 		cachedCommands.put(command, h.response(r.table("commands").insert(
-			r.array(
-				r.hashMap("gid", guild.getId())
-					.with("responses", list)
-					.with("name", name)
-			)
+			r.hashMap("gid", guild.getId())
+				.with("responses", cmdsToDB(new ArrayList<>(command.responses)))
+				.with("name", name)
 		).run(conn)).object().getAsJsonObject().get("generated_keys").getAsJsonArray().get(0).getAsString());
 	}
 
 	public static void update(UserCommand command) {
 		if (!cachedCommands.containsKey(command)) throw new IllegalStateException("The Command isn't registered");
 
-		//Base64-fy
-		List list = r.array();
-		command.responses.forEach(s -> list.add(Base64.getEncoder().encodeToString(s.getBytes(Charset.forName("UTF-8")))));
-
 		//Update
-		r.table("commands").get(cachedCommands.get(command)).update(arg -> r.hashMap("responses", list)).runNoReply(conn);
+		r.table("commands").get(cachedCommands.get(command)).update(arg -> r.hashMap("responses", cmdsToDB(new ArrayList<>(command.responses)))).runNoReply(conn);
 	}
 
 	public static void remove(UserCommand command) {
 		if (!cachedCommands.containsKey(command)) throw new IllegalStateException("The Command isn't at the database");
+
+		cachedCommands.remove(command);
+		List<Runnable> post = new ArrayList<>();
+		guildCommands.forEach((data, map) -> map.forEach((s, cmd) -> {
+			if (cmd == command) post.add(() -> guildCommands.get(data).remove(s));
+		}));
+		post.forEach(Runnable::run);
 
 		//Delete
 		r.table("commands").get(cachedCommands.get(command)).delete().runNoReply(conn);
 	}
 
 	public static void loadAllFrom(Guilds.Data data) {
-		if (!guildCommands.containsKey(data)) guildCommands.put(data, new HashMap<>());
+		Map<String, UserCommand> thisGuildCommands = guildCommands.containsKey(data) ? guildCommands.get(data) : new HashMap<>();
 
-		h.query(r.table("commands").filter(row -> row.g("gid").eq(data.getId())).run(conn)).list().getAsJsonArray().forEach(jsonElement -> {
+		h.query(r.table("commands").filter(row -> row.g("gid").eq(data.getId())).run(conn)).forEach(jsonElement -> {
 			UserCommand cmd = new UserCommand();
-			jsonElement.getAsJsonObject().get("responses").getAsJsonArray().forEach(jsonString -> cmd.responses.add(new String(Base64.getDecoder().decode(jsonString.getAsString()), Charset.forName("UTF-8"))));
-			guildCommands.get(data).put(jsonElement.getAsJsonObject().get("name").getAsString(), cmd);
+			jsonElement.getAsJsonObject().get("responses").getAsJsonArray().forEach(jsonString -> cmd.responses.add(jsonString.getAsString()));
+			cmd.responses = cmdsFromDB(cmd.responses);
+			thisGuildCommands.put(jsonElement.getAsJsonObject().get("name").getAsString(), cmd);
 			cachedCommands.put(cmd, jsonElement.getAsJsonObject().get("id").getAsString());
 		});
-	}
 
+
+		guildCommands.put(data, thisGuildCommands);
+	}
 
 	public static Map<String, UserCommand> allFrom(Guilds.Data data) {
 		if (!guildCommands.containsKey(data)) guildCommands.put(data, new HashMap<>());
 		return Collections.unmodifiableMap(guildCommands.get(data));
+	}
+
+	public static List<String> cmdsFromDB(List<String> l) {
+		l.replaceAll(s -> new String(Base64.getDecoder().decode(s.getBytes()), Charset.forName("UTF-8")));
+		return l;
+	}
+
+	public static List<String> cmdsToDB(List<String> l) {
+		l.replaceAll(s -> Base64.getEncoder().encodeToString(s.getBytes(Charset.forName("UTF-8"))));
+		return l;
 	}
 }
