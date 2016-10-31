@@ -15,7 +15,6 @@ package cf.adriantodt.bot.data;
 import cf.adriantodt.bot.Bot;
 import cf.adriantodt.bot.base.Permissions;
 import cf.adriantodt.bot.utils.Tasks;
-import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.rethinkdb.model.MapObject;
@@ -113,16 +112,15 @@ public class Guilds {
 		}
 	}
 
-	@SuppressWarnings("OptionalUsedAsFieldOrParameterType")
 	private static Data getOrGen(Optional<Guild> guildOptional, Optional<String> optionalId, Optional<String> optionalName) {
 		RuntimeException ex = new IllegalStateException("Id and/or Name can't be Optional if Guild isn't returned");
 		String id = optionalId.orElseGet(() -> guildOptional.orElseThrow(() -> ex).getId());
 		String name = optionalName.orElseGet(() -> guildOptional.orElseThrow(() -> ex).getName());
 
-		Data data = null;
+		Data data;
 
-		JsonArray array = h.query(r.db("bot").table("guilds").filter(r.hashMap("id", id)).run(conn)).list().getAsJsonArray();
-		if (array.size() == 0) {
+		JsonElement object = h.from(r.db("bot").table("guilds").get(id).run(conn)).simpleExpected();
+		if (object.isJsonNull()) {
 			data = new Data();
 
 			data.id = id;
@@ -138,7 +136,7 @@ public class Guilds {
 
 			r.table("guilds").insert(m).runNoReply(conn);
 		} else {
-			data = unpack(array.get(0));
+			data = unpack(object);
 		}
 		Data finalData = data;
 		guildOptional.ifPresent(guild -> guildMap.put(guild, finalData));

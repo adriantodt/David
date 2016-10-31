@@ -20,7 +20,10 @@ import cf.adriantodt.bot.data.*;
 import cf.adriantodt.bot.handlers.BotGreeter;
 import cf.adriantodt.bot.handlers.CommandHandler;
 import cf.adriantodt.bot.handlers.scripting.JS;
-import cf.adriantodt.bot.utils.*;
+import cf.adriantodt.bot.utils.Commands;
+import cf.adriantodt.bot.utils.Statistics;
+import cf.adriantodt.bot.utils.Tasks;
+import cf.adriantodt.bot.utils.Utils;
 import cf.brforgers.core.lib.IOHelper;
 import net.dv8tion.jda.core.JDAInfo;
 import net.dv8tion.jda.core.entities.MessageChannel;
@@ -41,6 +44,7 @@ import static cf.adriantodt.bot.utils.Formatter.encase;
 import static cf.adriantodt.bot.utils.Formatter.italic;
 import static cf.adriantodt.bot.utils.Statistics.clampIfNotOwner;
 import static cf.adriantodt.bot.utils.Statistics.parseInt;
+import static cf.adriantodt.bot.utils.Utils.advancedSplitArgs;
 import static cf.adriantodt.bot.utils.Utils.sleep;
 
 public class CmdsAndInterfaces {
@@ -198,6 +202,16 @@ public class CmdsAndInterfaces {
 //			.build()
 //		);
 
+		addCommand("parser", new CommandBuilder("noUsage")
+			.setAction(event -> event.awaitTyping().sendMessage(Arrays.toString(Utils.parse(event.getArgs(0)).entrySet().toArray())).queue())
+			.build()
+		);
+
+		addCommand("splitargs", new CommandBuilder("noUsage")
+			.setAction(event -> event.awaitTyping().sendMessage(Arrays.toString(advancedSplitArgs(event.getArgs(), 0))).queue())
+			.build()
+		);
+
 		addCommand("guild", new TreeCommandBuilder()
 			.addCommand("info",
 				new CommandBuilder("guild.info.usage")
@@ -263,14 +277,10 @@ public class CmdsAndInterfaces {
 							for (String each : all) {
 								if (each.charAt(0) == '+') {
 									String p = each.substring(1).toUpperCase();
-									if (perms.containsKey(p)) {
-										toBeSet |= perms.get(p);
-									}
+									if (perms.containsKey(p)) toBeSet |= perms.get(p);
 								} else if (each.charAt(0) == '-') {
 									String p = each.substring(1).toUpperCase();
-									if (perms.containsKey(p)) {
-										toBeUnset |= perms.get(p);
-									}
+									if (perms.containsKey(p)) toBeUnset |= perms.get(p);
 								}
 							}
 							event.getAnswers().bool(setPerms(event.getGuild(), event, args[0], toBeSet, toBeUnset)).queue();
@@ -330,15 +340,17 @@ public class CmdsAndInterfaces {
 			new TreeCommandBuilder()
 				.addCommand("subscribe", new CommandBuilder("push.subscribe.usage", PUSH_SUBSCRIBE)
 					.setAction(event -> {
-						Push.subscribe(event.getChannel(), Arrays.asList(event.getArgs(0)));
-						event.awaitTyping().getAnswers().bool(true).queue();
+						Set<String> args = new HashSet<>();
+						Collections.addAll(args, event.getArgs(0));
+						event.awaitTyping().getAnswers().bool(Push.subscribe(event.getChannel(), args)).queue();
 					})
 					.build()
 				)
 				.addCommand("unsubscribe", new CommandBuilder("push.unsubscribe.usage", PUSH_SUBSCRIBE)
 					.setAction(event -> {
-						Push.unsubscribe(event.getChannel(), Arrays.asList(event.getArgs(0)));
-						event.awaitTyping().getAnswers().bool(true).queue();
+						Set<String> args = new HashSet<>();
+						Collections.addAll(args, event.getArgs(0));
+						event.awaitTyping().getAnswers().bool(Push.unsubscribe(event.getChannel(), args)).queue();
 					})
 					.build()
 				)
@@ -349,7 +361,7 @@ public class CmdsAndInterfaces {
 					})
 					.build()
 				)
-				.addCommand("list", new CommandBuilder("push.list.usage", PUSH_SEND)
+				.addCommand("list", new CommandBuilder("push.list.usage")
 					.setAction(event -> {
 						Set<String> subscribed = new TreeSet<>(Push.subscriptionsFor(event.getChannel())), all = new TreeSet<>(Push.resolveTypeSet());
 						Holder<StringBuilder> b = new Holder<>(new StringBuilder().append("**").append(getLocalized("push.list", event)).append(":**\n "));

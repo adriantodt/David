@@ -15,10 +15,12 @@ package cf.adriantodt.bot.data;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.rethinkdb.net.Cursor;
 
-import java.util.HashMap;
-import java.util.function.Consumer;
+import java.io.Closeable;
+import java.io.IOException;
+import java.util.Iterator;
 
 public class ReturnHandler {
 	public static final ReturnHandler h = new ReturnHandler();
@@ -27,91 +29,67 @@ public class ReturnHandler {
 	private ReturnHandler() {
 	}
 
-	public CursorHandler cursor(Cursor<HashMap<String, Object>> cursor) {
-		return new CursorHandler(cursor);
+	public HandlerInstance from(Object object) {
+		return new HandlerInstance(object);
 	}
 
-	public MapHandler map(HashMap<String, Object> map) {
-		return new MapHandler(map);
-	}
+	public static class HandlerInstance {
+		private final Object object;
 
-	public CursorHandler query(Cursor<HashMap<String, Object>> cursor) {
-		return cursor(cursor);
-	}
-
-	public MapHandler response(HashMap<String, Object> map) {
-		return map(map);
-	}
-
-	public static class CursorHandler {
-		private final Cursor<HashMap<String, Object>> cursor;
-
-		private CursorHandler(Cursor<HashMap<String, Object>> cursor) {
-			this.cursor = cursor;
+		public HandlerInstance(Object object) {
+			this.object = object;
 		}
 
-		public JsonArray list() {
-			return json.toJsonTree(cursor.toList()).getAsJsonArray();
+		public JsonObject mapExpected() {
+			return simpleExpected().getAsJsonObject();
 		}
 
-		public void forEach(Consumer<? super JsonElement> consumer) {
-			list().forEach(consumer);
+		public JsonElement simpleExpected() {
+			if (object instanceof Cursor)
+				throw new IllegalStateException("Json-able expected, got " + Cursor.class + ".");
+			return json.toJsonTree(object);
 		}
 
-		public MapHandler first() {
-			return new MapHandler(cursor.next());
+		public CursorHandler cursorExpected() {
+			if (!(object instanceof Cursor))
+				throw new IllegalStateException(Cursor.class + " expected, got " + object.getClass() + ".");
+			return new CursorHandler((Cursor) object);
 		}
 
-		public CursorStreamHandler stream() {
-			return new CursorStreamHandler(cursor);
+		public JsonArray arrayExpected() {
+			return cursorExpected().toList();
 		}
 
-		public static class CursorStreamHandler {
-			private final Cursor<HashMap<String, Object>> cursor;
-			private CursorStreamHandler(Cursor<HashMap<String, Object>> cursor) {
+		public static class CursorHandler implements Iterator<JsonElement>, Iterable<JsonElement>, Closeable {
+			private final Cursor cursor;
+
+			private CursorHandler(Cursor cursor) {
 				this.cursor = cursor;
 			}
 
-			public Runnable onStream(Consumer<StreamHandler> streamConsumer) {
-				return () -> {
-					for (Object next : cursor) {
-						StreamHandler handler = new StreamHandler(cursor, json.toJsonTree(next));
-						streamConsumer.accept(handler);
-						if (handler.breakAfter()) break;
-					}
-				};
+			@Override
+			public Iterator<JsonElement> iterator() {
+				return this;
 			}
 
-			public static class StreamHandler {
-				private final JsonElement element;
-				private final Cursor<HashMap<String, Object>> cursor;
-				private boolean breakAfter = false;
-
-				public StreamHandler(Cursor<HashMap<String, Object>> cursor, JsonElement element) {
-					this.element = element;
-					this.cursor = cursor;
-				}
-
-				public boolean breakAfter() {
-					return breakAfter;
-				}
-
-				public void doBreak(boolean breakAfter) {
-					this.breakAfter = breakAfter;
-				}
+			@Override
+			public boolean hasNext() {
+				return cursor.hasNext();
 			}
-		}
-	}
 
-	public static class MapHandler {
-		private final HashMap<String, Object> map;
+			@Override
+			public JsonElement next() {
+				return json.toJsonTree(cursor.next());
+			}
 
-		private MapHandler(HashMap<String, Object> map) {
-			this.map = map;
-		}
+			@Override
+			public void close() throws IOException {
+				cursor.close();
+			}
 
-		public JsonElement object() {
-			return json.toJsonTree(map);
+			public JsonArray toList() {
+				return json.toJsonTree(cursor.toList()).getAsJsonArray();
+			}
 		}
 	}
 }

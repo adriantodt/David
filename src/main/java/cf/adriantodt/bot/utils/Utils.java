@@ -18,10 +18,7 @@ import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import org.apache.commons.lang3.NotImplementedException;
 
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Spliterator;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.regex.Matcher;
 
@@ -77,7 +74,11 @@ public class Utils {
 	public static String[] splitArgs(String args, int expectedArgs) {
 		String[] raw = args.split("\\s+", expectedArgs);
 		if (expectedArgs < 1) return raw;
-		String[] normalized = new String[expectedArgs];
+		return normalizeArray(raw, expectedArgs);
+	}
+
+	public static String[] normalizeArray(String[] raw, int expectedSize) {
+		String[] normalized = new String[expectedSize];
 
 		Arrays.fill(normalized, "");
 		for (int i = 0; i < normalized.length; i++) {
@@ -86,6 +87,67 @@ public class Utils {
 			}
 		}
 		return normalized;
+	}
+
+	public static String[] advancedSplitArgs(String args, int expectedArgs) {
+		List<String> result = new ArrayList<>();
+		boolean inAString = false;
+		StringBuilder currentBlock = new StringBuilder();
+		for (int i = 0; i < args.length(); i++) {
+			if (args.charAt(i) == '"' && (i == 0 || args.charAt(i - 1) != '\\' || args.charAt(i - 2) == '\\')) //Entered a String Init/End
+				inAString = !inAString;
+
+			if (inAString) //We're at a String. Keep Going
+				currentBlock.append(args.charAt(i));
+			else if (Character.isSpaceChar(args.charAt(i))) //We found a Code Block
+			{
+				if (currentBlock.length() != 0) {
+					if (currentBlock.charAt(0) == '"' && currentBlock.charAt(currentBlock.length() - 1) == '"') {
+						currentBlock.deleteCharAt(0);
+						currentBlock.deleteCharAt(currentBlock.length() - 1);
+					}
+
+					result.add(currentBlock.toString());
+					currentBlock = new StringBuilder();
+				}
+			} else currentBlock.append(args.charAt(i));
+		}
+
+		if (currentBlock.length() != 0) {
+			if (currentBlock.charAt(0) == '"' && currentBlock.charAt(currentBlock.length() - 1) == '"') {
+				currentBlock.deleteCharAt(0);
+				currentBlock.deleteCharAt(currentBlock.length() - 1);
+			}
+
+			result.add(currentBlock.toString());
+		}
+
+		String[] raw = result.toArray(new String[result.size()]);
+
+		if (expectedArgs < 1) return raw;
+		return normalizeArray(raw, expectedArgs);
+	}
+
+	public static Map<String, String> parse(String[] args) {
+		Map<String, String> options = new HashMap<>();
+
+		for (int i = 0; i < args.length; i++) {
+			if (args[i].charAt(0) == '-' || args[i].charAt(0) == '/') //This start with - or /
+			{
+				args[i] = args[i].substring(1);
+				if (i + 1 >= args.length || args[i + 1].charAt(0) == '-' || args[i + 1].charAt(0) == '/') //Next start with - (or last arg)
+				{
+					options.put(args[i], "null");
+				} else {
+					options.put(args[i], args[i + 1]);
+					i++;
+				}
+			} else {
+				options.put(null, args[i]);
+			}
+		}
+
+		return options;
 	}
 
 	public static String name(User user, Guild guild) {

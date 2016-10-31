@@ -58,7 +58,7 @@ public class Users {
 
 	public static void loadAll() {
 		//TODO IMPLEMENT
-		h.query(r.table("guilds").getAll().run(conn)).list().getAsJsonArray().forEach(Users::unpack);
+		h.from(r.table("guilds").run(conn)).cursorExpected().forEach(Users::unpack);
 	}
 
 	private static Data unpack(JsonElement element) {

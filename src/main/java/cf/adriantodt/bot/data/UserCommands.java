@@ -37,11 +37,11 @@ public class UserCommands {
 		guildCommands.get(guild).put(name, command);
 
 		//Insert
-		cachedCommands.put(command, h.response(r.table("commands").insert(
+		cachedCommands.put(command, h.from(r.table("commands").insert(
 			r.hashMap("gid", guild.getId())
 				.with("responses", cmdsToDB(new ArrayList<>(command.responses)))
 				.with("name", name)
-		).run(conn)).object().getAsJsonObject().get("generated_keys").getAsJsonArray().get(0).getAsString());
+		).run(conn)).mapExpected().get("generated_keys").getAsJsonArray().get(0).getAsString());
 	}
 
 	public static void update(UserCommand command) {
@@ -68,7 +68,7 @@ public class UserCommands {
 	public static void loadAllFrom(Guilds.Data data) {
 		Map<String, UserCommand> thisGuildCommands = guildCommands.containsKey(data) ? guildCommands.get(data) : new HashMap<>();
 
-		h.query(r.table("commands").filter(row -> row.g("gid").eq(data.getId())).run(conn)).forEach(jsonElement -> {
+		h.from(r.table("commands").filter(row -> row.g("gid").eq(data.getId())).run(conn)).cursorExpected().forEach(jsonElement -> {
 			UserCommand cmd = new UserCommand();
 			jsonElement.getAsJsonObject().get("responses").getAsJsonArray().forEach(jsonString -> cmd.responses.add(jsonString.getAsString()));
 			cmd.responses = cmdsFromDB(cmd.responses);

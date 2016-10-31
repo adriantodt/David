@@ -13,7 +13,6 @@
 package cf.adriantodt.bot.data;
 
 import cf.adriantodt.bot.base.cmd.CommandEvent;
-import cf.adriantodt.bot.utils.Push;
 import com.google.gson.JsonObject;
 import net.dv8tion.jda.core.entities.TextChannel;
 

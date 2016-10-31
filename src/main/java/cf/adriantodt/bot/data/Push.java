@@ -7,123 +7,118 @@
  * GNU Lesser General Public License v2.1:
  * https://github.com/adriantodt/David/blob/master/LICENSE
  *
- * File Created @ [05/10/16 07:27]
+ * File Created @ [31/10/16 08:53]
  */
 
-package cf.adriantodt.bot.utils;
+package cf.adriantodt.bot.data;
 
 import cf.adriantodt.bot.Bot;
-import cf.adriantodt.bot.data.Guilds;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import net.dv8tion.jda.core.MessageBuilder;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.TextChannel;
 
 import java.util.*;
-import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import static cf.adriantodt.bot.data.DataManager.*;
 
 public class Push {
 	private static Map<String, String> pushParenting = new HashMap<>();
-	private static Map<Supplier<List<String>>, String> dynamicParenting = new HashMap<>();
-	private static Map<String, List<TextChannel>> subscripted = new HashMap<>();
+	private static Map<Supplier<Set<String>>, String> dynamicParenting = new HashMap<>();
+	private static Map<TextChannel, Set<String>> subscriptions = new HashMap<>();
 
 	static {
 		pushParenting.put("*", null);
-
 		pushParenting.put("bot", "*");
 		pushParenting.put("stop", "bot");
 		pushParenting.put("start", "bot");
-
 		pushParenting.put("update", "*");
 		pushParenting.put("changelog", "update");
-
 		pushParenting.put("log", "*");
-
 		pushParenting.put("ownerID", "*");
-
 		pushParenting.put("guild", "*");
-
 		pushParenting.put("i18n", "*");
 
-		dynamicParenting.put(() -> Bot.API.getGuilds().stream().map(guild -> "guild_" + Guilds.fromDiscord(guild).getName()).collect(Collectors.toList()), "guild");
+		dynamicParenting.put(() -> Bot.API.getGuilds().stream().map(guild -> "guild_" + Guilds.fromDiscord(guild).getName()).collect(Collectors.toSet()), "guild");
 
-		Consumer<JsonObject> INVALIDATE_SUBSCRIPTION = subscription -> {
-			r.table("pushSubs")
-				.filter(r.row("cid").eq(subscription.get("cid").getAsString()))
-				.delete()
-				.runNoReply(conn);
-		};
-
-		h.query(r.table("pushSubs").run(conn)).forEach(json -> {
+		h.from(r.table("pushSubs").run(conn)).cursorExpected().forEach(json -> {
 			JsonObject subscription = json.getAsJsonObject();
-			TextChannel channel = Bot.API.getTextChannelById(subscription.get("cid").getAsString());
+			TextChannel channel = Bot.API.getTextChannelById(subscription.get("id").getAsString());
 
 			if (channel == null) {
-				INVALIDATE_SUBSCRIPTION.accept(subscription);
+				r.table("pushSubs").get(subscription.get("id").getAsString()).delete().runNoReply(conn);
 				return;
 			}
 
-			subscribe(channel, Collections.singletonList(subscription.get("type").getAsString()));
+			subscriptions.put(channel, StreamSupport.stream(subscription.get("types").getAsJsonArray().spliterator(), false).map(JsonElement::getAsString).collect(Collectors.toSet()));
 		});
 	}
 
-	public static void subscribe(TextChannel channel, List<String> types) {
-		types = new ArrayList<>(types);
+	public static boolean subscribe(TextChannel channel, Set<String> typesToAdd) {
+		typesToAdd = new HashSet<>(typesToAdd);
 		Set<String> valid = resolveTypeSet();
-		types.removeIf(s -> !valid.contains(s));
-		Set<String> typeSet = new HashSet<>(types);
-		for (String type : typeSet) {
-			if (!subscripted.containsKey(type)) subscripted.put(type, new ArrayList<>());
-			List<TextChannel> subscriptedToType = subscripted.get(type);
-			if (!subscriptedToType.contains(channel)) subscriptedToType.add(channel);
+		typesToAdd.removeIf(s -> !valid.contains(s));
+		typesToAdd.remove(null);
 
-			r.table("pushSubs")
-				.insert(r.hashMap("cid", channel.getId()).with("type", type))
-				.runNoReply(conn);
+		if (typesToAdd.size() == 0) return false;
+
+		if (subscriptions.containsKey(channel)) {
+			Set<String> currentSubs = subscriptions.get(channel);
+			int size = currentSubs.size();
+			currentSubs.addAll(typesToAdd);
+
+			if (currentSubs.size() == size) return false;
+
+			r.table("pushSubs").get(channel.getId()).update(arg -> r.hashMap("types", new ArrayList<>(currentSubs))).runNoReply(conn);
+		} else {
+			r.table("pushSubs").insert(r.hashMap("id", channel.getId()).with("types", new ArrayList<>(typesToAdd))).runNoReply(conn);
+			subscriptions.put(channel, new HashSet<>(typesToAdd));
 		}
+		return true;
 	}
 
-	public static void unsubscribe(TextChannel channel, List<String> types) {
-		types = new ArrayList<>(types);
-		Set<String> valid = resolveTypeSet();
-		types.removeIf(s -> !valid.contains(s));
-		Set<String> typeSet = new HashSet<>(types);
-		for (String type : typeSet) {
-			if (subscripted.containsKey(type)) {
-				List<TextChannel> subscriptedToType = subscripted.get(type);
-				if (subscriptedToType.contains(channel)) subscriptedToType.remove(channel);
-				if (subscriptedToType.size() == 0) subscripted.remove(type);
-			}
+	public static boolean unsubscribe(TextChannel channel, Set<String> typesToRemove) {
+		if (!subscriptions.containsKey(channel)) return false;
 
-			r.table("pushSubs")
-				.filter(r.row("cid").eq(channel.getId()))
-				.filter(r.row("type").eq(type))
-				.delete()
-				.runNoReply(conn);
+		Set<String> currentSubs = subscriptions.get(channel);
+		int size = currentSubs.size();
+		currentSubs.removeAll(typesToRemove);
+
+		if (currentSubs.size() == size) return false;
+
+		if (currentSubs.size() > 0) {
+			r.table("pushSubs").get(channel.getId()).update(arg -> r.hashMap("types", new ArrayList<>(currentSubs))).runNoReply(conn);
+		} else {
+			r.table("pushSubs").get(channel.getId()).delete().runNoReply(conn);
+			subscriptions.remove(channel);
 		}
+
+		return true;
 	}
 
 	public static void registerType(String type, String parent) {
 		pushParenting.put(type.toLowerCase(), parent.toLowerCase());
 	}
 
-	public static void registerDynamicTypes(Supplier<List<String>> supplier, String parent) {
+	public static void registerDynamicTypes(Supplier<Set<String>> supplier, String parent) {
 		dynamicParenting.put(supplier, parent.toLowerCase());
 	}
 
 	public static Set<String> subscriptionsFor(TextChannel channel) {
-		return subscripted.entrySet().stream().filter(entry -> entry.getValue().contains(channel)).map(Map.Entry::getKey).collect(Collectors.toSet());
+		return Collections.unmodifiableSet(subscriptions.get(channel));
 	}
 
 	public static void pushMessage(String type, Function<TextChannel, Message> pushSupplier) {
 		Set<String> appliable = resolve(type);
-		Set<TextChannel> channels = new HashSet<>();
-		appliable.stream().filter(s -> subscripted.containsKey(s)).forEach(s -> channels.addAll(subscripted.get(s)));
+		Set<TextChannel> channels = subscriptions.entrySet().stream()
+			.filter(entry -> entry.getValue().stream().anyMatch(appliable::contains))
+			.map(Map.Entry::getKey)
+			.collect(Collectors.toSet());
 		channels.forEach(channel -> channel.sendMessage(pushSupplier.apply(channel)).queue());
 	}
 
@@ -145,7 +140,6 @@ public class Push {
 		set.remove(null);
 		return set;
 	}
-
 
 	public static Set<String> resolve(String type) {
 		Map<String, String> resolvedMap = resolveTypeMap();

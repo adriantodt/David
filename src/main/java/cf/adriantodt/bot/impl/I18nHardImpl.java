@@ -48,8 +48,8 @@ public class I18nHardImpl {
 		localize("pt_BR", "bot.stats.usage", "Estatísticas da sessão.");
 		localize("en_US", "bot.info.usage", "Bot Information");
 		localize("pt_BR", "bot.info.usage", "Informações do Bot");
-		localize("en_US", "bot.info.usage", "Bot (and Libs) Version");
-		localize("pt_BR", "bot.info.usage", "Versão do Bot (e Libs)");
+		localize("en_US", "bot.version.usage", "Bot (and Libs) Version");
+		localize("pt_BR", "bot.version.usage", "Versão do Bot (e Libs)");
 		localize("en_US", "bot.help", "Hello! I'm $(dynamic.botname).\nTo get started with the Commands, send: $(dynamic.mention) cmds\nTo invite me to your Guild, send: $(dynamic.mention) bot inviteme");
 		localize("pt_BR", "bot.help", "Olá! Eu sou o $(dynamic.botname).\nPara começar a usar os Comandos, envie: $(dynamic.mention) cmds\nPara me convidar para a sua Guild, envie: $(dynamic.mention) bot inviteme");
 
@@ -68,6 +68,9 @@ public class I18nHardImpl {
 		localize("pt_BR", "guild.channels", "Canais");
 		localize("en_US", "guild.id", "ID");
 		//pt_BR = en_US
+		localize("en_US", "guild.vip", "VIP");
+		//pt_BR = en_US
+
 		localize("en_US", "guild.users", "Users");
 		localize("pt_BR", "guild.users", "Usuários");
 		localize("en_US", "guild.info.usage", "Show Guild info.");
