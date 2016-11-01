@@ -19,6 +19,7 @@ import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.core.requests.RestAction;
+import org.apache.logging.log4j.LogManager;
 
 import java.io.File;
 import java.util.concurrent.Future;
@@ -129,5 +130,23 @@ public class CommandEvent {
 		}
 
 		return this;
+	}
+
+	public boolean checkPrivateChatIsOkay() {
+		if (!event.getAuthor().hasPrivateChannel()) {
+			try {
+				event.getAuthor().openPrivateChannel().block();
+				return true;
+			} catch (Exception e) {
+				LogManager.getLogger("CommandEvent - PMs").info("Failure when trying to open private channel for user " + event.getAuthor().toString() + ". User was asked to send a pm.\n" +
+					e.getClass().getSimpleName() + ": " + e.getMessage());
+				awaitTyping().sendMessage(event.getMember().getAsMention() + " I can't send any DM messages to you, please send a DM to me with the message \"!ping\" to resolve the issue.\n" +
+					"You should receive a \"pong!\" as response\n" +
+					"Your command was ignored because it is required that the user can receive a DM to execute commands.").queue();
+				return false;
+			}
+		} else {
+			return true;
+		}
 	}
 }

@@ -206,6 +206,9 @@ public class I18nHardImpl {
 
 		localize("en_US", "alias.of", "Alias of %s");
 		localize("pt_BR", "alias.of", "Alias de %s");
+
+		localize("pt_BR", "cmds.userCommandsAvailable", "Comandos de Usuário Disponíveis");
+		localize("pt_BR", "cmds.userCommandsAvailable", "User Commands Available");
 		//"cmds.list.usage"
 		//"cmds.detailed.usage"
 		//"cmds.add.usage" "Adiciona um Comando de Usuário"

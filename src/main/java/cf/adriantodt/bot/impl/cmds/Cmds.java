@@ -97,13 +97,7 @@ public class Cmds {
 				}).build())
 			.addDefault("list")
 			.addCommand("detailed", new CommandBuilder("cmds.detailed.usage").setAction(event -> {
-				if (!event.getAuthor().hasPrivateChannel()) {
-					try {
-						event.getAuthor().openPrivateChannel().block();
-					} catch (Exception e) {
-						throw new RuntimeException(e);
-					}
-				}
+				if (!event.checkPrivateChatIsOkay()) return;
 
 				MessageChannel channel = event.getAuthor().getPrivateChannel();
 				List<String> cmds = getBaseCommands().entrySet().stream().filter(entry -> canRunCommand(event.getGuild(), event.createChild(entry.getValue(), event.getArgs()))).map(

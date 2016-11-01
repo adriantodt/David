@@ -25,7 +25,7 @@ import static cf.adriantodt.bot.utils.Commands.addCommand;
 public class CmdsAndInterfaces {
 	public static void impl() {
 		Arrays.asList(
-			Bot.class, Cmds.class, Feed.class, Funny.class, Guild.class, Push.class, User.class
+			Bot.class, Cmds.class, /*Feed.class,*/ Funny.class, Guild.class, Push.class, User.class
 		).forEach(CmdsAndInterfaces::load);
 	}
 

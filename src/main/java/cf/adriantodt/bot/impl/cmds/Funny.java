@@ -74,7 +74,7 @@ public class Funny {
 						String result = "";
 						for (String[] theoryArray : SU_THEORIES)
 							result = result + theoryArray[(int) Math.floor(Math.random() * theoryArray.length)] + " ";
-						event.getAnswers().send("[#" + (i + 1) + "] What if " + result.substring(0, result.length() - 1) + "?").queue();
+						event.getAnswers().send("[#" + (i + 1) + "] What if " + result.trim() + "?").queue();
 					}
 				}).build())
 				.addCommand("theorygen", "theorygenerator")
