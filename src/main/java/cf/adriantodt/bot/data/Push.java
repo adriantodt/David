@@ -43,6 +43,7 @@ public class Push {
 		pushParenting.put("ownerID", "*");
 		pushParenting.put("guild", "*");
 		pushParenting.put("i18n", "*");
+		pushParenting.put("feed", "*");
 
 		dynamicParenting.put(() -> Bot.API.getGuilds().stream().map(guild -> "guild_" + Guilds.fromDiscord(guild).getName()).collect(Collectors.toSet()), "guild");
 

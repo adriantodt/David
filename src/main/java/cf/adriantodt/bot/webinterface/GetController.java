@@ -48,14 +48,14 @@ public class GetController {
 				else array.add(new JsonPrimitive(g.getId()));
 			});
 			object.add("guildsOwned", array);
-			object.addProperty("owner", Configs.getConfigs().ownerID.equals(id));
+			object.addProperty("owner", Configs.getConfigs().get("ownerID").getAsString().equals(id));
 			return object;
 		});
 
 		api.put("me", map -> {
 			JsonObject object = object();
 			object.addProperty("avatar", Bot.SELF.getAvatarUrl());
-			object.addProperty("owner", Configs.getConfigs().ownerID);
+			object.addProperty("owner", Configs.getConfigs().get("ownerID").getAsString());
 			return object;
 		});
 	}

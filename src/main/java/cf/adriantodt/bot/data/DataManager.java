@@ -33,7 +33,7 @@ public class DataManager {
 	public static ReturnHandler h = ReturnHandler.h;
 
 	public static void init() {
-		conn = r.connection().hostname(Configs.getConfigs().hostname).port(Configs.getConfigs().port).db("bot").connect();
+		conn = r.connection().hostname(Configs.getConfigs().get("hostname").getAsString()).port(Configs.getConfigs().get("port").getAsInt()).db("bot").connect();
 	}
 
 	public static Path getPath(String file, String ext) {

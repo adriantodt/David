@@ -20,6 +20,7 @@ import org.apache.commons.lang3.NotImplementedException;
 
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 import java.util.regex.Matcher;
 
 import static cf.adriantodt.bot.utils.Tasks.userTimeout;
@@ -235,5 +236,11 @@ public class Utils {
 				throw new NotImplementedException("I am too lazy to Implement this.");
 			}
 		};
+	}
+
+	public static <T> List<T> subListOn(List<T> list, Predicate<T> predicate) {
+		Optional<T> first = list.stream().filter(predicate).findFirst();
+		if (!first.isPresent()) return list;
+		return list.subList(0, list.indexOf(first.get()));
 	}
 }

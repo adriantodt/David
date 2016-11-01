@@ -41,8 +41,8 @@ import static cf.adriantodt.bot.utils.Formatter.boldAndItalic;
 
 public class Bot {
 	public static final Random RAND = new Random();
-	public static final Gson JSON = new GsonBuilder().setPrettyPrinting().create();
-	public static final Gson JSON_INTERNAL = new GsonBuilder().create();
+	public static final Gson JSON = new GsonBuilder().setPrettyPrinting().serializeNulls().create();
+	public static final Gson JSON_INTERNAL = new GsonBuilder().serializeNulls().create();
 	public static Logger LOGGER = LogManager.getLogger("Bot");
 	public static JDA API = null;
 	public static User SELF = null;
@@ -51,7 +51,7 @@ public class Bot {
 
 	static {
 		onLoaded.add(() -> {
-			User user = API.getUserById(Configs.getConfigs().ownerID);
+			User user = API.getUserById(Configs.getConfigs().get("ownerID").getAsString());
 			if (user == null) {
 				LOGGER.warn("Owner not regognized. This WILL cause issues (specially PermSystem)");
 			} else {
@@ -64,7 +64,7 @@ public class Bot {
 		DataManager.init();
 		Tasks.startAsyncTasks();
 		new JDABuilder(AccountType.BOT)
-			.setToken(Configs.getConfigs().token)
+			.setToken(Configs.getConfigs().get("token").getAsString())
 			.setBulkDeleteSplittingEnabled(false)
 			.setAudioEnabled(false)
 			.setEventManager(new AnnotatedEventManager())
