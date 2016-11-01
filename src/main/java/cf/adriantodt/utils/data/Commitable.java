@@ -7,10 +7,10 @@
  * GNU Lesser General Public License v2.1:
  * https://github.com/adriantodt/David/blob/master/LICENSE
  *
- * File Created @ [06/10/16 21:46]
+ * File Created @ [01/11/16 13:19]
  */
 
-package cf.adriantodt.bot.data;
+package cf.adriantodt.utils.data;
 
 import java.util.function.Consumer;
 

@@ -23,22 +23,12 @@ import net.dv8tion.jda.core.entities.User;
 import java.lang.management.ManagementFactory;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
+
+import static cf.adriantodt.utils.TaskManager.startAsyncTask;
 
 public class Tasks {
-	static final Map<User, Integer> userTimeout = new HashMap<>();
-	private static final ExecutorService threadPool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 5);
+	public static final Map<User, Integer> userTimeout = new HashMap<>();
 	public static double cpuUsage = 0;
-
-	public static ExecutorService getThreadPool() {
-		return threadPool;
-	}
-
-	public static void startAsyncTask(String task, Runnable scheduled, int everySeconds) {
-		Executors.newSingleThreadScheduledExecutor(r -> new Thread(r, task + "Executor")).scheduleAtFixedRate(scheduled, 0, everySeconds, TimeUnit.SECONDS);
-	}
 
 	public static void startAsyncTasks() {
 
@@ -59,7 +49,7 @@ public class Tasks {
 			System.out.println("Log4j2Discord Enabled!");
 			Holder<String> s = new Holder<>();
 			while ((s.var = QueueLogAppender.getNextLogEvent("DiscordLogListeners")) != null) {
-				Pushes.pushSimple("log", channel -> "[LOG] " + s.var);
+				Pushes.pushSimple("get", channel -> "[LOG] " + s.var);
 			}
 			System.out.println("Log4j2Discord Disabled...");
 		})).start();

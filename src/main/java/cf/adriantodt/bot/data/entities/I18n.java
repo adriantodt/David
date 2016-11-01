@@ -19,8 +19,9 @@ import net.dv8tion.jda.core.entities.TextChannel;
 import java.util.*;
 import java.util.regex.Pattern;
 
-import static cf.adriantodt.bot.data.DataManager.*;
-import static cf.adriantodt.bot.utils.Utils.*;
+import static cf.adriantodt.utils.AsyncUtils.asyncSleepThen;
+import static cf.adriantodt.utils.CollectionUtils.iterate;
+import static cf.adriantodt.utils.StringUtils.notNullOrDefault;
 
 /*
  * LOCALES:
@@ -54,9 +55,9 @@ public class I18n {
 	public static void pushTranslation(String unlocalized, String locale, String localized) {
 		String localeId = unlocalized + ":" + locale;
 		if (syncedLocalizations.contains(localeId)) {
-			r.table("i18n").get(localeId).update(arg -> r.hashMap("value", encode(localized))).runNoReply(conn);
+//			r.table("i18n").get(localeId).update(arg -> r.hashMap("value", encode(localized))).runNoReply(conn);
 		} else {
-			r.table("i18n").insert(r.hashMap("id", localeId).with("value", encode(localized)).with("moderated", moderated.contains(localeId))).runNoReply(conn);
+//			r.table("i18n").insert(r.hashMap("id", localeId).with("value", encode(localized)).with("moderated", moderated.contains(localeId))).runNoReply(conn);
 			syncedLocalizations.add(localeId);
 		}
 
@@ -73,7 +74,7 @@ public class I18n {
 		}
 
 		if (syncedLocalizations.contains(localeId)) {
-			r.table("i18n").get(localeId).update(arg -> r.hashMap("moderated", flag)).runNoReply(conn);
+//			r.table("i18n").get(localeId).update(arg -> r.hashMap("moderated", flag)).runNoReply(conn);
 		}
 	}
 
@@ -83,7 +84,7 @@ public class I18n {
 	}
 
 	public static String getLocale(CommandEvent event) {
-		return nnOrD(Users.fromDiscord(event.getAuthor()).getLang(), event.getGuild().getLang());
+		return notNullOrDefault(Users.fromDiscord(event.getAuthor()).getLang(), event.getGuild().getLang());
 	}
 
 	public static void setParent(String locale, String parent) {
@@ -159,7 +160,7 @@ public class I18n {
 		}
 
 		if (unlocalizing.equals(localized) || localed == null) {
-			async(() -> Pushes.pushSimple("i18n", channel -> "I18n Warn: Detected an untranslated String: " + unlocalized + ":" + locale)).run();
+			asyncSleepThen(1000, () -> Pushes.pushSimple("i18n", channel -> "I18n Warn: Detected an untranslated String: " + unlocalized + ":" + locale)).run();
 		}
 
 		return localized;

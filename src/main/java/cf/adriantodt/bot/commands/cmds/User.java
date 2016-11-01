@@ -18,7 +18,7 @@ import cf.adriantodt.bot.commands.base.Holder;
 import cf.adriantodt.bot.commands.base.ICommand;
 import cf.adriantodt.bot.commands.base.ProvidesCommand;
 import cf.adriantodt.bot.data.entities.Users;
-import cf.adriantodt.bot.utils.Utils;
+import cf.adriantodt.bot.utils.DiscordUtils;
 
 import static cf.adriantodt.bot.data.entities.I18n.getLocale;
 import static cf.adriantodt.bot.data.entities.I18n.getLocalized;
@@ -37,7 +37,7 @@ public class User {
 					Holder<Boolean> any = new Holder<>(false);
 
 					for (String userId : users) {
-						net.dv8tion.jda.core.entities.User user = event.getJDA().getUserById(Utils.processId(userId));
+						net.dv8tion.jda.core.entities.User user = event.getJDA().getUserById(DiscordUtils.processId(userId));
 						if (user == null) continue;
 						any.var = true;
 						event.awaitTyping().getAnswers().send(

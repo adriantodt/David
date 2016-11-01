@@ -14,7 +14,7 @@ package cf.adriantodt.bot.commands.cmds;
 
 import cf.adriantodt.bot.BotGreeter;
 import cf.adriantodt.bot.BotInfo;
-import cf.adriantodt.bot.commands.CommandHandler;
+import cf.adriantodt.bot.commands.CommandManager;
 import cf.adriantodt.bot.commands.base.Commands;
 import cf.adriantodt.bot.commands.base.ICommand;
 import cf.adriantodt.bot.commands.base.ProvidesCommand;
@@ -47,7 +47,7 @@ public class Bot {
 			)
 			.addCommand("toofast",
 				Commands.buildSimple("bot.toofast.usage", BOT_OWNER)
-					.setAction((event) -> event.getAnswers().bool(CommandHandler.toofast = !CommandHandler.toofast).queue()).build()
+					.setAction((event) -> event.getAnswers().bool(CommandManager.toofast = !CommandManager.toofast).queue()).build()
 			)
 			.addCommand("stats",
 				Commands.buildSimple("bot.stats.usage").setAction(Statistics::printStats).build()

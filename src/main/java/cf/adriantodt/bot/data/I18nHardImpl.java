@@ -14,6 +14,8 @@ package cf.adriantodt.bot.data;
 
 import cf.adriantodt.bot.Bot;
 import cf.adriantodt.bot.data.entities.I18n;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import static cf.adriantodt.bot.data.entities.I18n.setParent;
 
@@ -23,6 +25,35 @@ import static cf.adriantodt.bot.data.entities.I18n.setParent;
  */
 public class I18nHardImpl {
 	public static void impl() {
+		JsonObject i18nFile = new JsonParser().parse(ContentManager.resource("/i18n.json")).getAsJsonObject();
+
+		i18nFile.get("parents").getAsJsonObject().entrySet().forEach(entry -> {
+			setParent(entry.getKey(), entry.getValue().getAsString());
+		});
+
+		i18nFile.get("translations").getAsJsonObject().entrySet().forEach(
+			entry -> entry.getValue().getAsJsonObject().entrySet().forEach(
+				entry2 -> localize(entry2.getKey(), entry.getKey(), entry2.getValue().getAsString())
+			)
+		);
+
+		JsonObject usage = i18nFile.get("meta").getAsJsonObject().get("params").getAsJsonObject();
+
+		i18nFile.get("commands").getAsJsonObject().entrySet().forEach(
+			entry -> entry.getValue().getAsJsonObject().entrySet().forEach(
+				entry2 -> {
+					JsonObject v = entry2.getValue().getAsJsonObject();
+					localize(
+						entry2.getKey(),
+						entry.getKey() + ".usage",
+						v.get("desc").getAsString() + "\n"
+							+ usage.get(entry2.getKey()).getAsString() + ": " + v.get("params").getAsString() + "\n"
+							+ v.get("info").getAsString());
+				}
+			)
+		);
+
+		/*
 		setParent("pt_BR", "en_US");
 		setParent("en_GB", "en_US");
 		setParent("en_SG", "en_US");
@@ -215,8 +246,9 @@ public class I18nHardImpl {
 		//"cmds.rm.usage" "Remove um Comando de Usuário"
 		//"cmds.debug.usage"
 		//"spy.trigger.usage" "Ativa/Desativa a Espionagem no Canal."
-		//"spy.log.usage" "Ativa/Desativa a Leitura de Logs no Canal."
+		//"spy.get.usage" "Ativa/Desativa a Leitura de Logs no Canal."
 		//"spy.send.usage" "Envia uma Mensagem para o canal especificado.\n(Parâmetros: <channel_id> <message>)\nO channel_id pode ser visto através do (#NUM) das mensagens de espionagem."
+		*/
 	}
 
 	public static void implLocal() {

@@ -12,7 +12,6 @@
 
 package cf.adriantodt.bot.commands.cmds;
 
-import cf.adriantodt.bot.commands.CommandsProvider;
 import cf.adriantodt.bot.commands.Permissions;
 import cf.adriantodt.bot.commands.base.*;
 import cf.adriantodt.bot.data.entities.I18n;
@@ -25,7 +24,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static cf.adriantodt.bot.commands.CommandsProvider.*;
+import static cf.adriantodt.bot.commands.CommandManager.*;
 import static cf.adriantodt.bot.commands.Permissions.*;
 import static cf.adriantodt.bot.data.entities.I18n.getLocalized;
 import static cf.adriantodt.bot.utils.Formatter.encase;
@@ -161,7 +160,7 @@ public class Cmds {
 			.addCommand("debug", Commands.buildSimple("cmds.debug.usage", MANAGE_USER_CMDS).setAction(event -> {
 				if (event.getArgs().trim().isEmpty()) event.getAnswers().invalidargs().queue();
 				else {
-					ICommand cmd = CommandsProvider.getCommands(event.getGuild()).get(event.getArgs());
+					ICommand cmd = getCommands(event.getGuild()).get(event.getArgs());
 					if (cmd == null) event.getAnswers().invalidargs().queue();
 					else
 						event.getAnswers().send("***`" + event.getArgs() + "`:*** " + cmd.toString(I18n.getLocale(event))).queue();

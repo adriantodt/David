@@ -12,7 +12,6 @@
 
 package cf.adriantodt.bot;
 
-import cf.adriantodt.bot.commands.CommandHandler;
 import cf.adriantodt.bot.commands.CommandManager;
 import cf.adriantodt.bot.commands.utils.ReadyBuilder;
 import cf.adriantodt.bot.commands.utils.Statistics;
@@ -24,6 +23,7 @@ import cf.adriantodt.bot.data.entities.I18n;
 import cf.adriantodt.bot.data.entities.Pushes;
 import cf.adriantodt.bot.utils.Tasks;
 import cf.adriantodt.jda.port.AnnotatedEventManager;
+import cf.adriantodt.utils.Java;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import net.dv8tion.jda.core.AccountType;
@@ -79,7 +79,7 @@ public class Bot {
 				I18nHardImpl.implLocal();
 				Statistics.startDate = new Date();
 			}))
-			.addListener(CommandHandler.class)
+			.addListener(CommandManager.class)
 			.addListener(BotGreeter.class)
 			.addListener(Guilds.class)
 			.buildBlocking();
@@ -90,7 +90,6 @@ public class Bot {
 		LOGGER.info("Bot: " + SELF.getName() + " (#" + SELF.getId() + ")");
 		//LOGGER.info("Configs: " + DataManager.getSaveFile().toAbsolutePath().toString());
 		Tasks.startJDAAsyncTasks();
-		CommandManager.impl();
 
 		//TODO WAIT DV8'S IMPL
 		((JDAImpl) API).getClient().send(new JSONObject()

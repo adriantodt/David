@@ -14,7 +14,7 @@ package cf.adriantodt.bot.commands.base;
 
 import cf.adriantodt.bot.commands.utils.Statistics;
 import cf.adriantodt.bot.data.entities.Guilds;
-import cf.adriantodt.bot.utils.Tasks;
+import cf.adriantodt.utils.TaskManager;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
@@ -24,8 +24,9 @@ import org.apache.logging.log4j.LogManager;
 import java.io.File;
 import java.util.concurrent.Future;
 
-import static cf.adriantodt.bot.utils.Utils.sleep;
-import static cf.adriantodt.bot.utils.Utils.splitArgs;
+import static cf.adriantodt.utils.AsyncUtils.sleep;
+import static cf.adriantodt.utils.StringUtils.splitArgs;
+
 
 public class CommandEvent {
 	private final GuildMessageReceivedEvent event;
@@ -116,7 +117,7 @@ public class CommandEvent {
 	}
 
 	public void sendAwaitableTyping() {
-		awaitableTyping = Tasks.getThreadPool().submit(() -> sendTyping().block());
+		awaitableTyping = TaskManager.getThreadPool().submit(() -> sendTyping().block());
 	}
 
 	public CommandEvent createChild(ICommand command, String args) {

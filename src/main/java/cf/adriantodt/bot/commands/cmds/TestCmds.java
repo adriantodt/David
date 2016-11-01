@@ -15,24 +15,23 @@ package cf.adriantodt.bot.commands.cmds;
 import cf.adriantodt.bot.commands.base.Commands;
 import cf.adriantodt.bot.commands.base.ICommand;
 import cf.adriantodt.bot.commands.base.ProvidesCommand;
-import cf.adriantodt.bot.utils.Utils;
+import cf.adriantodt.utils.StringUtils;
 
 import java.util.Arrays;
 
-import static cf.adriantodt.bot.utils.Utils.advancedSplitArgs;
 
 public class TestCmds {
 	@ProvidesCommand("parser")
 	private static ICommand parser() {
 		return Commands.buildSimple("noUsage")
-			.setAction(event -> event.awaitTyping().sendMessage(Arrays.toString(Utils.parse(event.getArgs(0)).entrySet().toArray())).queue())
+			.setAction(event -> event.awaitTyping().sendMessage(Arrays.toString(StringUtils.parse(event.getArgs(0)).entrySet().toArray())).queue())
 			.build();
 	}
 
 	@ProvidesCommand("splitargs")
 	private static ICommand splitargs() {
 		return Commands.buildSimple("noUsage")
-			.setAction(event -> event.awaitTyping().sendMessage(Arrays.toString(advancedSplitArgs(event.getArgs(), 0))).queue())
+			.setAction(event -> event.awaitTyping().sendMessage(Arrays.toString(StringUtils.advancedSplitArgs(event.getArgs(), 0))).queue())
 			.build();
 	}
 

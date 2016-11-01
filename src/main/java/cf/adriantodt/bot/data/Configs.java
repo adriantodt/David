@@ -12,7 +12,7 @@
 
 package cf.adriantodt.bot.data;
 
-import cf.adriantodt.bot.Java;
+import cf.adriantodt.utils.Java;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;

@@ -1,16 +1,80 @@
-!user info
-	Game(IntelliJ IDEA 2016.2.4) -> IntelliJ IDEA 2016.2.4
-
-Statistics
-
-I18n Warn: Detected an untranslated String: cmds.detailed.usage:pt_BR
-I18n Warn: Detected an untranslated String: cmds.add.usage:pt_BR
-I18n Warn: Detected an untranslated String: cmds.debug.usage:pt_BR
-I18n Warn: Detected an untranslated String: cmds.rm.usage:pt_BR
-I18n Warn: Detected an untranslated String: cmds.list.usage:pt_BR
-I18n Warn: Detected an untranslated String: bot.version.usage:pt_BR
-I18n Warn: Detected an untranslated String: push.send:pt_BR
-I18n Warn: Detected an untranslated String: push.subscribe:pt_BR
-I18n Warn: Detected an untranslated String: push.unsubscribe:pt_BR
-I18n Warn: Detected an untranslated String: cmds.commandsAvailable:pt_BR
-I18n Warn: Detected an untranslated String: cmds.userCommandsAvailable:pt_BR
+  //    "bot.stats.usage": {
+  //      "en_US": "Session Statistics.",
+  //      "pt_BR": "Estatísticas da sessão."
+  //    },
+  //    "perms.set.usage": {
+  //      "en_US": "Define the User Permissions.\n(Parameters: <user>)\nDefine the permissions of a user specified by the parameter.",
+  //      "pt_BR": "Define as Permissões de um Usuário.\n(Parâmetros: <user>)\nDefine as permissões do usuário suprido pelo parâmetro."
+  //    },
+  //    "perms.list.usage": {
+  //      "en_US": "List all the permissions",
+  //      "pt_BR": "Lista todas as permissões"
+  //    },
+  //    "perms.get.usage": {
+  //      "en_US": "Show the current User Permissions.\n(Parameters: [user])\nIf executed without arguments, return the sender's permissions.\nIf a user is specified, the user's permissions is returned instead.",
+  //      "pt_BR": "Mostrar as Permissões que o Usuário tem.\n(Parâmetros: [user])\nSe executado sem argumentos, retorna as suas permissões.\nSe um usuário for suprido, retorna as permissões do usuário."
+  //    },
+  //    "funny.stevenuniverse.theorygenerator.usage": {
+  //      "en_US": "Generate Edgy Steven Universe Theories, based on http://www.generatorland.com/usergenerator.aspx?id=10737 data. Specify a number to generate multiple.",
+  //      "pt_BR": "Gera Teorias Aletórias de Steven Universo, baseado nos dados em http://www.generatorland.com/usergenerator.aspx?id=10737. Especifique um número para gerar múltiplos."
+  //    },
+  //    "funny.stevenuniverse.stevonnie.usage": {
+  //      "en_US": "Say random Stevonnie quotes, pumped from http://steven-universe.wikia.com/wiki/Stevonnie/Quotes (No Spoilers besides themselves). Specify a number to generate multiple.",
+  //      "pt_BR": "Envia frases aleatórias da Stevonnie, usando os dados de http://steven-universe.wikia.com/wiki/Stevonnie/Quotes (Sem Spoilers além dela própria). Especifique um número para gerar múltiplos."
+  //    },
+  //    "funny.skyrim.guard.usage": {
+  //      "en_US": "Say random Skyrim Guard quotes, pumped from http://www.uesp.net/wiki/Skyrim:Guard_Dialogue. Specify a number to generate multiple.",
+  //      "pt_BR": "Envia frases aleatórias dos guardas de Skyrim, usando os dados de http://www.uesp.net/wiki/Skyrim:Guard_Dialogue. Especifique um número para gerar múltiplos."
+  //    },
+  //    "bot.restart.usage": {
+  //      "en_US": "Restarts the Bot",
+  //      "pt_BR": "Reinicia o Bot"
+  //    },
+  //    "inviteme.usage": {
+  //      "en_US": "Sends an Link to Invite the Bot to your Guild",
+  //      "pt_br": "Envia um Link para Conviar o Bot para a sua Guild"
+  //    },
+  //    "funny.minecraft.drama.usage": {
+  //      "en_US": "Generate Minecraft Modding Drama, pumped from https://drama.thog.eu/drama. Specify a number to generate multiple.",
+  //      "pt_BR": "Gera Minecraft Modding Drama, gerado pelo site https://drama.thog.eu/drama. Especifique um número para gerar múltiplos."
+  //    },
+  //    "guild.cleanup.usage": {
+  //      "en_US": "Toggles Message Cleanup (Messages from the bot are deleted after 15s).",
+  //      "pt_BR": "Ativa ou Desativa o \"Cleanup\" de mensagens (Mensagens do bot são deletadas após 15s)."
+  //    },
+  //    "eval.usage": {
+  //      "en_US": "Executes Scripts in JVM (Owner-only)",
+  //      "pt_BR": "Executa Scripts na JVM (Apenas-Owner)"
+  //    },
+  //    "guild.info.usage": {
+  //      "en_US": "Show Guild info.",
+  //      "pt_BR": "Mostre informações sobre a Guild."
+  //    },
+  //    "guild.lang.usage": {
+  //      "en_US": "Define the language the bot will speak at the Guild",
+  //      "pt_br": "Define a língua que o Bot vai falar na Guild"
+  //    },
+  //    "guild.prefixes.usage": {
+  //      "en_US": "Set, Clear and Get the Current Guild Prefixes.",
+  //      "pt_BR": "Define, Limpa ou Mostra os Prefixos Atuais da Guild."
+  //    },
+  //    "user.info.usage": {
+  //      "en_US": "Gets information about the User. Multiple IDs/Mentions can be used and each will be processed.",
+  //      "pt_BR": "Mostra informação sobre o Usuário. Multipos IDs/Menções podem ser usados e cada um será processado."
+  //    },
+  //    "user.lang.usage": {
+  //      "en_US": "Define the language the bot will talk with you",
+  //      "pt_br": "Define a língua que o Bot vai falar com você"
+  //    },
+  //    "bot.info.usage": {
+  //      "en_US": "Bot Information",
+  //      "pt_BR": "Informações do Bot"
+  //    },
+  //    "bot.stop.usage": {
+  //      "en_US": "Stops the Bot",
+  //      "pt_BR": "Desliga o Bot"
+  //    },
+  //    "guild.list.usage": {
+  //      "en_US": "List the Guild channels.",
+  //      "pt_BR": "Mostre os canais da Guild."
+  //    }

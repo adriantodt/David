@@ -14,7 +14,7 @@ package cf.adriantodt.bot.commands.base;
 
 import cf.adriantodt.bot.commands.Permissions;
 import cf.adriantodt.bot.data.entities.I18n;
-import cf.adriantodt.bot.utils.Utils;
+import cf.adriantodt.bot.utils.DiscordUtils;
 
 import java.util.*;
 
@@ -48,7 +48,7 @@ public class UserCommand implements ICommand, ITranslatable {
 		Map<String, String> dynamicMap = new HashMap<>();
 		dynamicMap.put("event.username", event.getAuthor().getName());
 		dynamicMap.put("event.nickname", event.getMember().getNickname());
-		dynamicMap.put("event.name", Utils.name(event.getAuthor(), event.getGuild().getGuild()));
+		dynamicMap.put("event.name", DiscordUtils.name(event.getAuthor(), event.getGuild().getGuild()));
 		dynamicMap.put("event.mentionUser", event.getAuthor().getAsMention());
 		dynamicMap.put("event.args", event.getArgs());
 		dynamicMap.put("event.guild", event.getGuild().getName());

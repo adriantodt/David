@@ -12,7 +12,7 @@
 
 package cf.adriantodt.bot.commands.base;
 
-import cf.adriantodt.bot.commands.CommandHandler;
+import cf.adriantodt.bot.commands.CommandManager;
 import cf.adriantodt.bot.commands.Permissions;
 import cf.adriantodt.bot.data.entities.I18n;
 import org.apache.logging.log4j.LogManager;
@@ -246,7 +246,7 @@ public class Commands {
 				String[] args = event.getArgs(2);
 				ICommand cmd = SUBCMDS.get(args[0].toLowerCase());
 				if (cmd == null) event.getAnswers().invalidargs().queue();
-				else CommandHandler.execute(new CommandEvent(event.getEvent(), event.getGuild(), cmd, args[1]));
+				else CommandManager.execute(new CommandEvent(event.getEvent(), event.getGuild(), cmd, args[1]));
 			}).build();
 		}
 	}

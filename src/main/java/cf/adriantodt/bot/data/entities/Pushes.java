@@ -41,7 +41,7 @@ public class Pushes {
 		pushParenting.put("start", "bot");
 		pushParenting.put("update", "*");
 		pushParenting.put("changelog", "update");
-		pushParenting.put("log", "*");
+		pushParenting.put("get", "*");
 		pushParenting.put("ownerID", "*");
 		pushParenting.put("guild", "*");
 		pushParenting.put("i18n", "*");

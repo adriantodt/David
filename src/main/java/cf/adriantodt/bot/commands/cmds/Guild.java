@@ -15,9 +15,9 @@ package cf.adriantodt.bot.commands.cmds;
 import cf.adriantodt.bot.commands.base.Commands;
 import cf.adriantodt.bot.commands.base.ICommand;
 import cf.adriantodt.bot.commands.base.ProvidesCommand;
-import cf.adriantodt.bot.data.Commitable;
 import cf.adriantodt.bot.data.entities.Guilds;
 import cf.adriantodt.bot.data.entities.I18n;
+import cf.adriantodt.utils.data.Commitable;
 
 import java.util.Arrays;
 import java.util.List;

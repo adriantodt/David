@@ -14,9 +14,9 @@ package cf.adriantodt.bot.data.entities;
 
 import cf.adriantodt.bot.Bot;
 import cf.adriantodt.bot.commands.Permissions;
-import cf.adriantodt.bot.data.Commitable;
 import cf.adriantodt.bot.data.Configs;
-import cf.adriantodt.bot.utils.Tasks;
+import cf.adriantodt.utils.TaskManager;
+import cf.adriantodt.utils.data.Commitable;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.rethinkdb.model.MapObject;
@@ -61,7 +61,7 @@ public class Guilds {
 		GLOBAL.id = "-1";
 		GLOBAL.name = "GLOBAL";
 
-		Tasks.startAsyncTask("GuildTimeoutCleanup", () -> {
+		TaskManager.startAsyncTask("GuildTimeoutCleanup", () -> {
 			timeoutUntilDbRemoval.replaceAll((guild, integer) -> Math.min(integer - 1, 0));
 			timeoutUntilDbRemoval.entrySet().stream().filter(entry -> entry.getValue() == 0).map(Map.Entry::getKey).forEach(data -> {
 				r.table("commands").filter(r.row("gid").eq(data.id)).delete().runNoReply(conn);
@@ -214,7 +214,7 @@ public class Guilds {
 
 		public void setUserPerms(String s, long userPerms) {
 			this.userPerms.put(s, userPerms);
-			pushUpdate(this, r.hashMap("userPerms", userPerms));
+			pushUpdate(this, r.hashMap("userPerms", this.userPerms));
 		}
 
 		public boolean getFlag(String s) {

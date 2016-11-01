@@ -15,8 +15,9 @@ package cf.adriantodt.bot.commands;
 import cf.adriantodt.bot.commands.base.CommandEvent;
 import cf.adriantodt.bot.data.Configs;
 import cf.adriantodt.bot.data.entities.Guilds;
-import cf.adriantodt.bot.utils.Utils;
+import cf.adriantodt.bot.utils.DiscordUtils;
 import net.dv8tion.jda.core.entities.User;
+import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
@@ -25,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static cf.adriantodt.bot.utils.Tasks.userTimeout;
 import static cf.brforgers.core.lib.MathHelper.previousPowerOfTwo;
 import static cf.brforgers.core.lib.MathHelper.roundToPowerOf2;
 
@@ -122,7 +124,7 @@ public class Permissions {
 	}
 
 	public static boolean setPerms(Guilds.Data guild, CommandEvent event, String target, long permsToAdd, long permsToTake) {
-		target = Utils.processId(target); //Un-mention ID
+		target = DiscordUtils.processId(target); //Un-mention ID
 		if (target.equals(event.getAuthor().getId())) return false; //Disable changing itself
 		long senderPerm = getSenderPerm(guild, event), targetPerm = getPermFor(guild, target); //Get perrms
 		if (!checkPerms(senderPerm, targetPerm)) return false; //Check the Special Bits
@@ -142,8 +144,8 @@ public class Permissions {
 	}
 
 	public static long getPermFor(Guilds.Data guild, String target) {
-		target = Utils.processId(target);
-		long global = Guilds.GLOBAL.getUserPerms(target, 0L), unrevokeable = (target.equals(Utils.processId(Configs.getConfigs().get("ownerID").getAsString())) || target.equals("console") ? BOT_OWNER : (guild.getGuild() != null && guild.getGuild().getOwner().getUser().getId().equals(target)) ? GUILD_OWNER : 0);
+		target = DiscordUtils.processId(target);
+		long global = Guilds.GLOBAL.getUserPerms(target, 0L), unrevokeable = (target.equals(DiscordUtils.processId(Configs.getConfigs().get("ownerID").getAsString())) || target.equals("console") ? BOT_OWNER : (guild.getGuild() != null && guild.getGuild().getOwner().getUser().getId().equals(target)) ? GUILD_OWNER : 0);
 		return global | guild.getUserPerms(target, (global == 0 ? guild.getUserPerms("default", BASE_USER) : global)) | unrevokeable;
 		//this will merge the Global Perms, the Local Perms, and Unrevokeable Perms (BOT_OWNER or GUILD_OWNER)
 	}
@@ -163,5 +165,14 @@ public class Permissions {
 			.filter(entry -> (entry.getValue() & userPerms) == entry.getValue())
 			.map(Map.Entry::getKey)
 			.sorted(String::compareTo).collect(Collectors.toList());
+	}
+
+	public static boolean canExecuteCmd(GuildMessageReceivedEvent event) {
+		int count;
+		synchronized (userTimeout) {
+			count = userTimeout.getOrDefault(event.getAuthor(), 0);
+			userTimeout.put(event.getAuthor(), count + 1);
+		}
+		return count + 1 < 5;
 	}
 }

@@ -14,10 +14,8 @@ package cf.adriantodt.bot.data.entities;
 
 import cf.adriantodt.bot.commands.base.Holder;
 import cf.adriantodt.bot.data.ContentManager;
-import cf.adriantodt.bot.utils.RemarkDiscord;
-import cf.adriantodt.bot.utils.Tasks;
-import cf.adriantodt.bot.utils.Utils;
-import com.overzealous.remark.Remark;
+import cf.adriantodt.utils.CollectionUtils;
+import cf.adriantodt.utils.TaskManager;
 import com.rometools.rome.feed.synd.SyndFeed;
 import com.rometools.rome.io.SyndFeedInput;
 import com.rometools.rome.io.XmlReader;
@@ -30,12 +28,10 @@ import java.util.stream.Collectors;
 public class Feeds {
 	private static final String RENDER_PATTERN = ContentManager.resource("/feed_base.html");
 	private static final Set<Subscription> ALL = new HashSet<>();
-	private static final Remark REMARK = RemarkDiscord.discordMarkdown();
 
 	static {
-		REMARK.setCleanedHtmlEchoed(true);
-		Tasks.startAsyncTask("Feeds: From External", Feeds::onFeed, 60);
-		Tasks.startAsyncTask("Feeds: To Pushes", Feeds::onSendFeed, 5);
+		TaskManager.startAsyncTask("Feeds: From External", Feeds::onFeed, 60);
+		TaskManager.startAsyncTask("Feeds: To Pushes", Feeds::onSendFeed, 5);
 		Pushes.registerDynamicTypes(() -> ALL.stream().map(s -> "feed_" + s.pushName).collect(Collectors.toSet()), "feeds");
 	}
 
@@ -56,20 +52,21 @@ public class Feeds {
 			SyndFeedInput input = new SyndFeedInput();
 			SyndFeed feed = input.build(new XmlReader(subs.url));
 			Holder<Optional<Integer>> lastHashCode = new Holder<>(Optional.empty());
-			Utils.subListOn(
+			CollectionUtils.subListOn(
 				feed.getEntries(),
 				entryPredicate -> subs.equalsLastHashCode(entryPredicate.getLink().hashCode())
 			).forEach(entry -> {
 				HtmlImageGenerator generator = new HtmlImageGenerator();
 				generator.loadHtml(String.format(RENDER_PATTERN, entry.getDescription().getValue()));
-				generator.saveAsImage();
-				subs.compiledPushes.add(
-					("***RSS - " + feed.getTitle() + " (Feed " + subs.pushName + " - " + feed.getLink() + ")***:\n" +
-						"**" + entry.getTitle().trim() + "**\n" +
-						"" + REMARK.convert("<html><body>" + +"</body></html>").trim() + "**\n" +
-						"" + entry.getLink() + " (at " + entry.getPublishedDate().toString() + ")")
-						.replace("\n\n", "\n")
-				);
+				//TODO FIX THIS MESS
+//				generator.saveAsImage();
+//				subs.compiledPushes.add(
+//					("***RSS - " + feed.getTitle() + " (Feed " + subs.pushName + " - " + feed.getLink() + ")***:\n" +
+//						"**" + entry.getTitle().trim() + "**\n" +
+//						"" + REMARK.convert("<html><body>" + +"</body></html>").trim() + "**\n" +
+//						"" + entry.getLink() + " (at " + entry.getPublishedDate().toString() + ")")
+//						.replace("\n\n", "\n")
+//				);
 				if (!lastHashCode.var.isPresent()) lastHashCode.var = Optional.of(entry.getLink().hashCode());
 			});
 

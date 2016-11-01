@@ -13,7 +13,7 @@
 package cf.adriantodt.bot.data.entities;
 
 import cf.adriantodt.bot.Bot;
-import cf.adriantodt.bot.utils.Tasks;
+import cf.adriantodt.utils.TaskManager;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.rethinkdb.model.MapObject;
@@ -33,7 +33,7 @@ import java.util.*;
 import static cf.adriantodt.bot.data.DataManager.conn;
 import static cf.adriantodt.bot.data.DataManager.r;
 import static cf.adriantodt.bot.data.ReturnHandler.h;
-import static cf.adriantodt.bot.utils.Utils.nnOrD;
+import static cf.adriantodt.utils.StringUtils.notNullOrDefault;
 
 public class Users {
 	private static List<Data> all = new ArrayList<>();
@@ -42,7 +42,7 @@ public class Users {
 
 	static {
 
-		Tasks.startAsyncTask("UserTimeoutCleanup", () -> {
+		TaskManager.startAsyncTask("UserTimeoutCleanup", () -> {
 			timeoutUntilDbRemoval.replaceAll((guild, integer) -> Math.min(integer - 1, 0));
 			timeoutUntilDbRemoval.entrySet().stream().filter(entry -> entry.getValue() == 0).map(Map.Entry::getKey).forEach(data -> {
 				//TODO IMPL DB REMOVAL
@@ -121,9 +121,9 @@ public class Users {
 		if (member == null) throw new RuntimeException("User doesn't belong to the Guild.");
 		return I18n.getLocalized("user.name", language) + ": " + user.getName() + "\n" +
 			I18n.getLocalized("user.nick", language) + ": " + (member.getNickname() == null ? "(" + I18n.getLocalized("user.none", language) + ")" : member.getNickname()) + "\n" +
-			I18n.getLocalized("user.roles", language) + ": " + nnOrD(String.join(", ", member.getRoles().stream().map(Role::getName).toArray(String[]::new)), "(" + I18n.getLocalized("user.none", language) + ")") + "\n" +
+			I18n.getLocalized("user.roles", language) + ": " + notNullOrDefault(String.join(", ", member.getRoles().stream().map(Role::getName).toArray(String[]::new)), "(" + I18n.getLocalized("user.none", language) + ")") + "\n" +
 			I18n.getLocalized("user.memberSince", language) + ": " + member.getJoinDate().format(DateTimeFormatter.RFC_1123_DATE_TIME) + "\n" +
-			I18n.getLocalized("user.commonGuilds", language) + ": " + nnOrD(String.join(", ", jda.getGuilds().stream().filter(guild -> guild.isMember(user)).map(Guild::getName).toArray(String[]::new)), "(" + I18n.getLocalized("user.none", language) + ")") + "\n" +
+			I18n.getLocalized("user.commonGuilds", language) + ": " + notNullOrDefault(String.join(", ", jda.getGuilds().stream().filter(guild -> guild.isMember(user)).map(Guild::getName).toArray(String[]::new)), "(" + I18n.getLocalized("user.none", language) + ")") + "\n" +
 			"ID: " + user.getId() + "\n" +
 			I18n.getLocalized("user.status", language) + ": " + member.getOnlineStatus() + "\n" +
 			I18n.getLocalized("user.playing", language) + ": " + (member.getGame() == null ? "(" + I18n.getLocalized("user.none", language) + ")" : member.getGame().getName());

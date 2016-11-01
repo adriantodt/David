@@ -22,7 +22,7 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import static cf.adriantodt.bot.gui.GuiTranslationHandler.get;
-import static cf.adriantodt.bot.utils.Utils.splitArgs;
+import static cf.adriantodt.utils.StringUtils.splitArgs;
 
 public class ConsoleHandler {
 	public static final Map<String, BiConsumer<String, Consumer<String>>> CMDS = new HashMap<>();

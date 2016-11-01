@@ -21,7 +21,7 @@ import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.requests.RestAction;
 
 import static cf.adriantodt.bot.utils.Formatter.*;
-import static cf.adriantodt.bot.utils.Utils.limit;
+import static cf.adriantodt.utils.StringUtils.limit;
 
 
 public class FastAnswers {

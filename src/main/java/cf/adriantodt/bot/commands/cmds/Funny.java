@@ -16,8 +16,7 @@ import cf.adriantodt.bot.commands.base.Commands;
 import cf.adriantodt.bot.commands.base.ICommand;
 import cf.adriantodt.bot.commands.base.ProvidesCommand;
 import cf.adriantodt.bot.data.ContentManager;
-import cf.adriantodt.bot.utils.Tasks;
-import cf.adriantodt.bot.utils.Utils;
+import cf.adriantodt.utils.TaskManager;
 import cf.brforgers.core.lib.IOHelper;
 import org.apache.logging.log4j.LogManager;
 
@@ -27,7 +26,8 @@ import static cf.adriantodt.bot.commands.utils.Statistics.clampIfNotOwner;
 import static cf.adriantodt.bot.commands.utils.Statistics.parseInt;
 import static cf.adriantodt.bot.data.ContentManager.*;
 import static cf.adriantodt.bot.utils.Formatter.italic;
-import static cf.adriantodt.bot.utils.Utils.sleep;
+import static cf.adriantodt.utils.AsyncUtils.async;
+import static cf.adriantodt.utils.AsyncUtils.sleep;
 
 public class Funny {
 	@ProvidesCommand("funny")
@@ -41,8 +41,8 @@ public class Funny {
 							event.getAnswers().send(italic("Pulling " + amount + " dramas... This can take a while...")).queue(message -> event.sendTyping().queue());
 						}
 						for (int i = 0; i < amount; i++)
-							Utils.async(() -> {
-								Future<String> task = Tasks.getThreadPool().submit(() -> {
+							async(() -> {
+								Future<String> task = TaskManager.getThreadPool().submit(() -> {
 									String latestDrama = IOHelper.toString("https://drama.thog.eu/api/drama");
 									if ("null".equals(latestDrama)) return "*Failed to retrieve the Drama*";
 									return "**Minecrosoft**: *" + latestDrama + "*\n  *(Provided by Minecraft Drama Generator)*";
