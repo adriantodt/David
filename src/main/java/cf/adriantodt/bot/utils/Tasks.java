@@ -12,9 +12,9 @@
 
 package cf.adriantodt.bot.utils;
 
-import cf.adriantodt.bot.base.cmd.Holder;
-import cf.adriantodt.bot.base.gui.QueueLogAppender;
-import cf.adriantodt.bot.data.Push;
+import cf.adriantodt.bot.commands.base.Holder;
+import cf.adriantodt.bot.data.entities.Pushes;
+import cf.adriantodt.bot.gui.QueueLogAppender;
 import cf.adriantodt.bot.webinterface.BotWebInterface;
 import cf.adriantodt.utils.ThreadBuilder;
 import com.sun.management.OperatingSystemMXBean;
@@ -59,7 +59,7 @@ public class Tasks {
 			System.out.println("Log4j2Discord Enabled!");
 			Holder<String> s = new Holder<>();
 			while ((s.var = QueueLogAppender.getNextLogEvent("DiscordLogListeners")) != null) {
-				Push.pushSimple("log", channel -> "[LOG] " + s.var);
+				Pushes.pushSimple("log", channel -> "[LOG] " + s.var);
 			}
 			System.out.println("Log4j2Discord Disabled...");
 		})).start();

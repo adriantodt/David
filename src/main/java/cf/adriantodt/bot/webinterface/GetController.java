@@ -14,7 +14,7 @@ package cf.adriantodt.bot.webinterface;
 
 import cf.adriantodt.bot.Bot;
 import cf.adriantodt.bot.data.Configs;
-import cf.adriantodt.bot.data.Guilds;
+import cf.adriantodt.bot.data.entities.Guilds;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;

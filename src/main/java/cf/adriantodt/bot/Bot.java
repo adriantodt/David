@@ -12,13 +12,16 @@
 
 package cf.adriantodt.bot;
 
-import cf.adriantodt.bot.data.*;
-import cf.adriantodt.bot.handlers.BotGreeter;
-import cf.adriantodt.bot.handlers.CommandHandler;
-import cf.adriantodt.bot.handlers.ReadyBuilder;
-import cf.adriantodt.bot.impl.CmdsAndInterfaces;
-import cf.adriantodt.bot.impl.I18nHardImpl;
-import cf.adriantodt.bot.utils.Statistics;
+import cf.adriantodt.bot.commands.CommandHandler;
+import cf.adriantodt.bot.commands.CommandManager;
+import cf.adriantodt.bot.commands.utils.ReadyBuilder;
+import cf.adriantodt.bot.commands.utils.Statistics;
+import cf.adriantodt.bot.data.Configs;
+import cf.adriantodt.bot.data.DataManager;
+import cf.adriantodt.bot.data.I18nHardImpl;
+import cf.adriantodt.bot.data.entities.Guilds;
+import cf.adriantodt.bot.data.entities.I18n;
+import cf.adriantodt.bot.data.entities.Pushes;
 import cf.adriantodt.bot.utils.Tasks;
 import cf.adriantodt.jda.port.AnnotatedEventManager;
 import com.google.gson.Gson;
@@ -87,7 +90,7 @@ public class Bot {
 		LOGGER.info("Bot: " + SELF.getName() + " (#" + SELF.getId() + ")");
 		//LOGGER.info("Configs: " + DataManager.getSaveFile().toAbsolutePath().toString());
 		Tasks.startJDAAsyncTasks();
-		CmdsAndInterfaces.impl();
+		CommandManager.impl();
 
 		//TODO WAIT DV8'S IMPL
 		((JDAImpl) API).getClient().send(new JSONObject()
@@ -101,14 +104,14 @@ public class Bot {
 				.put("status", "online")).toString()
 		);
 
-		Push.pushSimple("start", channel -> I18n.getLocalized("bot.startup", channel));
+		Pushes.pushSimple("start", channel -> I18n.getLocalized("bot.startup", channel));
 	}
 
 	public static void stopBot() {
 		//API.getSelfInfo().setIdle(true);
 		//API.getAccountManager().update();
 		LOGGER.info("Bot exiting...");
-		Push.pushSimple("stop", channel -> boldAndItalic(I18n.getLocalized("bot.stop", channel)));
+		Pushes.pushSimple("stop", channel -> boldAndItalic(I18n.getLocalized("bot.stop", channel)));
 		try {
 			Thread.sleep(2 * 1000);
 		} catch (Exception ignored) {

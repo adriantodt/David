@@ -12,7 +12,7 @@
 
 package cf.adriantodt.bot;
 
-import cf.adriantodt.bot.base.gui.BotGui;
+import cf.adriantodt.bot.gui.BotGui;
 import net.dv8tion.jda.core.utils.SimpleLog;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
