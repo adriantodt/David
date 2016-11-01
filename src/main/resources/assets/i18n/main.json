@@ -1,0 +1,15 @@
+{
+  "en_US": {},
+  "pt_BR": {
+    "parent": "en_US"
+  },
+  "en_GB": {
+    "parent": "en_US"
+  },
+  "en_SG": {
+    "parent": "en_US"
+  },
+  "en_AU": {
+    "parent": "en_US"
+  }
+}

@@ -25,33 +25,33 @@ import static cf.adriantodt.bot.data.entities.I18n.setParent;
  */
 public class I18nHardImpl {
 	public static void impl() {
-		JsonObject i18nFile = new JsonParser().parse(ContentManager.resource("/i18n.json")).getAsJsonObject();
+		JsonObject mainFile = new JsonParser().parse(ContentManager.resource("/assets/i18n/main.json")).getAsJsonObject();
+		mainFile.entrySet().forEach(entry -> {
+			//Before Load, Parse Contents
+			JsonObject def = entry.getValue().getAsJsonObject();
+			if (def.has("parent")) setParent(entry.getKey(), def.get("parent").getAsString());
 
-		i18nFile.get("parents").getAsJsonObject().entrySet().forEach(entry -> {
-			setParent(entry.getKey(), entry.getValue().getAsString());
-		});
+			String resource = ContentManager.resource("/assets/i18n/" + entry.getKey() + ".json");
+			if (resource == null) return;
 
-		i18nFile.get("translations").getAsJsonObject().entrySet().forEach(
-			entry -> entry.getValue().getAsJsonObject().entrySet().forEach(
-				entry2 -> localize(entry2.getKey(), entry.getKey(), entry2.getValue().getAsString())
-			)
-		);
+			JsonObject file = new JsonParser().parse(resource).getAsJsonObject();
 
-		JsonObject usage = i18nFile.get("meta").getAsJsonObject().get("params").getAsJsonObject();
+			file.get("translations").getAsJsonObject().entrySet().forEach(
+				entry2 -> localize(entry.getKey(), entry2.getKey(), entry2.getValue().getAsString())
+			);
 
-		i18nFile.get("commands").getAsJsonObject().entrySet().forEach(
-			entry -> entry.getValue().getAsJsonObject().entrySet().forEach(
+			file.get("commands").getAsJsonObject().entrySet().forEach(
 				entry2 -> {
 					JsonObject v = entry2.getValue().getAsJsonObject();
 					localize(
-						entry2.getKey(),
-						entry.getKey() + ".usage",
+						entry.getKey(),
+						entry2.getKey() + ".usage",
 						v.get("desc").getAsString() + "\n"
-							+ usage.get(entry2.getKey()).getAsString() + ": " + v.get("params").getAsString() + "\n"
-							+ v.get("info").getAsString());
+							+ file.get("meta").getAsJsonObject().get("params").getAsString() + ": " + v.get("params").getAsString()
+							+ (v.has("info") ? "\n  " + v.get("info").getAsString().replace("\n", "\n  ") : ""));
 				}
-			)
-		);
+			);
+		});
 
 		/*
 		setParent("pt_BR", "en_US");

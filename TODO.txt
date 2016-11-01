@@ -1,15 +1,3 @@
-  //    "guild.perms.list.usage": {
-  //      "en_US": "List all the permissions",
-  //      "pt_BR": "Lista todas as permissões"
-  //    },
-  //    "guild.perms.get.usage": {
-  //      "en_US": "Show the current User Permissions.\n(Parameters: [user])\nIf executed without arguments, return the sender's permissions.\nIf a user is specified, the user's permissions is returned instead.",
-  //      "pt_BR": "Mostrar as Permissões que o Usuário tem.\n(Parâmetros: [user])\nSe executado sem argumentos, retorna as suas permissões.\nSe um usuário for suprido, retorna as permissões do usuário."
-  //    },
-  //    "funny.stevenuniverse.theorygenerator.usage": {
-  //      "en_US": "Generate Edgy Steven Universe Theories, based on http://www.generatorland.com/usergenerator.aspx?id=10737 data. Specify a number to generate multiple.",
-  //      "pt_BR": "Gera Teorias Aletórias de Steven Universo, baseado nos dados em http://www.generatorland.com/usergenerator.aspx?id=10737. Especifique um número para gerar múltiplos."
-  //    },
   //    "funny.stevenuniverse.stevonnie.usage": {
   //      "en_US": "Say random Stevonnie quotes, pumped from http://steven-universe.wikia.com/wiki/Stevonnie/Quotes (No Spoilers besides themselves). Specify a number to generate multiple.",
   //      "pt_BR": "Envia frases aleatórias da Stevonnie, usando os dados de http://steven-universe.wikia.com/wiki/Stevonnie/Quotes (Sem Spoilers além dela própria). Especifique um número para gerar múltiplos."
@@ -18,6 +6,10 @@
   //      "en_US": "Say random Skyrim Guard quotes, pumped from http://www.uesp.net/wiki/Skyrim:Guard_Dialogue. Specify a number to generate multiple.",
   //      "pt_BR": "Envia frases aleatórias dos guardas de Skyrim, usando os dados de http://www.uesp.net/wiki/Skyrim:Guard_Dialogue. Especifique um número para gerar múltiplos."
   //    },
+  //    "funny.minecraft.drama.usage": {
+  //      "en_US": "Generate Minecraft Modding Drama, pumped from https://drama.thog.eu/drama. Specify a number to generate multiple.",
+  //      "pt_BR": "Gera Minecraft Modding Drama, gerado pelo site https://drama.thog.eu/drama. Especifique um número para gerar múltiplos."
+  //    },
   //    "bot.restart.usage": {
   //      "en_US": "Restarts the Bot",
   //      "pt_BR": "Reinicia o Bot"
@@ -25,10 +17,6 @@
   //    "inviteme.usage": {
   //      "en_US": "Sends an Link to Invite the Bot to your Guild",
   //      "pt_br": "Envia um Link para Conviar o Bot para a sua Guild"
-  //    },
-  //    "funny.minecraft.drama.usage": {
-  //      "en_US": "Generate Minecraft Modding Drama, pumped from https://drama.thog.eu/drama. Specify a number to generate multiple.",
-  //      "pt_BR": "Gera Minecraft Modding Drama, gerado pelo site https://drama.thog.eu/drama. Especifique um número para gerar múltiplos."
   //    },
   //    "guild.cleanup.usage": {
   //      "en_US": "Toggles Message Cleanup (Messages from the bot are deleted after 15s).",

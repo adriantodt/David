@@ -1,0 +1,105 @@
+{
+  "translations": {
+    "user.status": "Status",
+    "user.lang.setNone": "Now I'll speak the Guild's Default Language!",
+    "gui.load": "$$=bot.load;",
+    "gui.guilds": "Guilds",
+    "cmds.userCommandsAvailable": "User Commands Available",
+    "tree.subcmds": "Sub-Commands",
+    "user.avatar": "Avatar",
+    "gui.cmds.help": "Show all Console Commands",
+    "guild.admin": "Admin",
+    "gui.input": "Input",
+    "gui.title": "$(dynamic.botname) - GUI",
+    "bot.startup": "Hello! I'm now Online and ready to receive commands!",
+    "alias.of": "Alias of %s",
+    "user.nick": "Nick",
+    "user.id": "ID",
+    "tree.default": "default",
+    "answers.exception": "an exception occurred while running this command:",
+    "answers.tooFast": "You're running commands too fast!",
+    "bot.restart": "Restarting...",
+    "gui.cmds.restart": "$$=bot.restart.usage;",
+    "user.lang.set": "Now I'll speak in %s to you!",
+    "bot.help": "Hello! I'm $(dynamic.botname).\nTo get started with the Commands, send: $(dynamic.mention) cmds\nTo invite me to your Guild, send: $(dynamic.mention) bot inviteme",
+    "guild.channels": "Channels",
+    "guild.cmds": "Commands",
+    "perms.get.none": "none",
+    "stats.timeFormat": "%d days, %d hours, %d minutes, %d seconds",
+    "eval.noOut": "Executed successfully (No output was provided)",
+    "gui.stats": "Stats",
+    "user.name": "Name",
+    "user.commonGuilds": "Common Guilds",
+    "bot.hello1": "Hello! I'm $(dynamic.botname). Someone dropped me here!",
+    "user.memberSince": "Member Since",
+    "error.contentmanager": "The ContentManager failed at loading the content. Please report it to the devs.",
+    "bot.hello2": "Someone call %s to set my Default Language!\n(Because of the Region, I guessed the language as `%s`, but the Guild Owner can set it anytime by executing `$(dynamic.mention) guild lang <en_US|pt_BR|etc>`)",
+    "guild.guild": "Guild",
+    "gui.cmds.stop": "$$=bot.stop.usage;",
+    "gui.stats4": "CPU Usage: %.2f%%.",
+    "gui.stats3": "RAM(Usando/Total/Max): %s MB/%d MB/%d MB.",
+    "gui.stats2": "%d wgets; %d active threads.",
+    "gui.stats1": "%d msgs; %d cmds; %d crashes; %d spam; %d noperms; %d invalidargs.",
+    "gui.stats0": "Uptime: %s",
+    "guild.vip": "VIP",
+    "user.playing": "Playing",
+    "gui.logAndChat": "Log and Chat",
+    "guild.lang.set": "Now I'll speak %s in this Guild!",
+    "stats.negativeTime": "<Negative difference of time>",
+    "gui.done": "Done.",
+    "answers.invalidArgs": "you've sent invalid arguments to the command.",
+    "guild.id": "ID",
+    "gui.save": "$$=bot.save;",
+    "answers.calmDown": "Calm down",
+    "guild.users": "Users",
+    "inviteme.link": "Click the Link to invite the Bot to your Guild",
+    "gui.cmds.lang": "Set GUI Language",
+    "answers.dear": "Dear",
+    "user.none": "none",
+    "perms.get.userPerms": "User Permissions",
+    "bot.stop": "Stopping...",
+    "user.roles": "Roles"
+  },
+  "meta": {
+    "params": "Parameters"
+  },
+  "commands": {
+    "bot.version": {
+      "desc": "Print Bot (and Libs) Version",
+      "params": "none"
+    },
+    "bot.toofast": {
+      "desc": "Toggles \"TooFast\" SpamProtection",
+      "params": "none",
+      "info": "Only the Bot Owner can use it. Enabled by default"
+    },
+    "bot.session": {
+      "desc": "Show session info",
+      "params": "none"
+    },
+    "guild.perms.set": {
+      "desc": "Define the User Permissions",
+      "params": "<user> <perms...>",
+      "info": "Define the permissions of a user specified by the parameter.\nIt doesn't allow, however, lower-ranks changing higher-ranks permissions."
+    },
+    "guild.perms.list": {
+      "desc": "List all the permissions",
+      "params": "none"
+    },
+    "guild.perms.get": {
+      "desc": "Show the current User Permissions",
+      "params": "[user]",
+      "info": "If executed without arguments, return the sender's permissions.\nIf a user is specified, the user's permissions is returned instead."
+    },
+    "funny.skyrim.lydia": {
+      "desc": "Say random Lydia quotes",
+      "params": "[times]",
+      "info": "Quotes pumped from http://elderscrolls.wikia.com/wiki/Lydia.\n Specify a number to generate multiple."
+    },
+    "funny.stevenuniverse.theorygenerator": {
+      "desc": "Generate Edgy Steven Universe Theories",
+      "params": "[times]",
+      "info": "Based on http://www.generatorland.com/usergenerator.aspx?id=10737 data. Specify a number to generate multiple."
+    }
+  }
+}

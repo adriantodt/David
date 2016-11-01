@@ -1,0 +1,93 @@
+{
+  "translations": {
+    "user.lang.setNone": "Agora eu vou falar na lingua padrão da Guild!",
+    "gui.load": "$$=bot.load;",
+    "cmds.userCommandsAvailable": "User Commands Available",
+    "tree.subcmds": "Sub-Comandos",
+    "gui.cmds.help": "Mostra todos os Comandos de Console",
+    "guild.admin": "Admin",
+    "bot.startup": "Olá! Agora eu estou Online e pronto para receber comandos!",
+    "alias.of": "Alias de %s",
+    "user.nick": "Apelido",
+    "tree.default": "padrão",
+    "answers.exception": "uma exceção ocorreu durante a execução do comando:",
+    "answers.tooFast": "Você está executando comandos rápido de mais",
+    "bot.restart": "Reiniciando...",
+    "gui.cmds.restart": "$$=bot.restart.usage;",
+    "user.lang.set": "Agora eu vou falar em %s para você!",
+    "bot.help": "Olá! Eu sou o $(dynamic.botname).\nPara começar a usar os Comandos, envie: $(dynamic.mention) cmds\nPara me convidar para a sua Guild, envie: $(dynamic.mention) bot inviteme",
+    "guild.channels": "Canais",
+    "guild.cmds": "Comandos",
+    "perms.get.none": "nenhuma",
+    "stats.timeFormat": "%d dias, %d horas, %d minutos, %d segundos",
+    "eval.noOut": "Executou com sucesso (Nenhum objeto foi retornado)",
+    "gui.stats": "Estatísticas",
+    "user.name": "Nome",
+    "user.commonGuilds": "Guilds em Comum",
+    "bot.hello1": "Oi! Eu sou o $(dynamic.botname). Alguém me jogou aqui!",
+    "user.memberSince": "Membro Desde",
+    "error.contentmanager": "O ContentManager falhou ao carregar o conteúdo. Por favor reporte isso ao desenvolvedor.",
+    "bot.hello2": "Alguém chame %s para definir minha Língua Padrão!\n(Por causa da Região, eu adivinhei a língua como `%s`, mas o Guild Owner pode defini-la a qualquer mmomento executando `$(dynamic.mention) guild lang <en_US|pt_BR|etc>`)",
+    "guild.guild": "Guild",
+    "gui.cmds.stop": "$$=bot.stop.usage;",
+    "gui.stats2": "%d wgets; %d threads ativas.",
+    "user.playing": "Jogando",
+    "gui.logAndChat": "Log e Chat",
+    "guild.lang.set": "Agora eu vou falar em %s nessa Guild!",
+    "stats.negativeTime": "<Diferença negativa de tempo>",
+    "gui.done": "Feito.",
+    "answers.invalidArgs": "você enviou argumento(s) incorreto(s) para o comando.",
+    "gui.save": "$$=bot.save;",
+    "answers.calmDown": "Acalme-se",
+    "guild.users": "Usuários",
+    "inviteme.link": "Clique no Link para convidar o Bot para a sua Guild",
+    "gui.cmds.lang": "Define a Língua da GUI",
+    "answers.dear": "Prezado",
+    "user.none": "nenhum",
+    "perms.get.userPerms": "Permissões do Usuário",
+    "bot.stop": "Saindo...",
+    "user.roles": "Cargos"
+  },
+  "meta": {
+    "params": "Parâmetros"
+  },
+  "commands": {
+    "bot.version": {
+      "desc": "Envia a Versão do Bot (e Libs)",
+      "params": "nenhum"
+    },
+    "bot.toofast": {
+      "desc": "Ativa ou Desativa o \"Toofast\" SpamProtection",
+      "params": "nenhum",
+      "info": "Apenas o Dono do Bot pode usar. Ativado por padrão"
+    },
+    "bot.session": {
+      "desc": "Mostra informações da sessão",
+      "params": "nenhum"
+    },
+    "guild.perms.set": {
+      "desc": "Define as Permissões de um Usuário",
+      "params": "<usuário> <permissões...>",
+      "info": "Define as permissões do usuário suprido pelo parâmetro.\nPorém, ele não permite a usuários de rank menor alterar permissões de usuários de rank maior."
+    },
+    "guild.perms.list": {
+      "desc": "Lista todas as permissões",
+      "params": "nenhum"
+    },
+    "guild.perms.get": {
+      "desc": "Mostrar as Permissões que o Usuário tem",
+      "params": "[usuário]",
+      "info": "Se executado sem argumentos, retorna as suas permissões.\nSe um usuário for suprido, retorna as permissões do usuário."
+    },
+    "funny.skyrim.lydia": {
+      "desc": "Envia frases aleatórias da Lydia",
+      "params": "[vezes]",
+      "info": "Frases tiradas de http://elderscrolls.wikia.com/wiki/Lydia.\n Especifique um número para gerar múltiplos."
+    },
+    "funny.stevenuniverse.theorygenerator": {
+      "desc": "Gera Teorias Aletórias de Steven Universo",
+      "params": "[vezes]",
+      "info": "Baseado nos dados em http://www.generatorland.com/usergenerator.aspx?id=10737. Especifique um número para gerar múltiplos."
+    }
+  }
+}

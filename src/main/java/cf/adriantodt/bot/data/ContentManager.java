@@ -34,21 +34,21 @@ public class ContentManager {
 
 	public static void reload() {
 		try {
-			TESV_GUARDS = resource("/skyrim_guards.txt").split("\\r?\\n");
+			TESV_GUARDS = resource("/assets/funny/skyrim_guards.txt").split("\\r?\\n");
 			TESV_GUARDS_LOADED = true;
 		} catch (Exception e) {
 			LOGGER.error("Error while parsing \"skyrim_guards.txt\" resource.", e);
 		}
 
 		try {
-			TESV_LYDIA = resource("/skyrim_lydia.txt").split("\\r?\\n");
+			TESV_LYDIA = resource("/assets/funny/skyrim_lydia.txt").split("\\r?\\n");
 			TESV_LYDIA_LOADED = true;
 		} catch (Exception e) {
 			LOGGER.error("Error while parsing \"skyrim_lydia.txt\" resource.", e);
 		}
 
 		try {
-			JsonObject object = new JsonParser().parse(resource("/stevenuniverse_theories.json")).getAsJsonObject();
+			JsonObject object = new JsonParser().parse(resource("/assets/funny/stevenuniverse_theories.json")).getAsJsonObject();
 			List<List<String>> SU_THEORIES_BUILD = Arrays.asList(new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
 			object.get("characters").getAsJsonArray().forEach(element -> {
 				SU_THEORIES_BUILD.get(0).add(element.getAsString());
@@ -92,7 +92,7 @@ public class ContentManager {
 		}
 
 		try {
-			SU_STEVONNIE = resource("/stevenuniverse_stevonnie.txt").split("\\r?\\n");
+			SU_STEVONNIE = resource("/assets/funny/stevenuniverse_stevonnie.txt").split("\\r?\\n");
 			SU_STEVONNIE_LOADED = true;
 		} catch (Exception e) {
 			LOGGER.error("Error while parsing \"stevenuniverse_stevonnie.txt\" resource.", e);

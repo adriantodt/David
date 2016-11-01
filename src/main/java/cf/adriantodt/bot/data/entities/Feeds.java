@@ -26,7 +26,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class Feeds {
-	private static final String RENDER_PATTERN = ContentManager.resource("/feed_base.html");
+	private static final String RENDER_PATTERN = ContentManager.resource("/assets/feed/base_render.html");
 	private static final Set<Subscription> ALL = new HashSet<>();
 
 	static {
