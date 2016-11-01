@@ -1,16 +1,8 @@
-  //    "bot.stats.usage": {
-  //      "en_US": "Session Statistics.",
-  //      "pt_BR": "Estatísticas da sessão."
-  //    },
-  //    "perms.set.usage": {
-  //      "en_US": "Define the User Permissions.\n(Parameters: <user>)\nDefine the permissions of a user specified by the parameter.",
-  //      "pt_BR": "Define as Permissões de um Usuário.\n(Parâmetros: <user>)\nDefine as permissões do usuário suprido pelo parâmetro."
-  //    },
-  //    "perms.list.usage": {
+  //    "guild.perms.list.usage": {
   //      "en_US": "List all the permissions",
   //      "pt_BR": "Lista todas as permissões"
   //    },
-  //    "perms.get.usage": {
+  //    "guild.perms.get.usage": {
   //      "en_US": "Show the current User Permissions.\n(Parameters: [user])\nIf executed without arguments, return the sender's permissions.\nIf a user is specified, the user's permissions is returned instead.",
   //      "pt_BR": "Mostrar as Permissões que o Usuário tem.\n(Parâmetros: [user])\nSe executado sem argumentos, retorna as suas permissões.\nSe um usuário for suprido, retorna as permissões do usuário."
   //    },

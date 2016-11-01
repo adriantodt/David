@@ -251,12 +251,12 @@
     },
     "bot.toofast": {
       "en_US": {
-        "desc": "Toggles \"TooFast\" SpamProtection.",
+        "desc": "Toggles \"TooFast\" SpamProtection",
         "params": "none",
         "info": "Only the Bot Owner can use it. Enabled by default"
       },
       "pt_BR": {
-        "desc": "Ativa ou Desativa o \"Toofast\" SpamProtection.",
+        "desc": "Ativa ou Desativa o \"Toofast\" SpamProtection",
         "params": "nenhum",
         "info": "Apenas o Dono do Bot pode usar. Ativado por padrão"
       }
@@ -273,28 +273,28 @@
         "info": "Frases tiradas http://elderscrolls.wikia.com/wiki/Lydia.\n Especifique um número para gerar múltiplos."
       }
     },
-    "CMDNAME": {
+    "bot.session": {
       "en_US": {
-        "desc": "DESC",
-        "params": "PARAMS",
-        "info": "INFO"
+        "desc": "Show session info",
+        "params": "none",
+        "info": "Show session related info, like RAM and CPU usage."
       },
       "pt_BR": {
-        "desc": "DESC",
-        "params": "PARAMS",
-        "info": "INFO"
+        "desc": "Mostra informações da sessão",
+        "params": "nenhum",
+        "info": "Mostra as informações relacionadas a sessão, como uso de RAM e CPU."
       }
     },
-    "CMDNAME": {
+    "guild.perms.set": {
       "en_US": {
-        "desc": "DESC",
-        "params": "PARAMS",
-        "info": "INFO"
+        "desc": "Define the User Permissions",
+        "params": "<user> <perms...>",
+        "info": "Define the permissions of a user specified by the parameter.\nIt doesn't allow, however, lower-ranks changing higher-ranks permissions."
       },
       "pt_BR": {
-        "desc": "DESC",
-        "params": "PARAMS",
-        "info": "INFO"
+        "desc": "Define as Permissões de um Usuário",
+        "params": "<usuário> <permissões...>",
+        "info": "Define as permissões do usuário suprido pelo parâmetro.\nPorém, ele não permite a usuários de rank menor alterar permissões de usuários de rank maior."
       }
     },
     "CMDNAME": {

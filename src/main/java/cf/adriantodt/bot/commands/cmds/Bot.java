@@ -49,8 +49,8 @@ public class Bot {
 				Commands.buildSimple("bot.toofast.usage", BOT_OWNER)
 					.setAction((event) -> event.getAnswers().bool(CommandManager.toofast = !CommandManager.toofast).queue()).build()
 			)
-			.addCommand("stats",
-				Commands.buildSimple("bot.stats.usage").setAction(Statistics::printStats).build()
+			.addCommand("session",
+				Commands.buildSimple("bot.session.usage").setAction(Statistics::printStats).build()
 			)
 			.addCommand("inviteme",
 				Commands.buildSimple("inviteme.usage")

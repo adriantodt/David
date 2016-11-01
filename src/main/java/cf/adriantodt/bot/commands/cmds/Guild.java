@@ -77,13 +77,13 @@ public class Guild {
 					.build()
 			)
 			.addCommand("perms", Commands.buildTree()
-				.addCommand("get", Commands.buildSimple("perms.get.usage")
+				.addCommand("get", Commands.buildSimple("guild.perms.get.usage")
 					.setAction(event -> {
 						String arg = event.getArg(1, 0); //!getlevel USER
 						if (arg.isEmpty()) arg = event.getAuthor().getId();
 						event.getAnswers().send("**" + getLocalized("perms.get.userPerms", event) + ":**\n *" + String.join(", ", toCollection(getPermFor(event.getGuild(), arg)).stream().toArray(String[]::new)) + "*").queue();
 					}).build())
-				.addCommand("set", Commands.buildSimple("perms.set.usage", SET_PERMS)
+				.addCommand("set", Commands.buildSimple("guild.perms.set.usage", SET_PERMS)
 					.setAction(event -> {
 						String[] args = event.getArgs(2); //!setlevel USER LEVEL
 						if (args[0].isEmpty() || args[1].isEmpty()) event.getAnswers().invalidargs().queue();
@@ -104,10 +104,9 @@ public class Guild {
 					})
 					.build()
 				)
-				.addCommand("list",
-					Commands.buildSimple("perms.list.usage")
-						.setAction(event -> event.getAnswers().send("**" + getLocalized("perms.get.userPerms", event) + ":**\n *" + String.join(", ", toCollection(BOT_OWNER).stream().toArray(String[]::new)) + "*").queue())
-						.build()
+				.addCommand("list", Commands.buildSimple("guild.perms.list.usage")
+					.setAction(event -> event.getAnswers().send("**" + getLocalized("perms.get.userPerms", event) + ":**\n *" + String.join(", ", toCollection(BOT_OWNER).stream().toArray(String[]::new)) + "*").queue())
+					.build()
 				)
 				.build()
 			)
