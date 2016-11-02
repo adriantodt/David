@@ -13,7 +13,10 @@
 package cf.adriantodt.bot.data;
 
 import cf.adriantodt.bot.Bot;
+import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.rethinkdb.RethinkDB;
 import com.rethinkdb.net.Connection;
 
@@ -23,17 +26,55 @@ import java.nio.file.Paths;
 import java.util.Base64;
 import java.util.List;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class DataManager {
 	public static final RethinkDB r = RethinkDB.r;
 
+	public static final JsonObject mainConfig = ConfigUtils.get(
+		"main",
+		ImmutableMap.<String, Predicate<JsonElement>>builder()
+			.put("ownerID", ConfigUtils::isJsonString)
+			.put("token", ConfigUtils::isJsonString)
+			.build(),
+		() -> {
+			JsonObject object = new JsonObject();
+			object.add("ownerID", null);
+			object.add("token", null);
+			return object;
+		},
+		false,
+		true
+	), dbConfig = ConfigUtils.get(
+		"db",
+		ImmutableMap.<String, Predicate<JsonElement>>builder()
+			.put("hostname", ConfigUtils::isJsonString)
+			.put("port", element -> ConfigUtils.isJsonNumber(element) && element.getAsInt() != 0)
+			.build(),
+		() -> {
+			JsonObject object = new JsonObject();
+			object.addProperty("hostname", "localhost");
+			object.addProperty("port", 28015);
+			return object;
+		},
+		true,
+		true
+	);
+
 	public static Connection conn;
 	public static Gson json = Bot.JSON_INTERNAL;
 	public static ReturnHandler h = ReturnHandler.h;
+			/*
+			ConfigUtils.requireObject(configs, "hostname", ConfigUtils::isJsonString, "RethinkDB Hostname doesn't exists/is invalid");
+			ConfigUtils.requireObject(configs, "token", ConfigUtils::isJsonString, "Token doesn't exists/is null");
+			ConfigUtils.requireObject(configs, "ownerID", ConfigUtils::isJsonString, "OwnerID doesn't exists/is null");
+			ConfigUtils.requireObject(configs, "port", ConfigUtils::isJsonNumber, "RethinkDB Port doesn't exists/is null");
+			if (configs.get("port").getAsInt() == 0) throw new IllegalStateException("Port number can't be 0");
+		 */
 
 	public static void init() {
-		conn = r.connection().hostname(Configs.getConfigs().get("hostname").getAsString()).port(Configs.getConfigs().get("port").getAsInt()).db("bot").connect();
+		conn = r.connection().hostname(dbConfig.get("hostname").getAsString()).port(dbConfig.get("port").getAsInt()).db("bot").connect();
 	}
 
 	public static Path getPath(String file, String ext) {

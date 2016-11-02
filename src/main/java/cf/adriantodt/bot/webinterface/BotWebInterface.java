@@ -12,18 +12,25 @@
 
 package cf.adriantodt.bot.webinterface;
 
+import cf.adriantodt.bot.Bot;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
+import org.springframework.context.annotation.Bean;
+import org.springframework.stereotype.Controller;
 
+@Controller
 @SpringBootApplication
 public class BotWebInterface {
 	public static void startWebServer() {
 		SpringApplication.run(BotWebInterface.class);
 	}
 
-//	@RequestMapping("/error")
-//	public String error() {
-//		return GetController.error("Not found").toString();
-//	}
+	@Bean
+	public EmbeddedServletContainerCustomizer containerCustomizer() {
+		return (container -> {
+			container.setPort(8012);
+			container.setDisplayName(Bot.SELF.getName() + " REST API");
+		});
+	}
 }
-

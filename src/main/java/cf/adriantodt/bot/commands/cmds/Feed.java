@@ -25,7 +25,7 @@ import static cf.adriantodt.bot.commands.Permissions.BOT_OWNER;
 public class Feed {
 	@ProvidesCommand("feed")
 	private static ICommand createCommand() {
-		return Commands.buildSimple(BOT_OWNER)
+		return Commands.buildSimple("noUsage", BOT_OWNER)
 			.setAction(event -> {
 				Feeds.whileOnLock(() -> Pushes.subscribe(event.getChannel(), Sets.newHashSet("feed_" + new Feeds.Subscription(IOHelper.newURL(event.getArg(2, 1)), event.getArg(2, 0)).pushName)));
 				event.awaitTyping().getAnswers().bool(true).queue();

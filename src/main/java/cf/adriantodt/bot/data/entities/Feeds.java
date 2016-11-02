@@ -12,18 +12,20 @@
 
 package cf.adriantodt.bot.data.entities;
 
-import cf.adriantodt.bot.commands.base.Holder;
 import cf.adriantodt.bot.data.ContentManager;
 import cf.adriantodt.utils.CollectionUtils;
+import cf.adriantodt.utils.StringUtils;
 import cf.adriantodt.utils.TaskManager;
+import com.google.common.collect.Lists;
 import com.rometools.rome.feed.synd.SyndFeed;
 import com.rometools.rome.io.SyndFeedInput;
 import com.rometools.rome.io.XmlReader;
-import gui.ava.html.image.generator.HtmlImageGenerator;
 
 import java.net.URL;
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static cf.adriantodt.bot.data.entities.FeedingUtil.handleHTML;
 
 public class Feeds {
 	private static final String RENDER_PATTERN = ContentManager.resource("/assets/feed/base_render.html");
@@ -51,31 +53,30 @@ public class Feeds {
 		try {
 			SyndFeedInput input = new SyndFeedInput();
 			SyndFeed feed = input.build(new XmlReader(subs.url));
-			Holder<Optional<Integer>> lastHashCode = new Holder<>(Optional.empty());
-			CollectionUtils.subListOn(
+			Lists.reverse(CollectionUtils.subListOn(
 				feed.getEntries(),
 				entryPredicate -> subs.equalsLastHashCode(entryPredicate.getLink().hashCode())
-			).forEach(entry -> {
-				HtmlImageGenerator generator = new HtmlImageGenerator();
-				generator.loadHtml(String.format(RENDER_PATTERN, entry.getDescription().getValue()));
-				//TODO FIX THIS MESS
-//				generator.saveAsImage();
-//				subs.compiledPushes.add(
-//					("***RSS - " + feed.getTitle() + " (Feed " + subs.pushName + " - " + feed.getLink() + ")***:\n" +
-//						"**" + entry.getTitle().trim() + "**\n" +
-//						"" + REMARK.convert("<html><body>" + +"</body></html>").trim() + "**\n" +
-//						"" + entry.getLink() + " (at " + entry.getPublishedDate().toString() + ")")
-//						.replace("\n\n", "\n")
-//				);
-				if (!lastHashCode.var.isPresent()) lastHashCode.var = Optional.of(entry.getLink().hashCode());
+			)).forEach(entry -> {
+				String noiceName = Arrays.stream(StringUtils.splitArgs(entry.getTitle(), 0))
+					.filter(s -> !s.isEmpty())
+					.map(s -> s.charAt(0))
+					.map(Object::toString)
+					.collect(Collectors.joining()) + "-" + entry.getTitle().hashCode() / 65536;
+				String linkToImg = handleHTML(String.format(RENDER_PATTERN, entry.getDescription().getValue()), noiceName);
+				subs.compiledPushes.add(
+					"***RSS - " + feed.getTitle() + " (Feed " + subs.pushName + " - " + feed.getLink() + ")***:\n" +
+						"**" + entry.getTitle().trim() + "**\n" +
+						linkToImg + "**\n" +
+						entry.getLink() + " (at " + entry.getPublishedDate().toString() + ")"
+				);
+				subs.setLastHashCode(entry.getLink().hashCode());
 			});
-
-			lastHashCode.var.ifPresent(subs::setLastHashCode);
 		} catch (Exception e) {
 			System.out.println("Something weird happened on Feeds");
 			e.printStackTrace();
 		}
 	}
+
 
 	public static void whileOnLock(Runnable r) {
 		synchronized (ALL) {

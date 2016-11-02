@@ -10,7 +10,7 @@
  * File Created @ [28/09/16 22:17]
  */
 
-package cf.adriantodt.bot.commands.utils.scripting;
+package cf.adriantodt.bot.commands.cmds.utils.scripting;
 
 import org.luaj.vm2.*;
 import org.luaj.vm2.compiler.LuaC;

@@ -10,7 +10,7 @@
  * File Created @ [30/09/16 08:43]
  */
 
-package cf.adriantodt.bot.commands.utils.scripting;
+package cf.adriantodt.bot.commands.cmds.utils.scripting;
 
 import cf.adriantodt.bot.commands.base.CommandEvent;
 

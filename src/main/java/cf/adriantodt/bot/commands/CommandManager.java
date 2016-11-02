@@ -114,7 +114,7 @@ public class CommandManager {
 	@SubscribeEvent
 	public static void onReady(ReadyEvent event) {
 		Arrays.asList(
-			cf.adriantodt.bot.commands.cmds.Bot.class, Cmds.class, Feed.class, Funny.class, Guild.class, Push.class, User.class
+			cf.adriantodt.bot.commands.cmds.Bot.class, Cmds.class, Feed.class, Funny.class, Guild.class, Push.class, User.class, TestCmds.class
 		).forEach(CommandManager::load);
 	}
 

@@ -13,6 +13,8 @@
 package cf.adriantodt.bot.gui;
 
 import cf.adriantodt.bot.Bot;
+import cf.adriantodt.bot.data.entities.Pushes;
+import cf.adriantodt.utils.StringUtils;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -38,6 +40,15 @@ public class ConsoleHandler {
 		HELP.put(CMDS.get("stop"), "stop");
 
 		CMDS.put("threads", (s, in) -> Thread.getAllStackTraces().keySet().forEach(t -> in.accept(t.getName())));
+
+		CMDS.put("push", (s, in) -> {
+			String[] args = StringUtils.splitArgs(s, 2);
+			if (args[0].isEmpty() || args[1].isEmpty()) {
+				in.accept("Invalid args.");
+			} else {
+				Pushes.pushSimple(args[0], args[1]);
+			}
+		});
 
 //		CMDS.put("load", (s, in) -> {
 //			in.accept(get("load"));

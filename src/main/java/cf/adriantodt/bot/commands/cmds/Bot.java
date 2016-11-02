@@ -18,8 +18,8 @@ import cf.adriantodt.bot.commands.CommandManager;
 import cf.adriantodt.bot.commands.base.Commands;
 import cf.adriantodt.bot.commands.base.ICommand;
 import cf.adriantodt.bot.commands.base.ProvidesCommand;
+import cf.adriantodt.bot.commands.cmds.utils.scripting.JS;
 import cf.adriantodt.bot.commands.utils.Statistics;
-import cf.adriantodt.bot.commands.utils.scripting.JS;
 import cf.adriantodt.bot.data.entities.I18n;
 import net.dv8tion.jda.core.JDAInfo;
 

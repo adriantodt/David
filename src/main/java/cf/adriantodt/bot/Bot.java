@@ -15,7 +15,6 @@ package cf.adriantodt.bot;
 import cf.adriantodt.bot.commands.CommandManager;
 import cf.adriantodt.bot.commands.utils.ReadyBuilder;
 import cf.adriantodt.bot.commands.utils.Statistics;
-import cf.adriantodt.bot.data.Configs;
 import cf.adriantodt.bot.data.DataManager;
 import cf.adriantodt.bot.data.I18nHardImpl;
 import cf.adriantodt.bot.data.entities.Guilds;
@@ -54,7 +53,7 @@ public class Bot {
 
 	static {
 		onLoaded.add(() -> {
-			User user = API.getUserById(Configs.getConfigs().get("ownerID").getAsString());
+			User user = API.getUserById(DataManager.mainConfig.get("ownerID").getAsString());
 			if (user == null) {
 				LOGGER.warn("Owner not regognized. This WILL cause issues (specially PermSystem)");
 			} else {
@@ -67,7 +66,7 @@ public class Bot {
 		DataManager.init();
 		Tasks.startAsyncTasks();
 		new JDABuilder(AccountType.BOT)
-			.setToken(Configs.getConfigs().get("token").getAsString())
+			.setToken(DataManager.mainConfig.get("token").getAsString())
 			.setBulkDeleteSplittingEnabled(false)
 			.setAudioEnabled(false)
 			.setEventManager(new AnnotatedEventManager())
@@ -88,7 +87,7 @@ public class Bot {
 		onLoaded = null;
 		LOGGER = LogManager.getLogger(SELF.getName());
 		LOGGER.info("Bot: " + SELF.getName() + " (#" + SELF.getId() + ")");
-		//LOGGER.info("Configs: " + DataManager.getSaveFile().toAbsolutePath().toString());
+		//LOGGER.info("ConfigUtils: " + DataManager.getSaveFile().toAbsolutePath().toString());
 		Tasks.startJDAAsyncTasks();
 
 		//TODO WAIT DV8'S IMPL

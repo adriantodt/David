@@ -10,7 +10,7 @@
  * File Created @ [28/09/16 22:17]
  */
 
-package cf.adriantodt.bot.commands.utils.scripting;
+package cf.adriantodt.bot.commands.cmds.utils.scripting;
 
 import cf.adriantodt.bot.commands.base.CommandEvent;
 import cf.adriantodt.bot.data.entities.I18n;

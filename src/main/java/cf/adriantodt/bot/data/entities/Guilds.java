@@ -14,7 +14,7 @@ package cf.adriantodt.bot.data.entities;
 
 import cf.adriantodt.bot.Bot;
 import cf.adriantodt.bot.commands.Permissions;
-import cf.adriantodt.bot.data.Configs;
+import cf.adriantodt.bot.data.DataManager;
 import cf.adriantodt.utils.TaskManager;
 import cf.adriantodt.utils.data.Commitable;
 import com.google.gson.JsonElement;
@@ -165,7 +165,7 @@ public class Guilds {
 	public static String toString(Data data, JDA jda, String language) {
 		Guild guild = data.getGuild(jda);
 		return I18n.getLocalized("guild.guild", language) + ": " + data.name + (guild != null && !data.name.equals(guild.getName()) ? " (" + guild.getName() + ")" : "")
-			+ "\n - " + I18n.getLocalized("guild.admin", language) + ": " + (guild == null ? Bot.API.getUserById(Configs.getConfigs().get("ownerID").getAsString()).getName() : guild.getOwner().getUser().getName())
+			+ "\n - " + I18n.getLocalized("guild.admin", language) + ": " + (guild == null ? Bot.API.getUserById(DataManager.mainConfig.get("ownerID").getAsString()).getName() : guild.getOwner().getUser().getName())
 			+ "\n - " + I18n.getLocalized("guild.cmds", language) + ": " + UserCommands.allFrom(data).size()
 			+ "\n - " + I18n.getLocalized("guild.channels", language) + ": " + (guild == null ? (Bot.API.getTextChannels().size() + Bot.API.getPrivateChannels().size()) : guild.getTextChannels().size())
 			+ "\n - " + I18n.getLocalized("guild.users", language) + ": " + (guild == null ? Bot.API.getUsers().size() : guild.getMembers().size())

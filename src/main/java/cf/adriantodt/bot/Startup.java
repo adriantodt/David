@@ -20,14 +20,25 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.awt.*;
+import java.io.File;
 import java.util.Arrays;
 
 public class Startup {
 	public static Logger LOGGER = LogManager.getLogger("Startup");
 	public static BotGui UI = null;
 
+	@SuppressWarnings("ResultOfMethodCallIgnored")
 	public static void main(String[] args) {
 		LOGGER.info("Pre-Initializating...");
+		try {
+			File file = new File("./tmp/");
+			if (file.exists()) file.delete();
+			file.mkdir();
+			System.setProperty("java.io.tmpdir", file.getCanonicalPath());
+		} catch (Exception e) {
+			LOGGER.error("Error while trying to define TMPDir: ", e);
+		}
+		LOGGER.info("TMP Directory: " + System.getProperty("java.io.tmpdir"));
 		if (GraphicsEnvironment.isHeadless()) LOGGER.info("GUI Disabled. (Headless Environiment)");
 		else if (Arrays.stream(args).filter("nogui"::equals).findAny().orElse(null) == null && !GraphicsEnvironment.isHeadless())
 			UI = BotGui.createBotGui();

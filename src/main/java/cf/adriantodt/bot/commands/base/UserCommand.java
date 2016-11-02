@@ -20,7 +20,7 @@ import java.util.*;
 
 import static cf.adriantodt.bot.Bot.RAND;
 
-//import cf.adriantodt.bot.commands.utils.scripting.JS;
+//import cf.adriantodt.bot.commands.cmds.utils.scripting.JS;
 
 public class UserCommand implements ICommand, ITranslatable {
 	public List<String> responses = new ArrayList<>();

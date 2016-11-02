@@ -13,7 +13,7 @@
 package cf.adriantodt.bot.webinterface;
 
 import cf.adriantodt.bot.Bot;
-import cf.adriantodt.bot.data.Configs;
+import cf.adriantodt.bot.data.DataManager;
 import cf.adriantodt.bot.data.entities.Guilds;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -48,14 +48,14 @@ public class GetController {
 				else array.add(new JsonPrimitive(g.getId()));
 			});
 			object.add("guildsOwned", array);
-			object.addProperty("owner", Configs.getConfigs().get("ownerID").getAsString().equals(id));
+			object.addProperty("owner", DataManager.mainConfig.get("ownerID").getAsString().equals(id));
 			return object;
 		});
 
 		api.put("me", map -> {
 			JsonObject object = object();
 			object.addProperty("avatar", Bot.SELF.getAvatarUrl());
-			object.addProperty("owner", Configs.getConfigs().get("ownerID").getAsString());
+			object.addProperty("owner", DataManager.mainConfig.get("ownerID").getAsString());
 			return object;
 		});
 	}
