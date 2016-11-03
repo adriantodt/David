@@ -28,7 +28,7 @@ import static cf.adriantodt.utils.Log4jUtils.logger;
  * Hardcoded Impl goes here. Shouldn't be used too much.
  * It's here for Anti Data Loss regeneration.
  */
-public class I18nHardImpl {
+public class I18nLoader {
 	public static void impl() {
 		JsonObject mainFile = new JsonParser().parse(ContentManager.resource("/assets/i18n/main.json")).getAsJsonObject();
 		mainFile.entrySet().forEach(entry -> {
@@ -39,7 +39,7 @@ public class I18nHardImpl {
 			String resource = ContentManager.resource("/assets/i18n/" + entry.getKey() + ".json");
 			if (resource == null) return;
 
-			JsonObject file = new JsonParser().parse(resource).getAsJsonObject();
+			loadFile(entry.getKey(), new JsonParser().parse(resource));
 		});
 	}
 
@@ -50,52 +50,71 @@ public class I18nHardImpl {
 		List<Exception> post = new ArrayList<>();
 
 		try {
-			file.get("translations").getAsJsonObject().entrySet().forEach(
-				entry -> localize(lang, entry.getKey(), entry.getValue().getAsString())
-			);
-		} catch (Exception e) {
-			post.add(e);
-		}
-
-		try {
-			JsonElement metaSrc = file.get("meta");
-
-			JsonObject meta = metaSrc.isJsonObject() ? metaSrc.getAsJsonObject() : null;
-
-			file.get("commands").getAsJsonObject().entrySet().forEach(
-				entry -> loadCommand(lang, entry.getKey(), entry.getValue(), meta, post)
-			);
-		} catch (Exception e) {
-			post.add(e);
-		}
-
-		if (post.size() > 0) {
-			logger().info("Errors occurred while loading I18N:");
-			post.forEach(e -> logger().error(e));
-		}
-	}
-
-	private static void loadCommand(String lang, String name, JsonElement src, JsonObject metadata, List<Exception> post) {
-		if (!src.isJsonObject()) return;
-		JsonObject cmd = src.getAsJsonObject();
-		try {
-			if (cmd.has("desc") || cmd.has("params") || cmd.has("info")) {
-				localize(
-					lang,
-					name + ".usage",
-					cmd.get("desc").getAsString() + "\n"
-						+ metadata.get("params").getAsString() + ": " + cmd.get("params").getAsString()
-						+ (cmd.has("info") ? "\n  " + cmd.get("info").getAsString().replace("\n", "\n  ") : ""));
+			if (file.has("translations")) {
+				loadTranslation(lang, "", file.get("translations"), post);
 			}
 		} catch (Exception e) {
 			post.add(e);
 		}
 
 		try {
-			if (cmd.has("translations") && cmd.get("translations").isJsonObject()) {
-				cmd.get("translations").getAsJsonObject().entrySet().forEach(
-					entry -> localize(lang, name + "." + entry.getKey(), entry.getValue().getAsString())
+			if (file.has("commands")) {
+				JsonElement metaSrc = file.get("meta");
+
+				JsonObject meta = metaSrc.isJsonObject() ? metaSrc.getAsJsonObject() : null;
+
+				file.get("commands").getAsJsonObject().entrySet().forEach(
+					entry -> loadCommand(lang, entry.getKey(), entry.getValue(), meta, post)
 				);
+			}
+		} catch (Exception e) {
+			post.add(e);
+		}
+
+		if (post.size() > 0) {
+			logger().info("Errors occurred while loading I18n:");
+			post.forEach(e -> logger().error(e));
+		}
+	}
+
+	private static void loadTranslation(String lang, String base, JsonElement src, List<Exception> post) {
+		if (!src.isJsonObject()) return;
+		JsonObject t = src.getAsJsonObject();
+
+		t.entrySet().forEach(
+			entry -> {
+				if (ConfigUtils.isJsonString(entry.getValue())) {
+					localize(lang, base + entry.getKey(), entry.getValue().getAsString());
+				}
+				if (entry.getValue().isJsonObject()) {
+					loadTranslation(lang, base + entry.getKey() + ".", entry.getValue(), post);
+				}
+			}
+		);
+	}
+
+	private static void loadCommand(String lang, String name, JsonElement src, JsonObject metadata, List<Exception> post) {
+		logger().trace(lang + " - " + name + " - " + src.toString());
+		if (!src.isJsonObject()) return;
+		JsonObject cmd = src.getAsJsonObject();
+		try {
+			if (cmd.has("desc") || cmd.has("params") || cmd.has("info")) {
+				String desc = cmd.has("desc") ? cmd.get("desc").getAsString() : metadata.get("noDesc").getAsString();
+				String params = cmd.has("params") ? cmd.get("params").getAsString() : metadata.get("noParams").getAsString();
+				String info = cmd.has("info") ? "\n  " + cmd.get("info").getAsString().replace("\n", "\n  ") : "";
+				localize(
+					lang,
+					name + ".usage",
+					desc + "\n" + metadata.get("params").getAsString() + ": " + params + info
+				);
+			}
+		} catch (Exception e) {
+			post.add(e);
+		}
+
+		try {
+			if (cmd.has("translations")) {
+				loadTranslation(lang, name + ".", cmd.get("translations"), post);
 			}
 		} catch (Exception e) {
 			post.add(e);

@@ -21,4 +21,23 @@ public class Holder<T> {
 	public Holder(T object) {
 		var = object;
 	}
+
+	@Override
+	public int hashCode() {
+		return var.hashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof Holder) {
+			return super.equals(obj);
+		}
+
+		return obj.equals(var);
+	}
+
+	@Override
+	public String toString() {
+		return var.toString();
+	}
 }

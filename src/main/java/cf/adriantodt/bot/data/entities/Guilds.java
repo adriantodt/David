@@ -164,7 +164,7 @@ public class Guilds {
 
 	public static String toString(Data data, JDA jda, String language) {
 		Guild guild = data.getGuild(jda);
-		return I18n.getLocalized("guild.guild", language) + ": " + data.name + (guild != null && !data.name.equals(guild.getName()) ? " (" + guild.getName() + ")" : "")
+		return I18n.getLocalized("guild.guild", language) + ": " + data.name + (data.getFlag("vip") ? " [VIP]" : "") + (guild != null && !data.name.equals(guild.getName()) ? " (" + guild.getName() + ")" : "")
 			+ "\n - " + I18n.getLocalized("guild.admin", language) + ": " + (guild == null ? Bot.API.getUserById(DataManager.mainConfig.get("ownerID").getAsString()).getName() : guild.getOwner().getUser().getName())
 			+ "\n - " + I18n.getLocalized("guild.cmds", language) + ": " + UserCommands.allFrom(data).size()
 			+ "\n - " + I18n.getLocalized("guild.channels", language) + ": " + (guild == null ? (Bot.API.getTextChannels().size() + Bot.API.getPrivateChannels().size()) : guild.getTextChannels().size())

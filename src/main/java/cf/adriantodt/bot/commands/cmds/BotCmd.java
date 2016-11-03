@@ -53,15 +53,15 @@ public class BotCmd {
 				Commands.buildSimple("bot.session.usage").setAction(Statistics::printStats).build()
 			)
 			.addCommand("inviteme",
-				Commands.buildSimple("inviteme.usage")
-					.setAction(event -> event.getAnswers().send("**" + getLocalized("inviteme.link", event) + ":**\nhttps://discordapp.com/oauth2/authorize?client_id=" + event.getJDA().getSelfInfo().getId() + "&scope=bot").queue())
+				Commands.buildSimple("bot.inviteme.usage")
+					.setAction(event -> event.getAnswers().send("**" + getLocalized("bot.inviteme.link", event) + ":**\nhttps://discordapp.com/oauth2/authorize?client_id=" + event.getJDA().getSelfInfo().getId() + "&scope=bot").queue())
 					.build()
 			)
 			.addCommand("administration", Commands.buildTree()
 				.build()
 			)
 			.addCommand("eval",
-				Commands.buildSimple("eval.usage", SCRIPTS | RUN_SCRIPT_CMDS | SCRIPTS_UNSAFEENV)
+				Commands.buildSimple("bot.eval.usage", SCRIPTS | RUN_SCRIPT_CMDS | SCRIPTS_UNSAFEENV)
 					.setAction(JS::eval)
 					.build()
 			)

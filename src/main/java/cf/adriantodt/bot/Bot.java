@@ -16,7 +16,7 @@ import cf.adriantodt.bot.commands.CommandManager;
 import cf.adriantodt.bot.commands.utils.ReadyBuilder;
 import cf.adriantodt.bot.commands.utils.Statistics;
 import cf.adriantodt.bot.data.DataManager;
-import cf.adriantodt.bot.data.I18nHardImpl;
+import cf.adriantodt.bot.data.I18nLoader;
 import cf.adriantodt.bot.data.entities.Guilds;
 import cf.adriantodt.bot.data.entities.I18n;
 import cf.adriantodt.bot.data.entities.Pushes;
@@ -74,8 +74,8 @@ public class Bot {
 				API = event.getJDA();
 				SELF = event.getJDA().getSelfInfo();
 				//API.getSelfInfo().setGame("mention me for help");
-				I18nHardImpl.impl();
-				I18nHardImpl.implLocal();
+				I18nLoader.impl();
+				I18nLoader.implLocal();
 				Statistics.startDate = new Date();
 			}))
 			.addListener(CommandManager.class)

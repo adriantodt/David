@@ -51,7 +51,9 @@
     "feed.at": "Ás"
   },
   "meta": {
-    "params": "Parâmetros"
+    "params": "Parâmetros",
+    "noParams": "nenhum",
+    "noDesc": "(Nenhuma descrição adicionada)"
   },
   "commands": {
     "bot.version": {

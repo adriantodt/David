@@ -81,7 +81,7 @@ public class GuildCmd {
 					.setAction(event -> {
 						String arg = event.getArg(1, 0); //!getlevel USER
 						if (arg.isEmpty()) arg = event.getAuthor().getId();
-						event.getAnswers().send("**" + getLocalized("perms.get.userPerms", event) + ":**\n *" + String.join(", ", toCollection(getPermFor(event.getGuild(), arg)).stream().toArray(String[]::new)) + "*").queue();
+						event.getAnswers().send("**" + getLocalized("guild.perms.get.userPerms", event) + ":**\n *" + String.join(", ", toCollection(getPermFor(event.getGuild(), arg)).stream().toArray(String[]::new)) + "*").queue();
 					}).build())
 				.addCommand("set", Commands.buildSimple("guild.perms.set.usage", SET_PERMS)
 					.setAction(event -> {
@@ -105,7 +105,7 @@ public class GuildCmd {
 					.build()
 				)
 				.addCommand("list", Commands.buildSimple("guild.perms.list.usage")
-					.setAction(event -> event.getAnswers().send("**" + getLocalized("perms.get.userPerms", event) + ":**\n *" + String.join(", ", toCollection(BOT_OWNER).stream().toArray(String[]::new)) + "*").queue())
+					.setAction(event -> event.getAnswers().send("**" + getLocalized("guild.perms.get.userPerms", event) + ":**\n *" + String.join(", ", toCollection(BOT_OWNER).stream().toArray(String[]::new)) + "*").queue())
 					.build()
 				)
 				.build()

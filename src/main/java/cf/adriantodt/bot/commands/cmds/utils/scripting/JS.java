@@ -45,7 +45,7 @@ public class JS {
 					event.getArgs() +
 					"}" +
 					"})();");
-			event.awaitTyping().getAnswers().send(out == null ? I18n.getLocalized("eval.noOut", event) : out.toString()).queue();
+			event.awaitTyping().getAnswers().send(out == null ? I18n.getLocalized("bot.eval.noOut", event) : out.toString()).queue();
 		} catch (ScriptException e) {
 			event.awaitTyping().getAnswers().exception(e).queue();
 		}

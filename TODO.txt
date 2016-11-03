@@ -1,13 +1,10 @@
   //    "funny.stevenuniverse.stevonnie.usage": {
-  //      "en_US": "Say random Stevonnie quotes, pumped from http://steven-universe.wikia.com/wiki/Stevonnie/Quotes (No Spoilers besides themselves). Specify a number to generate multiple.",
   //      "pt_BR": "Envia frases aleatórias da Stevonnie, usando os dados de http://steven-universe.wikia.com/wiki/Stevonnie/Quotes (Sem Spoilers além dela própria). Especifique um número para gerar múltiplos."
   //    },
   //    "funny.skyrim.guard.usage": {
-  //      "en_US": "Say random Skyrim Guard quotes, pumped from http://www.uesp.net/wiki/Skyrim:Guard_Dialogue. Specify a number to generate multiple.",
   //      "pt_BR": "Envia frases aleatórias dos guardas de Skyrim, usando os dados de http://www.uesp.net/wiki/Skyrim:Guard_Dialogue. Especifique um número para gerar múltiplos."
   //    },
   //    "funny.minecraft.drama.usage": {
-  //      "en_US": "Generate Minecraft Modding Drama, pumped from https://drama.thog.eu/drama. Specify a number to generate multiple.",
   //      "pt_BR": "Gera Minecraft Modding Drama, gerado pelo site https://drama.thog.eu/drama. Especifique um número para gerar múltiplos."
   //    },
   //    "bot.restart.usage": {
@@ -23,11 +20,10 @@
   //      "pt_BR": "Ativa ou Desativa o \"Cleanup\" de mensagens (Mensagens do bot são deletadas após 15s)."
   //    },
   //    "eval.usage": {
-  //      "en_US": "Executes Scripts in JVM (Owner-only)",
   //      "pt_BR": "Executa Scripts na JVM (Apenas-Owner)"
   //    },
   //    "guild.info.usage": {
-  //      "en_US": "Show Guild info.",
+  //      "en_US": ,
   //      "pt_BR": "Mostre informações sobre a Guild."
   //    },
   //    "guild.lang.usage": {
@@ -51,10 +47,6 @@
   //      "pt_BR": "Informações do Bot"
   //    },
   //    "bot.stop.usage": {
-  //      "en_US": "Stops the Bot",
   //      "pt_BR": "Desliga o Bot"
   //    },
-  //    "guild.list.usage": {
-  //      "en_US": "List the Guild channels.",
-  //      "pt_BR": "Mostre os canais da Guild."
-  //    }
+

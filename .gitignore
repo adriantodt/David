@@ -9,6 +9,7 @@ hs_err_pid*
 *.iws
 /.idea
 /out/
+TODO-INTERNAL.txt
 
 # Gradle
 .gradle

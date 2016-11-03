@@ -13,6 +13,7 @@
 package cf.adriantodt.bot.data.entities;
 
 import cf.adriantodt.bot.commands.base.Holder;
+import cf.adriantodt.bot.data.ConfigUtils;
 import cf.adriantodt.utils.AsyncUtils;
 import cf.adriantodt.utils.CollectionUtils;
 import cf.adriantodt.utils.EncodingUtil;
@@ -38,31 +39,36 @@ public class Feeds {
 
 	static {
 		AsyncUtils.asyncSleepThen(100, () -> {
+			logger().trace("Loading...");
 			Pushes.registerDynamicTypes(() -> ALL_TYPES, "feeds");
 
 			h.from(r.table("feeds").run(conn)).cursorExpected().forEach(json -> {
 				JsonObject feed = json.getAsJsonObject();
-				new Subscription(
+				Subscription s = new Subscription(
 					feed.get("pushName").getAsString(),
 					newURL(EncodingUtil.decodeURIComponent(feed.get("url").getAsString())),
 					feed.get("id").getAsString()
-				).setLastHashCode(feed.get("lastHashCode").getAsInt());
+				);
+
+				if (feed.has("lastHashCode") && ConfigUtils.isJsonNumber(feed.get("lastHashCode")))
+					s.setLastHashCode(feed.get("lastHashCode").getAsInt());
 			});
 
 			i = 1;
+			logger().trace("k");
 		}).run();
 	}
 
 	public static void loop() {
-		System.out.println("Loop();");
-		System.out.println("ALL.size() = " + ALL.size());
+		logger().trace("Loop(" + i + ");");
+		logger().trace("ALL.size() = " + ALL.size());
 		cleanup();
 		ALL.forEach(Feeds::onSendFeed);
 		if (i == 0) {
 			ALL.forEach(Feeds::onFeed);
 			i = 12;
 		} else i--;
-		System.out.println("Loop.End;");
+		logger().trace("Loop.End;");
 	}
 
 	public static void cleanup() {
@@ -75,15 +81,17 @@ public class Feeds {
 			SyndFeedInput input = new SyndFeedInput();
 			SyndFeed feed = input.build(new XmlReader(subs.url));
 			Holder<Integer> i = new Holder<>(0);
+			Holder<Optional<Integer>> h = new Holder<>(Optional.empty());
 			Lists.reverse(CollectionUtils.subListOn(
 				feed.getEntries(),
 				entryPredicate -> subs.equalsLastHashCode(entryPredicate.getLink().hashCode())
 			)).forEach(entry -> {
 				i.var++;
 				subs.compiledPushes.add(FeedingUtil.handleEntry(subs, entry));
-				subs.setLastHashCode(entry.getLink().hashCode());
+				h.var = Optional.of(entry.getLink().hashCode());
 			});
-			if (i.var != 0) System.out.println(subs.pushName + ".size() += " + i.var);
+			if (i.var != 0) logger().trace(subs.pushName + ".size() += " + i.var);
+			h.var.ifPresent(subs::setLastHashCode);
 		} catch (Exception e) {
 			logger().error("Error while creating messages", e);
 		}
@@ -91,14 +99,14 @@ public class Feeds {
 
 	public static void onSendFeed(Subscription subs) {
 		if (subs.compiledPushes.size() == 0) return;
-		System.out.println(subs.pushName + ".size() = " + subs.compiledPushes.size());
+		logger().trace(subs.pushName + ".size() = " + subs.compiledPushes.size());
 		AsyncUtils.async(() -> Pushes.pushSimple("feed_" + subs.pushName, subs.compiledPushes.remove(0))).run();
 	}
 
 	public static class Subscription {
 		public final URL url;
 		public final String pushName, id;
-		List<Function<TextChannel, String>> compiledPushes = new ArrayList<>();
+		List<Function<TextChannel, String>> compiledPushes = Collections.synchronizedList(new ArrayList<>());
 		private int lastHashCode = 0;
 		private boolean active = true, loadedOnce = false;
 
@@ -106,7 +114,7 @@ public class Feeds {
 			this(pushName, url, h.from(r.table("feeds").insert(
 				r.hashMap("pushName", pushName)
 					.with("url", EncodingUtil.encodeURIComponent(url.toString()))
-					.with("lastHashCode", 0)
+					.with("lastHashCode", null)
 			).run(conn)).mapExpected().get("generated_keys").getAsJsonArray().get(0).getAsString());
 		}
 
@@ -119,7 +127,13 @@ public class Feeds {
 		}
 
 		public boolean equalsLastHashCode(int newestHashCode) {
-			return ignoreHashCode() || getLastHashCode() == newestHashCode;
+			boolean v;
+			//ignoreHashCode = true -> FALSE
+			//ignoreHashCode = false -> getLastHashCode() == newestHashCode
+			// - IntelliJ
+			v = !ignoreHashCode() && (getLastHashCode() == newestHashCode);
+			logger().trace(v);
+			return v;
 		}
 
 		public int getLastHashCode() {
@@ -133,7 +147,7 @@ public class Feeds {
 		}
 
 		public boolean ignoreHashCode() {
-			return loadedOnce;
+			return !loadedOnce;
 		}
 
 		public boolean isActive() {

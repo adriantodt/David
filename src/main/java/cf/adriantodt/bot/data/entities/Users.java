@@ -13,6 +13,8 @@
 package cf.adriantodt.bot.data.entities;
 
 import cf.adriantodt.bot.Bot;
+import cf.adriantodt.bot.data.ConfigUtils;
+import cf.adriantodt.utils.AsyncUtils;
 import cf.adriantodt.utils.TaskManager;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -41,7 +43,6 @@ public class Users {
 	private static Map<Data, Integer> timeoutUntilDbRemoval = new HashMap<>();
 
 	static {
-
 		TaskManager.startAsyncTask("UserTimeoutCleanup", () -> {
 			timeoutUntilDbRemoval.replaceAll((guild, integer) -> Math.min(integer - 1, 0));
 			timeoutUntilDbRemoval.entrySet().stream().filter(entry -> entry.getValue() == 0).map(Map.Entry::getKey).forEach(data -> {
@@ -49,22 +50,23 @@ public class Users {
 				timeoutUntilDbRemoval.remove(data);
 			});
 		}, 60);
+
+		AsyncUtils.asyncSleepThen(100, Users::loadAll);
 	}
 
 	public static List<Data> all() {
 		return Collections.unmodifiableList(all);
 	}
 
-	public static void loadAll() {
-		//TODO IMPLEMENT
-		h.from(r.table("guilds").run(conn)).cursorExpected().forEach(Users::unpack);
+	private static void loadAll() {
+		h.from(r.table("users").run(conn)).cursorExpected().forEach(Users::unpack);
 	}
 
 	private static Data unpack(JsonElement element) {
 		JsonObject object = element.getAsJsonObject();
 		Data data = all.stream().filter(dataPredicate -> object.get("id").getAsString().equals(dataPredicate.id)).findFirst().orElseGet(Data::new);
 		data.id = object.get("id").getAsString();
-		data.lang = object.get("lang").getAsString();
+		data.lang = ConfigUtils.isJsonString(object.get("lang")) ? object.get("lang").getAsString() : null;
 		userMap.put(data.getUser(), data);
 		if (data.getUser() == null) {
 			timeoutUntilDbRemoval.put(data, 5);
@@ -133,7 +135,7 @@ public class Users {
 		private String id = "-1", lang = null;
 
 		private static void pushUpdate(Users.Data data, MapObject changes) {
-			r.table("users").get(data.id).update(arg -> changes).runNoReply(conn);
+			r.table("users").get(data.id).update(changes).runNoReply(conn);
 		}
 
 		public String getId() {
@@ -145,6 +147,7 @@ public class Users {
 		}
 
 		public void setLang(String lang) {
+			if (lang.isEmpty()) lang = null;
 			this.lang = lang;
 			pushUpdate(this, r.hashMap("lang", lang));
 		}
