@@ -15,6 +15,7 @@ package cf.adriantodt.bot.data.entities;
 import cf.adriantodt.bot.Bot;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.MultimapBuilder;
+import com.google.common.collect.SetMultimap;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import net.dv8tion.jda.core.MessageBuilder;
@@ -28,11 +29,12 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
 import static cf.adriantodt.bot.data.DataManager.*;
+import static cf.adriantodt.utils.Log4jUtils.logger;
 
 public class Pushes {
 	private static Map<String, String> pushParenting = new HashMap<>();
-	private static Map<Supplier<Set<String>>, String> dynamicParenting = new HashMap<>();
-	private static Multimap<TextChannel, String> subscriptions = MultimapBuilder.hashKeys().hashSetValues().build();
+	private static Map<Supplier<Set<String>>, String> dynamicParenting = Collections.synchronizedMap(new HashMap<>());
+	private static SetMultimap<TextChannel, String> subscriptions = MultimapBuilder.hashKeys().hashSetValues().build();
 
 	static {
 		pushParenting.put("*", null);
@@ -71,7 +73,7 @@ public class Pushes {
 		if (typesToAdd.size() == 0) return false;
 
 		if (subscriptions.containsKey(channel)) {
-			Set<String> currentSubs = (Set<String>) subscriptions.get(channel);
+			Set<String> currentSubs = subscriptions.get(channel);
 			int size = currentSubs.size();
 			currentSubs.addAll(typesToAdd);
 
@@ -88,7 +90,7 @@ public class Pushes {
 	public static boolean unsubscribe(TextChannel channel, Set<String> typesToRemove) {
 		if (!subscriptions.containsKey(channel)) return false;
 
-		Set<String> currentSubs = (Set<String>) subscriptions.get(channel);
+		Set<String> currentSubs = subscriptions.get(channel);
 		int size = currentSubs.size();
 		currentSubs.removeAll(typesToRemove);
 
@@ -104,6 +106,14 @@ public class Pushes {
 		return true;
 	}
 
+	public static void unsubscribeAll(Set<String> typesToRemove) {
+		Bot.API.getTextChannels().parallelStream().forEach(c -> unsubscribe(c, typesToRemove));
+	}
+
+	public static void uubscribeAll(Set<String> typesToRemove) {
+		Bot.API.getTextChannels().parallelStream().forEach(c -> subscribe(c, typesToRemove));
+	}
+
 	public static void registerType(String type, String parent) {
 		pushParenting.put(type.toLowerCase(), parent.toLowerCase());
 	}
@@ -113,7 +123,7 @@ public class Pushes {
 	}
 
 	public static Set<String> subscriptionsFor(TextChannel channel) {
-		return Collections.unmodifiableSet((Set<String>) subscriptions.get(channel));
+		return Collections.unmodifiableSet(subscriptions.get(channel));
 	}
 
 	public static void pushMessage(String type, Function<TextChannel, Message> pushSupplier) {
@@ -138,7 +148,13 @@ public class Pushes {
 
 	public static Map<String, String> resolveTypeMap() {
 		Map<String, String> resolvedMap = new HashMap<>(pushParenting);
-		dynamicParenting.forEach((supplier, s) -> supplier.get().forEach(s1 -> resolvedMap.put(s1, s)));
+		dynamicParenting.forEach((supplier, s) -> {
+			try {
+				supplier.get().forEach(s1 -> resolvedMap.put(s1, s));
+			} catch (Exception e) {
+				logger().error("Error while resolving dynamic type: ", e);
+			}
+		});
 		return resolvedMap;
 	}
 

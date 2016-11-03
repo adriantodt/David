@@ -51,6 +51,7 @@
     "The Pink Diamond",
     "The Blue Diamond",
     "The White Diamond",
+    "The Green Diamond",
     "Blue Pearl",
     "Yellow Pearl",
     "Pink Pearl",
@@ -81,7 +82,7 @@
     "was",
     "was actually"
   ],
-  "revelation": [
+  "revelation4characters": [
     "a gun",
     "a ghost",
     "a lie",
@@ -101,14 +102,9 @@
     "straight",
     "not real",
     "the reincarnation of rose",
-    "The Yellow Diamond",
-    "The Pink Diamond",
     "a corrupted gem",
     "corrupt",
     "a mass-produced servant",
-    "The Blue Diamond",
-    "The White Diamond",
-    "The Green Diamond",
     "two lesbians in a trenchcoat",
     "present for the war 6000 years ago",
     "a spy for Homeworld",
@@ -129,6 +125,24 @@
     "a Gem mutant",
     "behind everything",
     "Steven and Connie in a trenchcoat"
+  ],
+  "revelation4places": [
+    "evil",
+    "straight",
+    "cis",
+    "gay",
+    "straight",
+    "not real",
+    "dead",
+    "alive",
+    "a ghost",
+    "a lie",
+    "a weapon",
+    "corrupt",
+    "a mass-produced servant",
+    "controlling Earth's currency",
+    "a Homeworld experiment",
+    "behind everything"
   ],
   "post": [
     "",

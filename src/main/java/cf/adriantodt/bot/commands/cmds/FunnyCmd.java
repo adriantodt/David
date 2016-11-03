@@ -28,8 +28,9 @@ import static cf.adriantodt.bot.data.ContentManager.*;
 import static cf.adriantodt.bot.utils.Formatter.italic;
 import static cf.adriantodt.utils.AsyncUtils.async;
 import static cf.adriantodt.utils.AsyncUtils.sleep;
+import static cf.adriantodt.utils.CollectionUtils.random;
 
-public class Funny {
+public class FunnyCmd {
 	@ProvidesCommand("funny")
 	private static ICommand createCommand() {
 		return Commands.buildTree()
@@ -71,8 +72,8 @@ public class Funny {
 					}
 					for (int i = 0, amount = clampIfNotOwner(parseInt(event.getArgs(), 1), 0, 10, event.getAuthor()); i < amount; i++) {
 						String result = "";
-						for (String[] theoryArray : SU_THEORIES)
-							result = result + theoryArray[(int) Math.floor(Math.random() * theoryArray.length)] + " ";
+						for (String[] theoryArray : random(SU_THEORIES))
+							result = result + random(theoryArray) + " ";
 						event.getAnswers().send("[#" + (i + 1) + "] What if " + result.trim() + "?").queue();
 					}
 				}).build())
@@ -84,7 +85,7 @@ public class Funny {
 						return;
 					}
 					for (int i = 0, amount = clampIfNotOwner(parseInt(event.getArgs(), 1), 0, 10, event.getAuthor()); i < amount; i++)
-						event.getAnswers().send("[#" + (i + 1) + "] " + SU_STEVONNIE[(int) Math.floor(Math.random() * SU_STEVONNIE.length)]).queue();
+						event.getAnswers().send("[#" + (i + 1) + "] " + random(SU_STEVONNIE)).queue();
 				}).build())
 				.build()
 			)
@@ -97,7 +98,7 @@ public class Funny {
 						return;
 					}
 					for (int i = 0, amount = clampIfNotOwner(parseInt(event.getArgs(), 1), 0, 10, event.getAuthor()); i < amount; i++)
-						event.getAnswers().send("[#" + (i + 1) + "] " + TESV_GUARDS[(int) Math.floor(Math.random() * TESV_GUARDS.length)]).queue();
+						event.getAnswers().send("[#" + (i + 1) + "] " + random(TESV_GUARDS)).queue();
 				}).build())
 				.addCommand("lydia", Commands.buildSimple("funny.skyrim.lydia.usage").setAction(event -> {
 					if (!ContentManager.TESV_LYDIA_LOADED) {
@@ -106,7 +107,7 @@ public class Funny {
 						return;
 					}
 					for (int i = 0, amount = clampIfNotOwner(parseInt(event.getArgs(), 1), 0, 10, event.getAuthor()); i < amount; i++)
-						event.getAnswers().send("[#" + (i + 1) + "] " + TESV_LYDIA[(int) Math.floor(Math.random() * TESV_LYDIA.length)]).queue();
+						event.getAnswers().send("[#" + (i + 1) + "] " + random(TESV_LYDIA)).queue();
 				}).build())
 				.build()
 			)

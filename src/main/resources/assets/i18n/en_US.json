@@ -4,6 +4,7 @@
     "user.lang.setNone": "Now I'll speak the Guild's Default Language!",
     "gui.load": "$$=bot.load;",
     "gui.guilds": "Guilds",
+    "cmds.commandsAvailable" : "Commands Available",
     "cmds.userCommandsAvailable": "User Commands Available",
     "tree.subcmds": "Sub-Commands",
     "user.avatar": "Avatar",
@@ -11,17 +12,14 @@
     "guild.admin": "Admin",
     "gui.input": "Input",
     "gui.title": "$(dynamic.botname) - GUI",
-    "bot.startup": "Hello! I'm now Online and ready to receive commands!",
     "alias.of": "Alias of %s",
     "user.nick": "Nick",
     "user.id": "ID",
     "tree.default": "default",
     "answers.exception": "an exception occurred while running this command:",
     "answers.tooFast": "You're running commands too fast!",
-    "bot.restart": "Restarting...",
     "gui.cmds.restart": "$$=bot.restart.usage;",
     "user.lang.set": "Now I'll speak in %s to you!",
-    "bot.help": "Hello! I'm $(dynamic.botname).\nTo get started with the Commands, send: $(dynamic.mention) cmds\nTo invite me to your Guild, send: $(dynamic.mention) bot inviteme",
     "guild.channels": "Channels",
     "guild.cmds": "Commands",
     "perms.get.none": "none",
@@ -30,10 +28,8 @@
     "gui.stats": "Stats",
     "user.name": "Name",
     "user.commonGuilds": "Common Guilds",
-    "bot.hello1": "Hello! I'm $(dynamic.botname). Someone dropped me here!",
     "user.memberSince": "Member Since",
     "error.contentmanager": "The ContentManager failed at loading the content. Please report it to the devs.",
-    "bot.hello2": "Someone call %s to set my Default Language!\n(Because of the Region, I guessed the language as `%s`, but the Guild Owner can set it anytime by executing `$(dynamic.mention) guild lang <en_US|pt_BR|etc>`)",
     "guild.guild": "Guild",
     "gui.cmds.stop": "$$=bot.stop.usage;",
     "gui.stats4": "CPU Usage: %.2f%%.",
@@ -57,25 +53,37 @@
     "answers.dear": "Dear",
     "user.none": "none",
     "perms.get.userPerms": "User Permissions",
-    "bot.stop": "Stopping...",
-    "user.roles": "Roles"
+    "user.roles": "Roles",
+    "feed.at" : "At"
   },
   "meta": {
     "params": "Parameters"
   },
   "commands": {
-    "bot.version": {
-      "desc": "Print Bot (and Libs) Version",
-      "params": "none"
-    },
-    "bot.toofast": {
-      "desc": "Toggles \"TooFast\" SpamProtection",
-      "params": "none",
-      "info": "Only the Bot Owner can use it. Enabled by default"
-    },
-    "bot.session": {
-      "desc": "Show session info",
-      "params": "none"
+    "bot" : {
+      "subs" : {
+        "version": {
+          "desc": "Print Bot (and Libs) Version",
+          "params": "none"
+        },
+        "toofast": {
+          "desc": "Toggles \"TooFast\" SpamProtection",
+          "params": "none",
+          "info": "Only the Bot Owner can use it. Enabled by default"
+        },
+        "session": {
+          "desc": "Show session info",
+          "params": "none"
+        }
+      },
+      "translations" : {
+        "startup": "Hello! I'm now Online and ready to receive commands!",
+        "restart": "Restarting...",
+        "stop": "Stopping...",
+        "help": "Hello! I'm $(dynamic.botname).\nTo get started with the Commands, send: $(dynamic.mention) cmds\nTo invite me to your Guild, send: $(dynamic.mention) bot inviteme",
+        "hello1": "Hello! I'm $(dynamic.botname). Someone dropped me here!",
+        "hello2": "Someone call %s to set my Default Language!\n(Because of the Region, I guessed the language as `%s`, but the Guild Owner can set it anytime by executing `$(dynamic.mention) guild lang <en_US|pt_BR|etc>`)",
+      }
     },
     "guild.perms.set": {
       "desc": "Define the User Permissions",
@@ -101,5 +109,26 @@
       "params": "[times]",
       "info": "Based on http://www.generatorland.com/usergenerator.aspx?id=10737 data. Specify a number to generate multiple."
     }
+  },
+  "cmds" : {
+
+  },
+  "feed" : {
+
+  },
+  "funny" : {
+
+  },
+  "guild" : {
+
+  },
+  "push" : {
+
+  },
+  "user" : {
+
+  },
+  "utils" : {
+
   }
 }

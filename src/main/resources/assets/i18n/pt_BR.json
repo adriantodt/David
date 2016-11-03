@@ -2,7 +2,8 @@
   "translations": {
     "user.lang.setNone": "Agora eu vou falar na lingua padrão da Guild!",
     "gui.load": "$$=bot.load;",
-    "cmds.userCommandsAvailable": "User Commands Available",
+    "cmds.commandsAvailable" : "Comandos Disponíveis",
+    "cmds.userCommandsAvailable": "Comandos de Usuários Disponíveis",
     "tree.subcmds": "Sub-Comandos",
     "gui.cmds.help": "Mostra todos os Comandos de Console",
     "guild.admin": "Admin",
@@ -46,7 +47,8 @@
     "user.none": "nenhum",
     "perms.get.userPerms": "Permissões do Usuário",
     "bot.stop": "Saindo...",
-    "user.roles": "Cargos"
+    "user.roles": "Cargos",
+    "feed.at": "Ás"
   },
   "meta": {
     "params": "Parâmetros"

@@ -25,7 +25,7 @@ import java.util.List;
 import static cf.adriantodt.bot.commands.Permissions.*;
 import static cf.adriantodt.bot.data.entities.I18n.getLocalized;
 
-public class Guild {
+public class GuildCmd {
 	@ProvidesCommand("guild")
 	private static ICommand createCommand() {
 		return Commands.buildTree()

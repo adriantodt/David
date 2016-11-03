@@ -24,7 +24,7 @@ import java.util.List;
 
 public class ContentManager {
 	private static final Logger LOGGER = LogManager.getLogger("ContentManager");
-	public static String[][] SU_THEORIES;
+	public static String[][][] SU_THEORIES;
 	public static String[] TESV_GUARDS, SU_STEVONNIE, TESV_LYDIA;
 	public static boolean SU_THEORIES_LOADED = false, TESV_GUARDS_LOADED = false, SU_STEVONNIE_LOADED = false, TESV_LYDIA_LOADED = false;
 
@@ -49,43 +49,56 @@ public class ContentManager {
 
 		try {
 			JsonObject object = new JsonParser().parse(resource("/assets/funny/stevenuniverse_theories.json")).getAsJsonObject();
-			List<List<String>> SU_THEORIES_BUILD = Arrays.asList(new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>());
+			List<List<List<String>>> SU_THEORIES_BUILD = Arrays.asList(Arrays.asList(new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>()),Arrays.asList(new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new ArrayList<>()));
 			object.get("characters").getAsJsonArray().forEach(element -> {
-				SU_THEORIES_BUILD.get(0).add(element.getAsString());
-				SU_THEORIES_BUILD.get(2).add(element.getAsString());
+				SU_THEORIES_BUILD.get(0).get(0).add(element.getAsString());
+				SU_THEORIES_BUILD.get(0).get(2).add(element.getAsString());
 			});
 
 			object.get("places").getAsJsonArray().forEach(element -> {
-				SU_THEORIES_BUILD.get(0).add(element.getAsString());
-				SU_THEORIES_BUILD.get(2).add(element.getAsString());
+				SU_THEORIES_BUILD.get(1).get(0).add(element.getAsString());
+				SU_THEORIES_BUILD.get(1).get(2).add(element.getAsString());
 			});
 
 			object.get("objects").getAsJsonArray().forEach(element -> {
-				SU_THEORIES_BUILD.get(0).add(element.getAsString());
-				SU_THEORIES_BUILD.get(2).add(element.getAsString());
+				SU_THEORIES_BUILD.get(0).get(0).add(element.getAsString());
+				SU_THEORIES_BUILD.get(0).get(2).add(element.getAsString());
+				SU_THEORIES_BUILD.get(1).get(0).add(element.getAsString());
+				SU_THEORIES_BUILD.get(1).get(2).add(element.getAsString());
 			});
 
 			object.get("gems").getAsJsonArray().forEach(element -> {
-				SU_THEORIES_BUILD.get(0).add(element.getAsString());
-				SU_THEORIES_BUILD.get(2).add(element.getAsString());
-				SU_THEORIES_BUILD.get(0).add(element.getAsString() + "'s room");
-				SU_THEORIES_BUILD.get(2).add(element.getAsString() + "'s room");
+				SU_THEORIES_BUILD.get(0).get(0).add(element.getAsString());
+				SU_THEORIES_BUILD.get(0).get(2).add(element.getAsString());
+				SU_THEORIES_BUILD.get(1).get(0).add(element.getAsString() + "'s room");
+				SU_THEORIES_BUILD.get(1).get(2).add(element.getAsString() + "'s room");
 			});
 
 			object.get("fusionGems").getAsJsonArray().forEach(element -> {
-				SU_THEORIES_BUILD.get(0).add(element.getAsString());
-				SU_THEORIES_BUILD.get(2).add(element.getAsString());
-				SU_THEORIES_BUILD.get(0).add(element.getAsString() + "'s room");
-				SU_THEORIES_BUILD.get(2).add(element.getAsString() + "'s room");
-				SU_THEORIES_BUILD.get(0).add(element.getAsString() + "'s fusion realm");
-				SU_THEORIES_BUILD.get(2).add(element.getAsString() + "'s fusion realm");
+				SU_THEORIES_BUILD.get(0).get(0).add(element.getAsString());
+				SU_THEORIES_BUILD.get(0).get(2).add(element.getAsString());
+				SU_THEORIES_BUILD.get(1).get(0).add(element.getAsString() + "'s room");
+				SU_THEORIES_BUILD.get(1).get(2).add(element.getAsString() + "'s room");
+				SU_THEORIES_BUILD.get(1).get(0).add(element.getAsString() + "'s fusion realm");
+				SU_THEORIES_BUILD.get(1).get(2).add(element.getAsString() + "'s fusion realm");
 			});
 
-			object.get("verb").getAsJsonArray().forEach(element -> SU_THEORIES_BUILD.get(1).add(element.getAsString()));
-			object.get("revelation").getAsJsonArray().forEach(element -> SU_THEORIES_BUILD.get(2).add(element.getAsString()));
-			object.get("post").getAsJsonArray().forEach(element -> SU_THEORIES_BUILD.get(3).add(element.getAsString()));
+			object.get("verb").getAsJsonArray().forEach(element -> {
+				SU_THEORIES_BUILD.get(0).get(1).add(element.getAsString());
+				SU_THEORIES_BUILD.get(1).get(1).add(element.getAsString());
+			});
+			object.get("revelation4characters").getAsJsonArray().forEach(element -> {
+				SU_THEORIES_BUILD.get(0).get(2).add(element.getAsString());
+			});
+			object.get("revelation4places").getAsJsonArray().forEach(element -> {
+				SU_THEORIES_BUILD.get(1).get(2).add(element.getAsString());
+			});
+			object.get("post").getAsJsonArray().forEach(element -> {
+				SU_THEORIES_BUILD.get(0).get(3).add(element.getAsString());
+				SU_THEORIES_BUILD.get(1).get(3).add(element.getAsString());
+			});
 
-			SU_THEORIES = SU_THEORIES_BUILD.stream().map(l -> l.stream().toArray(String[]::new)).toArray(String[][]::new);
+			SU_THEORIES = SU_THEORIES_BUILD.stream().map(ll -> ll.stream().map(l -> l.stream().toArray(String[]::new)).toArray(String[][]::new)).toArray(String[][][]::new);
 			SU_THEORIES_LOADED = true;
 		} catch (Exception e) {
 			LOGGER.error("Error while parsing \"stevenuniverse_theories.json\" resource.", e);

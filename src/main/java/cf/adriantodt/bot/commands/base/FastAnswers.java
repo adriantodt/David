@@ -94,6 +94,10 @@ public class FastAnswers {
 		return send(v ? ":white_check_mark:" : ":negative_squared_cross_mark:");
 	}
 
+	public RestAction<Message> bool(boolean v, String post) {
+		return send((v ? ":white_check_mark:" : ":negative_squared_cross_mark:") + post);
+	}
+
 	public RestAction<Message> invalidargs() {
 		Statistics.invalidargs++;
 		String usage = event.getCommand().toString(I18n.getLocale(event));

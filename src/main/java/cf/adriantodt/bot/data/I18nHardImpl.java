@@ -14,10 +14,15 @@ package cf.adriantodt.bot.data;
 
 import cf.adriantodt.bot.Bot;
 import cf.adriantodt.bot.data.entities.I18n;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static cf.adriantodt.bot.data.entities.I18n.setParent;
+import static cf.adriantodt.utils.Log4jUtils.logger;
 
 /**
  * Hardcoded Impl goes here. Shouldn't be used too much.
@@ -35,23 +40,76 @@ public class I18nHardImpl {
 			if (resource == null) return;
 
 			JsonObject file = new JsonParser().parse(resource).getAsJsonObject();
+		});
+	}
 
+	private static void loadFile(String lang, JsonElement src) {
+		if (!src.isJsonObject()) return;
+		JsonObject file = src.getAsJsonObject();
+
+		List<Exception> post = new ArrayList<>();
+
+		try {
 			file.get("translations").getAsJsonObject().entrySet().forEach(
-				entry2 -> localize(entry.getKey(), entry2.getKey(), entry2.getValue().getAsString())
+				entry -> localize(lang, entry.getKey(), entry.getValue().getAsString())
 			);
+		} catch (Exception e) {
+			post.add(e);
+		}
+
+		try {
+			JsonElement metaSrc = file.get("meta");
+
+			JsonObject meta = metaSrc.isJsonObject() ? metaSrc.getAsJsonObject() : null;
 
 			file.get("commands").getAsJsonObject().entrySet().forEach(
-				entry2 -> {
-					JsonObject v = entry2.getValue().getAsJsonObject();
-					localize(
-						entry.getKey(),
-						entry2.getKey() + ".usage",
-						v.get("desc").getAsString() + "\n"
-							+ file.get("meta").getAsJsonObject().get("params").getAsString() + ": " + v.get("params").getAsString()
-							+ (v.has("info") ? "\n  " + v.get("info").getAsString().replace("\n", "\n  ") : ""));
-				}
+				entry -> loadCommand(lang, entry.getKey(), entry.getValue(), meta, post)
 			);
-		});
+		} catch (Exception e) {
+			post.add(e);
+		}
+
+		if (post.size() > 0) {
+			logger().info("Errors occurred while loading I18N:");
+			post.forEach(e -> logger().error(e));
+		}
+	}
+
+	private static void loadCommand(String lang, String name, JsonElement src, JsonObject metadata, List<Exception> post) {
+		if (!src.isJsonObject()) return;
+		JsonObject cmd = src.getAsJsonObject();
+		try {
+			if (cmd.has("desc") || cmd.has("params") || cmd.has("info")) {
+				localize(
+					lang,
+					name + ".usage",
+					cmd.get("desc").getAsString() + "\n"
+						+ metadata.get("params").getAsString() + ": " + cmd.get("params").getAsString()
+						+ (cmd.has("info") ? "\n  " + cmd.get("info").getAsString().replace("\n", "\n  ") : ""));
+			}
+		} catch (Exception e) {
+			post.add(e);
+		}
+
+		try {
+			if (cmd.has("translations") && cmd.get("translations").isJsonObject()) {
+				cmd.get("translations").getAsJsonObject().entrySet().forEach(
+					entry -> localize(lang, name + "." + entry.getKey(), entry.getValue().getAsString())
+				);
+			}
+		} catch (Exception e) {
+			post.add(e);
+		}
+
+		try {
+			if (cmd.has("subs") && cmd.get("subs").isJsonObject()) {
+				cmd.get("subs").getAsJsonObject().entrySet().forEach(entry ->
+					loadCommand(lang, name + "." + entry.getKey(), entry.getValue(), metadata, post)
+				);
+			}
+		} catch (Exception e) {
+			post.add(e);
+		}
 	}
 
 	public static void implLocal() {

@@ -14,13 +14,18 @@ package cf.adriantodt.bot;
 
 import cf.adriantodt.bot.gui.BotGui;
 import cf.adriantodt.bot.utils.DiscordUtils;
+import cf.adriantodt.bot.utils.Tasks;
+import cf.adriantodt.utils.AsyncUtils;
 import cf.adriantodt.utils.Java;
 import cf.adriantodt.utils.Log4jUtils;
+import cf.adriantodt.utils.TaskManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.awt.*;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.Arrays;
 
 public class Startup {
@@ -32,17 +37,26 @@ public class Startup {
 		LOGGER.info("Pre-Initializating...");
 		try {
 			File file = new File("./tmp/");
-			if (file.exists()) file.delete();
+			if (file.exists())
+				delete(file);
 			file.mkdir();
 			System.setProperty("java.io.tmpdir", file.getCanonicalPath());
 		} catch (Exception e) {
 			LOGGER.error("Error while trying to define TMPDir: ", e);
 		}
 		LOGGER.info("TMP Directory: " + System.getProperty("java.io.tmpdir"));
-		if (GraphicsEnvironment.isHeadless()) LOGGER.info("GUI Disabled. (Headless Environiment)");
-		else if (Arrays.stream(args).filter("nogui"::equals).findAny().orElse(null) == null && !GraphicsEnvironment.isHeadless())
+
+		if (GraphicsEnvironment.isHeadless()) {
+			LOGGER.info("GUI Disabled. (Headless Environiment)");
+		}
+		else if (Arrays.stream(args).filter("nogui"::equals).findAny().orElse(null) != null) {
+			LOGGER.info("GUI Disabled. (parameter \"nogui\")");
+		}
+		else {
+			LOGGER.info("Loading GUI...");
 			UI = BotGui.createBotGui();
-		else LOGGER.info("GUI Disabled. (parameter \"nogui\")");
+		}
+
 		Log4jUtils.hackStdout();
 		DiscordUtils.hackJDALog();
 
@@ -52,5 +66,15 @@ public class Startup {
 			LOGGER.error("An exception was caught during Initialization: ", e);
 			Java.stopApp();
 		}
+	}
+
+	@SuppressWarnings("ConstantConditions")
+	private static void delete(File f) throws IOException {
+		if (f.isDirectory()) {
+			for (File c : f.listFiles())
+				delete(c);
+		}
+		if (!f.delete())
+			throw new FileNotFoundException("Failed to delete file: " + f);
 	}
 }

@@ -23,7 +23,7 @@ import cf.adriantodt.bot.utils.DiscordUtils;
 import static cf.adriantodt.bot.data.entities.I18n.getLocale;
 import static cf.adriantodt.bot.data.entities.I18n.getLocalized;
 
-public class User {
+public class UserCmd {
 	@ProvidesCommand("user")
 	private static ICommand createCommand() {
 		return Commands.buildTree()
@@ -64,9 +64,9 @@ public class User {
 					.setAction(event -> {
 						Users.fromDiscord(event.getAuthor()).setLang(event.getArgs().trim());
 						if (event.getArgs().trim().isEmpty())
-							event.getAnswers().announce(getLocalized("lang.setNone", event)).queue();
+							event.getAnswers().announce(getLocalized("user.lang.setNone", event)).queue();
 						else
-							event.getAnswers().announce(String.format(getLocalized("lang.set", event), event.getArgs().trim())).queue();
+							event.getAnswers().announce(String.format(getLocalized("user.lang.set", event), event.getArgs().trim())).queue();
 					})
 					.build()
 			)

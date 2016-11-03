@@ -22,6 +22,7 @@ import net.dv8tion.jda.core.requests.RestAction;
 import org.apache.logging.log4j.LogManager;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.concurrent.Future;
 
 import static cf.adriantodt.utils.AsyncUtils.sleep;
@@ -35,6 +36,7 @@ public class CommandEvent {
 	private final String args;
 	private final FastAnswers answers;
 	private Future<Void> awaitableTyping = null;
+
 	public CommandEvent(GuildMessageReceivedEvent event, Guilds.Data targetGuild, ICommand command, String args) {
 		Statistics.cmds++;
 		this.event = event;
@@ -108,7 +110,7 @@ public class CommandEvent {
 		return getChannel().sendMessage(msg);
 	}
 
-	public RestAction<Message> sendFile(File file, Message message) {
+	public RestAction<Message> sendFile(File file, Message message) throws IOException {
 		return getChannel().sendFile(file, message);
 	}
 
@@ -126,10 +128,10 @@ public class CommandEvent {
 
 	public CommandEvent awaitTyping() {
 		if (awaitableTyping == null) return this;
-		while (!awaitableTyping.isDone()) {
-			sleep(100);
+		while (awaitableTyping != null && !awaitableTyping.isDone()) {
+			sleep(200);
 		}
-
+		awaitableTyping = null;
 		return this;
 	}
 

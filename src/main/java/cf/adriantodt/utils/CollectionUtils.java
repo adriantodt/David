@@ -69,5 +69,13 @@ public class CollectionUtils {
 	public static <T> T random(T[] array, Random random) {
 		return array[random.nextInt(array.length)];
 	}
+
+	public static <T> T random(List<T> list) {
+		return list.get((int) Math.floor(Math.random() * list.size()));
+	}
+
+	public static <T> T random(T[] array) {
+		return array[(int) Math.floor(Math.random() * array.length)];
+	}
 }
 

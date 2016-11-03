@@ -114,7 +114,7 @@ public class CommandManager {
 	@SubscribeEvent
 	public static void onReady(ReadyEvent event) {
 		Arrays.asList(
-			cf.adriantodt.bot.commands.cmds.Bot.class, Cmds.class, Feed.class, Funny.class, Guild.class, Push.class, User.class, TestCmds.class
+			BotCmd.class, CmdsCmd.class, FeedCmd.class, FunnyCmd.class, GuildCmd.class, PushCmd.class, UserCmd.class, TestCmds.class, UtilsCmd.class
 		).forEach(CommandManager::load);
 	}
 
@@ -133,7 +133,7 @@ public class CommandManager {
 	}
 
 	public static void addCommand(String name, ICommand command) {
-		COMMANDS.put(name, command);
+		COMMANDS.put(name.toLowerCase(), command);
 	}
 
 	public static Map<String, ICommand> getCommands(Guilds.Data guild) {

@@ -29,7 +29,7 @@ import static cf.adriantodt.bot.commands.Permissions.*;
 import static cf.adriantodt.bot.data.entities.I18n.getLocalized;
 import static cf.adriantodt.bot.utils.Formatter.encase;
 
-public class Cmds {
+public class CmdsCmd {
 	@ProvidesCommand("cmds")
 	private static ICommand createCommand() {
 		return Commands.buildTree()

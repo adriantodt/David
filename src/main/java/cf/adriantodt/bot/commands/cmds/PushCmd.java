@@ -27,7 +27,7 @@ import static cf.adriantodt.bot.commands.Permissions.PUSH_SEND;
 import static cf.adriantodt.bot.commands.Permissions.PUSH_SUBSCRIBE;
 import static cf.adriantodt.bot.data.entities.I18n.getLocalized;
 
-public class Push {
+public class PushCmd {
 	@ProvidesCommand("push")
 	private static ICommand createCommand() {
 		return Commands.buildTree()

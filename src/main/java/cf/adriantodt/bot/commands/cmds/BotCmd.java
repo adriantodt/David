@@ -28,7 +28,7 @@ import java.util.Optional;
 import static cf.adriantodt.bot.commands.Permissions.*;
 import static cf.adriantodt.bot.data.entities.I18n.getLocalized;
 
-public class Bot {
+public class BotCmd {
 	@ProvidesCommand("bot")
 	private static ICommand createCommand() {
 		return Commands.buildTree(RUN_CMDS)

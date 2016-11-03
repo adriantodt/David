@@ -14,6 +14,7 @@ package cf.adriantodt.utils;
 
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.util.ReflectionUtil;
 
 import java.io.IOException;
@@ -24,6 +25,8 @@ public class Log4jUtils {
 	public static void hackStdout() {
 		System.setOut(new LoggerStream(System.out, Level.INFO));
 		System.setErr(new LoggerStream(System.err, Level.ERROR));
+
+		System.out.println("Redirected!");
 	}
 
 	public static class LoggerStream extends PrintStream {
@@ -193,5 +196,10 @@ public class Log4jUtils {
 			Class c = ReflectionUtil.getCallerClass(3);
 			LogManager.getLogger(c == null ? "Unknown" : c.getSimpleName()).log(logLevel, in);
 		}
+	}
+
+	public static Logger logger() {
+		Class c = ReflectionUtil.getCallerClass(2);
+		return LogManager.getLogger(c == null ? "Unknown" : c.getSimpleName());
 	}
 }

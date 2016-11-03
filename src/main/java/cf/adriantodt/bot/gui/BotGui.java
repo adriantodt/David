@@ -8,6 +8,7 @@
 package cf.adriantodt.bot.gui;
 
 import cf.adriantodt.bot.Bot;
+import cf.adriantodt.utils.AsyncUtils;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -129,12 +130,11 @@ public class BotGui extends JComponent {
 				appendLine(textArea, pane, s);
 		});
 		thread.setDaemon(true);
-		thread.start();
+		AsyncUtils.asyncSleepThen(1000,thread::start).run();
 		return panel;
 	}
 
 	public void appendLine(final JTextArea textArea, final JScrollPane scrollPane, final String line) {
-
 		if (!SwingUtilities.isEventDispatchThread()) {
 			SwingUtilities.invokeLater(() -> this.appendLine(textArea, scrollPane, line));
 		} else {

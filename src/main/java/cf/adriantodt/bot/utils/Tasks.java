@@ -13,9 +13,11 @@
 package cf.adriantodt.bot.utils;
 
 import cf.adriantodt.bot.commands.base.Holder;
+import cf.adriantodt.bot.data.entities.Feeds;
 import cf.adriantodt.bot.data.entities.Pushes;
 import cf.adriantodt.bot.gui.QueueLogAppender;
 import cf.adriantodt.bot.webinterface.BotWebInterface;
+import cf.adriantodt.utils.TaskManager;
 import cf.adriantodt.utils.ThreadBuilder;
 import com.sun.management.OperatingSystemMXBean;
 import net.dv8tion.jda.core.entities.User;
@@ -43,6 +45,8 @@ public class Tasks {
 	}
 
 	public static void startJDAAsyncTasks() {
+		TaskManager.startAsyncTask("Feed Main Task", Feeds::loop, 5);
+
 		new ThreadBuilder().setDaemon(true).setName("Web-Interface").build(() -> new Thread(BotWebInterface::startWebServer)).start();
 
 		new ThreadBuilder().setDaemon(true).setName("Log4j2Discord").build(() -> new Thread(() -> {
