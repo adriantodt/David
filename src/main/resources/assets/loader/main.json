@@ -1,0 +1,5 @@
+[
+  "cf.adriantodt.David.modules.init.InitModule",
+  "cf.adriantodt.David.modules.gui.GUIModule",
+  "cf.adriantodt.David.modules.db.DBModule"
+]

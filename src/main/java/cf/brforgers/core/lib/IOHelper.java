@@ -1,6 +1,6 @@
 package cf.brforgers.core.lib;
 
-import cf.adriantodt.bot.commands.utils.Statistics;
+import cf.adriantodt.David.commands.utils.Statistics;
 import org.apache.commons.io.IOUtils;
 
 import java.io.File;

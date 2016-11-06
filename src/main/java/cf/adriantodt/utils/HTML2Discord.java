@@ -12,7 +12,7 @@
 
 package cf.adriantodt.utils;
 
-import cf.adriantodt.bot.commands.base.Holder;
+import cf.adriantodt.David.commands.base.Holder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -61,7 +61,7 @@ public class HTML2Discord {
 		compileReplace(Pattern.compile("[*_~`]\\s+?"), ""),
 		compileReplace(PatternCollection.UNNECESSARY_NEWLINE_END, ""),
 		compileReplace(PatternCollection.UNNECESSARY_NEWLINE_START, ""),
-		compileReplace(PatternCollection.MULTI_TO_SINGLE_LINE, "\n")
+		compileReplace(PatternCollection.MULTIPLE_LINES, "\n")
 	);
 
 	public static String toDiscordFormat(String html) {

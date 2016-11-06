@@ -21,10 +21,9 @@ import static java.util.regex.Pattern.quote;
 public class PatternCollection {
 	public static final Pattern
 		HTML_TO_PLAIN = Pattern.compile("(?s)<[^>]*>(\\s*<[^>]*>)*"),
-		MULTI_TO_SINGLE_LINE = Pattern.compile("(\\r?\\n)+"),
+		MULTIPLE_LINES = Pattern.compile("\"(?m)^[ \\t]*\\r?\\n\""),
 		UNNECESSARY_NEWLINE_END = Pattern.compile("(\\r?\\n)+$"),
-		UNNECESSARY_NEWLINE_START = Pattern.compile("^(\\r?\\n)+"),
-		INSIDE_HTML_TAG = Pattern.compile(">[\\S\\s]+?<");
+		UNNECESSARY_NEWLINE_START = Pattern.compile("^(\\r?\\n)+");
 
 	public static Pattern compileForHTMLTag(String tag) {
 		tag = quote(tag);

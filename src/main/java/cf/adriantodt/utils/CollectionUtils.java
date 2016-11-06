@@ -14,6 +14,7 @@ package cf.adriantodt.utils;
 
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.regex.Matcher;
 import java.util.stream.Collectors;
@@ -76,6 +77,10 @@ public class CollectionUtils {
 
 	public static <T> T random(T[] array) {
 		return array[(int) Math.floor(Math.random() * array.length)];
+	}
+
+	public static <T, R> List<R> apply(List<T> list, Function<T, R> mapper) {
+		return list.stream().map(mapper).collect(Collectors.toList());
 	}
 }
 

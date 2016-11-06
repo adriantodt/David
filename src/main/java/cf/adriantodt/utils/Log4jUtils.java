@@ -199,7 +199,10 @@ public class Log4jUtils {
 	}
 
 	public static Logger logger() {
-		Class c = ReflectionUtil.getCallerClass(2);
+		return logger(ReflectionUtil.getCallerClass(2));
+	}
+
+	public static Logger logger(Class c) {
 		return LogManager.getLogger(c == null ? "Unknown" : c.getSimpleName());
 	}
 }

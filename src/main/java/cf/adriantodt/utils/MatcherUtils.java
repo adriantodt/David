@@ -16,7 +16,7 @@ import java.util.function.Function;
 import java.util.regex.Matcher;
 
 public class MatcherUtils {
-	private static final Function<Matcher,CharSequence> MATCHER_TEXT = ReflectionEasyAsFuck.getVirtualField(Matcher.class, "text", CharSequence.class);
+	private static final Function<Matcher,CharSequence> MATCHER_TEXT = ReflectionEasyAsFuck.Virtual.getField(Matcher.class, "text", CharSequence.class);
 
 	public static Function<Matcher,String> replaceAll(Function<String, String> replacement) {
 		return matcher -> replaceAll(matcher,replacement);
