@@ -15,7 +15,7 @@ package cf.adriantodt.David.modules.cmds;
 import cf.adriantodt.David.commands.base.Commands;
 import cf.adriantodt.David.commands.base.ICommand;
 import cf.adriantodt.David.commands.base.ProvidesCommand;
-import cf.adriantodt.oldbot.data.ContentManager;
+
 import cf.adriantodt.utils.TaskManager;
 import cf.brforgers.core.lib.IOHelper;
 import com.google.gson.JsonObject;
@@ -28,9 +28,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Future;
 
-import static cf.adriantodt.David.commands.utils.Statistics.clampIfNotOwner;
-import static cf.adriantodt.David.commands.utils.Statistics.parseInt;
-import static cf.adriantodt.oldbot.data.ContentManager.*;
+import static cf.adriantodt.David.modules.init.Statistics.clampIfNotOwner;
+import static cf.adriantodt.David.modules.init.Statistics.parseInt;
+
 import static cf.adriantodt.David.utils.Formatter.italic;
 import static cf.adriantodt.utils.AsyncUtils.async;
 import static cf.adriantodt.utils.AsyncUtils.sleep;
@@ -126,7 +126,7 @@ public class FunnyCmd {
 		}
 	}
 
-	@ProvidesCommand("funny")
+	@Command("funny")
 	private static ICommand createCommand() {
 		return Commands.buildTree()
 			.addCommand("minecraft", Commands.buildTree()

@@ -15,36 +15,41 @@ package cf.adriantodt.David.modules.cmds;
 import cf.adriantodt.David.Info;
 import cf.adriantodt.David.commands.base.Commands;
 import cf.adriantodt.David.commands.base.ICommand;
-import cf.adriantodt.David.commands.base.ProvidesCommand;
+import cf.adriantodt.David.modules.init.Statistics;
+import cf.adriantodt.David.loader.Module;
+import cf.adriantodt.David.loader.Module.Command;
+import cf.adriantodt.David.loader.Module.SubscribeJDA;
+import cf.adriantodt.David.loader.Module.Type;
 import cf.adriantodt.David.modules.cmds.utils.scripting.JS;
-import cf.adriantodt.David.commands.utils.Statistics;
-import cf.adriantodt.oldbot.data.entities.I18n;
+import cf.adriantodt.David.modules.init.InitModule;
 import net.dv8tion.jda.core.JDAInfo;
 
 import java.util.Optional;
 
-import static cf.adriantodt.David.modules.db.MakePermissionsAModule.*;
-import static cf.adriantodt.oldbot.data.entities.I18n.getLocalized;
+import static cf.adriantodt.David.modules.db.I18nModule.getLocalized;
+import static cf.adriantodt.David.modules.db.PermissionsModule.*;
 
+@Module(Type.STATIC)
+@SubscribeJDA
 public class BotCmd {
-	@ProvidesCommand("bot")
+	@Command("bot")
 	private static ICommand createCommand() {
 		return Commands.buildTree(RUN_CMDS)
 			.addCommand("info",
-				Commands.buildSimple("bot.info.usage").setAction((event) -> MakeBotGreeterAModule.greet(event.getChannel(), Optional.of(event.getAuthor()))).build()
+				Commands.buildSimple("bot.info.usage").setAction((event) -> BotGreeter.greet(event.getChannel(), Optional.of(event.getAuthor()))).build()
 			)
 			.addDefault("info")
 			.addCommand("version", Commands.buildSimple("bot.version.usage").setAction(e -> e.getAnswers().send("**Bot Version:** " + Info.VERSION + "\n**JDA Version** " + JDAInfo.VERSION).queue()).build())
 			.addCommand("stop",
 				Commands.buildSimple("bot.stop.usage", STOP_BOT)
 					.setAction(event -> {
-						event.getAnswers().announce(I18n.getLocalized("bot.stop", event)).queue();
-						cf.adriantodt.oldbot.Bot.stopBot();
+						event.getAnswers().announce(getLocalized("bot.stop", event)).queue();
+						InitModule.stopBot();
 					})
 					.build()
 			)
-			.addCommand("toofast",
-				Commands.buildSimple("bot.toofast.usage", BOT_OWNER)
+			.addCommand("enabled",
+				Commands.buildSimple("bot.enabled.usage", BOT_OWNER)
 					.setAction((event) -> event.getAnswers().bool(MakeCommandManagerAModule.toofast = !MakeCommandManagerAModule.toofast).queue()).build()
 			)
 			.addCommand("session",

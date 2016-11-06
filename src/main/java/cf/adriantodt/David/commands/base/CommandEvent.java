@@ -12,8 +12,8 @@
 
 package cf.adriantodt.David.commands.base;
 
-import cf.adriantodt.David.commands.utils.Statistics;
-import cf.adriantodt.oldbot.data.entities.Guilds;
+import cf.adriantodt.David.modules.init.Statistics;
+import cf.adriantodt.David.modules.db.GuildModule;
 import cf.adriantodt.utils.TaskManager;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.*;
@@ -32,13 +32,13 @@ import static cf.adriantodt.utils.StringUtils.splitArgs;
 
 public class CommandEvent {
 	private final GuildMessageReceivedEvent event;
-	private final Guilds.Data targetGuild;
+	private final GuildModule.Data targetGuild;
 	private final ICommand command;
 	private final String args;
 	private final FastAnswers answers;
 	private Future<Void> awaitableTyping = null;
 
-	public CommandEvent(GuildMessageReceivedEvent event, Guilds.Data targetGuild, ICommand command, String args) {
+	public CommandEvent(GuildMessageReceivedEvent event, GuildModule.Data targetGuild, ICommand command, String args) {
 		Statistics.cmds++;
 		this.event = event;
 		this.targetGuild = targetGuild;
@@ -71,7 +71,7 @@ public class CommandEvent {
 		return event;
 	}
 
-	public Guilds.Data getGuild() {
+	public GuildModule.Data getGuild() {
 		return targetGuild;
 	}
 

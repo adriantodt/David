@@ -64,7 +64,8 @@ public class GuildModule {
 	private static Map<Data, Integer> timeoutUntilDbRemoval = new HashMap<>();
 
 	@OnEnabled
-	private static void load() { //FakeGuilds Impl
+	private static void load() {
+		//FakeGuilds Impl
 		GLOBAL = new Data();
 		GLOBAL.id = "-1";
 		GLOBAL.name = "GLOBAL";
@@ -98,18 +99,18 @@ public class GuildModule {
 	}
 
 	@SubscribeEvent
-	public static void newGuild(GuildJoinEvent e) {
+	private static void newGuild(GuildJoinEvent e) {
 		Data data = fromDiscord(e.getGuild());
 		if (timeoutUntilDbRemoval.containsKey(data)) timeoutUntilDbRemoval.remove(data);
 	}
 
 	@SubscribeEvent
-	public static void byeGuild(GuildLeaveEvent e) {
+	private static void byeGuild(GuildLeaveEvent e) {
 		timeoutUntilDbRemoval.put(fromDiscord(e.getGuild()), 5);
 	}
 
 	@SubscribeEvent
-	public static void renamedGuild(GuildUpdateNameEvent e) {
+	private static void renamedGuild(GuildUpdateNameEvent e) {
 		fromDiscord(e.getGuild()).setName(toGuildName(e.getGuild().getName()));
 	}
 
@@ -190,7 +191,7 @@ public class GuildModule {
 		private Data() {
 			flags.put("cleanup", true);
 			flags.put("vip", true);
-			userPerms.put("default", MakePermissionsAModule.BASE_USER);
+			userPerms.put("default", PermissionsModule.BASE_USER);
 			all.add(this);
 		}
 

@@ -21,21 +21,21 @@ import java.util.Arrays;
 
 
 public class TestCmds {
-//	@ProvidesCommand("parser")
+//	@Command("parser")
 //	private static ICommand parser() {
 //		return Commands.buildSimple()
 //			.setAction(event -> event.awaitTyping().sendMessage(Arrays.toString(StringUtils.parse(event.getArgs(0)).entrySet().toArray())).queue())
 //			.build();
 //	}
 //
-	@ProvidesCommand("splitargs")
+	@Command("splitargs")
 	private static ICommand splitargs() {
 		return Commands.buildSimple()
 			.setAction(event -> event.awaitTyping().sendMessage(Arrays.toString(StringUtils.advancedSplitArgs(event.getArgs(), 0))).queue())
 			.build();
 	}
 
-//	@ProvidesCommand("testcode")
+//	@Command("testcode")
 //	private static ICommand testcode() {
 //		return Commands.buildSimple()
 //			.setAction(event -> event.awaitTyping().sendMessage(

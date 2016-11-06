@@ -14,17 +14,19 @@ package cf.adriantodt.David.modules.init;
 
 import cf.adriantodt.David.loader.Module;
 import cf.adriantodt.David.loader.Module.*;
+import cf.adriantodt.David.modules.cmds.Pushes;
 import cf.adriantodt.David.modules.db.DBModule;
 import cf.adriantodt.David.modules.db.I18nModule;
-import cf.adriantodt.David.modules.cmds.Pushes;
 import cf.adriantodt.David.utils.DiscordUtils;
 import cf.adriantodt.utils.Java;
 import cf.adriantodt.utils.Log4jUtils;
 import net.dv8tion.jda.core.JDA;
+import net.dv8tion.jda.core.OnlineStatus;
 import net.dv8tion.jda.core.entities.Game;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.ReadyEvent;
 import net.dv8tion.jda.core.hooks.SubscribeEvent;
+import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.File;
@@ -63,17 +65,21 @@ public class InitModule {
 
 	@SubscribeEvent
 	public static void ready(ReadyEvent event) {
+		logger = LogManager.getLogger(event.getJDA().getSelfUser().getName());
+		logger.info("Bot: " + event.getJDA().getSelfUser().getName() + " (#" + event.getJDA().getSelfUser().getId() + ")");
 		event.getJDA().getPresence().setGame(Game.of("mention me for help"));
 	}
 
 	@PostReady
-	public static void warnOwner() {
+	public static void postReady() {
 		User user = jda.getUserById(DBModule.getConfig().get("ownerID").getAsString());
 		if (user == null) {
 			logger.warn("Owner not regognized. This WILL cause issues (specially PermSystem)");
 		} else {
 			logger.info("Owner recognized: " + user.getName() + "#" + user.getDiscriminator() + " (ID: " + user.getId() + ")");
 		}
+
+		Pushes.pushSimple("start", channel -> I18nModule.getLocalized("bot.startup", channel));
 	}
 
 	@SuppressWarnings("ConstantConditions")
@@ -87,8 +93,8 @@ public class InitModule {
 	}
 
 	public static void stopBot() {
-		//API.getSelfInfo().setIdle(true);
-		//API.getAccountManager().update();
+		jda.getPresence().setGame(Game.of("Stopping..."));
+		jda.getPresence().setIdle(true);
 		logger.info("Bot exiting...");
 		Pushes.pushSimple("stop", channel -> boldAndItalic(I18nModule.getLocalized("bot.stop", channel)));
 		try {

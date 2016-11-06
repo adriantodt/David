@@ -12,15 +12,15 @@
 
 package cf.adriantodt.David.commands.base;
 
-import cf.adriantodt.oldbot.Bot;
-import cf.adriantodt.David.modules.db.MakePermissionsAModule;
-import cf.adriantodt.David.commands.utils.Statistics;
-import cf.adriantodt.oldbot.data.entities.I18n;
+import cf.adriantodt.David.modules.init.Statistics;
+import cf.adriantodt.David.modules.db.I18nModule;
+import cf.adriantodt.David.modules.db.PermissionsModule;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.requests.RestAction;
 
 import static cf.adriantodt.David.utils.Formatter.*;
+import static cf.adriantodt.utils.Log4jUtils.logger;
 import static cf.adriantodt.utils.StringUtils.limit;
 
 
@@ -43,18 +43,18 @@ public class FastAnswers {
 
 	public RestAction<Message> exception(Exception e) {
 		dear("uma exceção ocorreu durante a execução do comando:");
-		Bot.LOGGER.error("Exception occurred during command \"" + event.getMessage().getContent() + "\": ", e);
+		logger().error("Exception occurred during command \"" + event.getMessage().getContent() + "\": ", e);
 		Statistics.crashes++;
 		return sendCased(limit(e.toString(), 500), "java");
 	}
 
 	public RestAction<Message> toofast() {
 		Statistics.toofasts++;
-		return send("*" + I18n.getLocalized("answers.calmDown", event) + " " + event.getAuthor().getAsMention() + "! " + I18n.getLocalized("answers.tooFast", event) + "!*");
+		return send("*" + I18nModule.getLocalized("answers.calmDown", event) + " " + event.getAuthor().getAsMention() + "! " + I18nModule.getLocalized("answers.tooFast", event) + "!*");
 	}
 
 	public RestAction<Message> sendTranslated(String unlocalized) {
-		return send(I18n.getLocalized(unlocalized, event));
+		return send(I18nModule.getLocalized(unlocalized, event));
 	}
 
 	public RestAction<Message> send(String message) {
@@ -77,14 +77,14 @@ public class FastAnswers {
 
 	public RestAction<Message> noperm() {
 		long perm = event.getCommand().retrievePerm();
-		perm ^= MakePermissionsAModule.getSenderPerm(event.getGuild(), event) & perm;
+		perm ^= PermissionsModule.getSenderPerm(event.getGuild(), event) & perm;
 		return noperm(perm);
 	}
 
 	public RestAction<Message> noperm(long permsMissing) {
 		Statistics.noperm++;
 		StringBuilder b = new StringBuilder("*(Permissões Ausentes:");
-		MakePermissionsAModule.toCollection(permsMissing).forEach(s -> b.append(" ").append(s));
+		PermissionsModule.toCollection(permsMissing).forEach(s -> b.append(" ").append(s));
 		b.append(")*");
 		dear("você não tem permissão para executar esse comando.");
 		return send(b.toString());
@@ -100,13 +100,13 @@ public class FastAnswers {
 
 	public RestAction<Message> invalidargs() {
 		Statistics.invalidargs++;
-		String usage = event.getCommand().toString(I18n.getLocale(event));
-		if (usage == null) return dear(I18n.getLocalized("answers.invalidArgs", event));
+		String usage = event.getCommand().toString(I18nModule.getLocale(event));
+		if (usage == null) return dear(I18nModule.getLocalized("answers.invalidArgs", event));
 		else if (!usage.isEmpty()) return sendCased(usage);
 		return new RestAction.EmptyRestAction<>(null);
 	}
 
 	public RestAction<Message> dear(String answer) {
-		return send(italic(I18n.getLocalized("answers.dear", event) + " " + event.getAuthor().getName() + ", " + answer));
+		return send(italic(I18nModule.getLocalized("answers.dear", event) + " " + event.getAuthor().getName() + ", " + answer));
 	}
 }

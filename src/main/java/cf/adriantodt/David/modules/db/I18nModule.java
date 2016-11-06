@@ -13,14 +13,12 @@
 package cf.adriantodt.David.modules.db;
 
 import cf.adriantodt.David.Loader;
+import cf.adriantodt.David.commands.base.CommandEvent;
 import cf.adriantodt.David.loader.Module;
 import cf.adriantodt.David.loader.Module.JDAInstance;
 import cf.adriantodt.David.loader.Module.PostReady;
 import cf.adriantodt.David.loader.Module.Resource;
-import cf.adriantodt.David.commands.base.CommandEvent;
-import cf.adriantodt.oldbot.data.entities.Guilds;
 import cf.adriantodt.David.modules.cmds.Pushes;
-import cf.adriantodt.oldbot.data.entities.Users;
 import cf.adriantodt.utils.data.ConfigUtils;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -95,7 +93,7 @@ public class I18nModule {
 		}
 
 		if (post.size() > 0) {
-			logger().info("Errors occurred while loading I18n:");
+			logger().info("Errors occurred while loading I18nModule:");
 			post.forEach(e -> logger().error(e));
 		}
 	}
@@ -214,7 +212,7 @@ public class I18nModule {
 	}
 
 	public static String getLocale(CommandEvent event) {
-		return notNullOrDefault(Users.fromDiscord(event.getAuthor()).getLang(), event.getGuild().getLang());
+		return notNullOrDefault(UserModule.fromDiscord(event.getAuthor()).getLang(), event.getGuild().getLang());
 	}
 
 	public static void setParent(String locale, String parent) {
@@ -252,7 +250,7 @@ public class I18nModule {
 	}
 
 	public static String getLocalized(String unlocalized, TextChannel channel) {
-		return getLocalized(unlocalized, Guilds.fromDiscord(channel.getGuild()).getLang());
+		return getLocalized(unlocalized, GuildModule.fromDiscord(channel.getGuild()).getLang());
 	}
 
 	private static String getBaseLocalized(final String unlocalized, final String locale) {
@@ -273,7 +271,7 @@ public class I18nModule {
 		}
 
 		if (unlocalizing.equals(localized) || localed == null) {
-			asyncSleepThen(1000, () -> Pushes.pushSimple("i18n", channel -> "I18n Warn: Detected an untranslated String: " + unlocalized + ":" + locale)).run();
+			asyncSleepThen(1000, () -> Pushes.pushSimple("i18n", channel -> "I18nModule Warn: Detected an untranslated String: " + unlocalized + ":" + locale)).run();
 		}
 
 		return localized;

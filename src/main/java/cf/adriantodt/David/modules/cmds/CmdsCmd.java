@@ -12,10 +12,17 @@
 
 package cf.adriantodt.David.modules.cmds;
 
-import cf.adriantodt.David.modules.db.MakePermissionsAModule;
-import cf.adriantodt.David.commands.base.*;
-import cf.adriantodt.oldbot.data.entities.I18n;
-import cf.adriantodt.oldbot.data.entities.UserCommands;
+import cf.adriantodt.David.commands.base.Commands;
+import cf.adriantodt.David.commands.base.Holder;
+import cf.adriantodt.David.commands.base.ICommand;
+import cf.adriantodt.David.commands.base.UserCommand;
+import cf.adriantodt.David.loader.Module;
+import cf.adriantodt.David.loader.Module.Command;
+import cf.adriantodt.David.loader.Module.SubscribeJDA;
+import cf.adriantodt.David.loader.Module.Type;
+import cf.adriantodt.David.modules.db.I18nModule;
+import cf.adriantodt.David.modules.db.PermissionsModule;
+import cf.adriantodt.David.modules.db.UserCommandsModule;
 import net.dv8tion.jda.core.entities.MessageChannel;
 
 import java.util.ArrayList;
@@ -25,12 +32,14 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static cf.adriantodt.David.modules.cmds.MakeCommandManagerAModule.*;
-import static cf.adriantodt.David.modules.db.MakePermissionsAModule.*;
-import static cf.adriantodt.oldbot.data.entities.I18n.getLocalized;
+import static cf.adriantodt.David.modules.db.I18nModule.getLocalized;
+import static cf.adriantodt.David.modules.db.PermissionsModule.*;
 import static cf.adriantodt.David.utils.Formatter.encase;
 
+@Module(Type.STATIC)
+@SubscribeJDA
 public class CmdsCmd {
-	@ProvidesCommand("cmds")
+	@Command("cmds")
 	private static ICommand createCommand() {
 		return Commands.buildTree()
 			.addCommand("list",
@@ -98,7 +107,7 @@ public class CmdsCmd {
 
 				MessageChannel channel = event.getAuthor().getPrivateChannel();
 				List<String> cmds = getBaseCommands().entrySet().stream().filter(entry -> canRunCommand(event.getGuild(), event.createChild(entry.getValue(), event.getArgs()))).map(
-					(entry) -> entry.getKey() + " - " + entry.getValue().toString(I18n.getLocale(event))).sorted(String::compareTo).collect(Collectors.toList());
+					(entry) -> entry.getKey() + " - " + entry.getValue().toString(I18nModule.getLocale(event))).sorted(String::compareTo).collect(Collectors.toList());
 
 				Holder<StringBuilder> b = new Holder<>(new StringBuilder().append("**").append(getLocalized("cmds.commandsAvailable", event)).append(":**\n"));
 				Holder<Boolean> first = new Holder<>(true);
@@ -126,7 +135,7 @@ public class CmdsCmd {
 					String[] args = event.getArgs(2); //COMMAND_NAME RESPONSE
 					if (args[0].isEmpty() | args[1].isEmpty()) event.getAnswers().invalidargs().queue();
 					else {
-						if (Stream.of("loc://", "js://", "aud://").anyMatch(args[1]::startsWith) && !MakePermissionsAModule.havePermsRequired(event.getGuild(), event.getAuthor(), MANAGE_SPECIAL_USER_CMDS)) {
+						if (Stream.of("loc://", "js://", "aud://").anyMatch(args[1]::startsWith) && !PermissionsModule.havePermsRequired(event.getGuild(), event.getAuthor(), MANAGE_SPECIAL_USER_CMDS)) {
 							event.awaitTyping().getAnswers().noperm(MANAGE_SPECIAL_USER_CMDS).queue();
 							return;
 						}
@@ -135,11 +144,11 @@ public class CmdsCmd {
 						if (cmd == null) {
 							UserCommand ncmd = new UserCommand();
 							ncmd.responses.add(args[1]);
-							UserCommands.register(ncmd, args[0].toLowerCase(), event.getGuild());
+							UserCommandsModule.register(ncmd, args[0].toLowerCase(), event.getGuild());
 							event.getAnswers().bool(true).queue();
 						} else {
 							cmd.responses.add(args[1]);
-							UserCommands.update(cmd);
+							UserCommandsModule.update(cmd);
 							event.getAnswers().bool(true).queue();
 						}
 					}
@@ -151,7 +160,7 @@ public class CmdsCmd {
 						UserCommand command = getLocalUserCommands(event.getGuild()).get(event.getArgs().toLowerCase());
 						if (command == null) event.getAnswers().invalidargs().queue();
 						else {
-							UserCommands.remove(command);
+							UserCommandsModule.remove(command);
 							event.getAnswers().bool(true).queue();
 						}
 					}
@@ -162,7 +171,7 @@ public class CmdsCmd {
 					ICommand cmd = getCommands(event.getGuild()).get(event.getArgs());
 					if (cmd == null) event.getAnswers().invalidargs().queue();
 					else
-						event.getAnswers().send("***`" + event.getArgs() + "`:*** " + cmd.toString(I18n.getLocale(event))).queue();
+						event.getAnswers().send("***`" + event.getArgs() + "`:*** " + cmd.toString(I18nModule.getLocale(event))).queue();
 				}
 			}).build())
 			.build();

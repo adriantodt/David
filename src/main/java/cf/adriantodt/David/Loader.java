@@ -14,7 +14,6 @@ package cf.adriantodt.David;
 
 import cf.adriantodt.David.loader.ModuleManager;
 import cf.adriantodt.David.modules.db.DBModule;
-import cf.adriantodt.oldbot.data.ContentManager;
 import cf.brforgers.core.lib.IOHelper;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;

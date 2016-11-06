@@ -12,7 +12,7 @@
 
 package cf.adriantodt.David.commands.base;
 
-import cf.adriantodt.David.modules.db.MakePermissionsAModule;
+import cf.adriantodt.David.modules.db.PermissionsModule;
 
 public interface ICommand extends ITranslatable {
 	void run(CommandEvent event);
@@ -23,7 +23,7 @@ public interface ICommand extends ITranslatable {
 	 * @return the Permission Required
 	 */
 	default long retrievePerm() {
-		return MakePermissionsAModule.RUN_CMDS;
+		return PermissionsModule.RUN_CMDS;
 	}
 
 	default boolean sendStartTyping() {

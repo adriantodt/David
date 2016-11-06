@@ -12,7 +12,7 @@
 
 package cf.adriantodt.David.modules.gui.impl;
 
-import cf.adriantodt.oldbot.Bot;
+
 import cf.adriantodt.David.modules.cmds.Pushes;
 import cf.adriantodt.utils.StringUtils;
 

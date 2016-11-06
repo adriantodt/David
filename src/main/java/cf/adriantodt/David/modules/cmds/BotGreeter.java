@@ -13,10 +13,10 @@
 package cf.adriantodt.David.modules.cmds;
 
 import cf.adriantodt.David.commands.base.Holder;
-import cf.adriantodt.David.commands.utils.Statistics;
-import cf.adriantodt.oldbot.data.entities.Guilds;
-import cf.adriantodt.oldbot.data.entities.I18n;
-import cf.adriantodt.oldbot.data.entities.Users;
+import cf.adriantodt.David.modules.db.GuildModule;
+import cf.adriantodt.David.modules.db.I18nModule;
+import cf.adriantodt.David.modules.db.UserModule;
+import cf.adriantodt.David.modules.init.Statistics;
 import cf.adriantodt.David.utils.DiscordUtils;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.User;
@@ -28,24 +28,24 @@ import java.util.Optional;
 
 import static cf.adriantodt.utils.StringUtils.notNullOrDefault;
 
-public class MakeBotGreeterAModule {
+public class BotGreeter {
 	public static void greet(TextChannel channel, Optional<User> optionalUser) {
-		Holder<String> lang = new Holder<>(Guilds.fromDiscord(channel.getGuild()).getLang());
-		optionalUser.ifPresent(user -> lang.var = notNullOrDefault(Users.fromDiscord(user).getLang(), lang.var));
+		Holder<String> lang = new Holder<>(GuildModule.fromDiscord(channel.getGuild()).getLang());
+		optionalUser.ifPresent(user -> lang.var = notNullOrDefault(UserModule.fromDiscord(user).getLang(), lang.var));
 		channel.sendTyping().queue(success -> {
 			Statistics.restActions++;
-			channel.sendMessage(I18n.getLocalized("bot.help", lang.var)).queue();
+			channel.sendMessage(I18nModule.getLocalized("bot.help", lang.var)).queue();
 		});
 	}
 
 	@SubscribeEvent
 	public static void onGuildJoin(GuildJoinEvent event) {
 		try {
-			Guilds.Data guild = Guilds.fromDiscord(event.getGuild());
+			GuildModule.Data guild = GuildModule.fromDiscord(event.getGuild());
 			guild.setLang(DiscordUtils.guessGuildLanguage(event.getGuild()));
 			event.getGuild().getPublicChannel().sendTyping().queue();
-			event.getGuild().getPublicChannel().sendMessage(I18n.getLocalized("bot.hello1", guild.getLang())).queue();
-			event.getGuild().getPublicChannel().sendMessage(String.format(I18n.getLocalized("bot.hello2", guild.getLang()), event.getGuild().getOwner().getAsMention(), guild.getLang())).queue();
+			event.getGuild().getPublicChannel().sendMessage(I18nModule.getLocalized("bot.hello1", guild.getLang())).queue();
+			event.getGuild().getPublicChannel().sendMessage(String.format(I18nModule.getLocalized("bot.hello2", guild.getLang()), event.getGuild().getOwner().getAsMention(), guild.getLang())).queue();
 		} catch (Exception e) {
 			//TODO WAIT DV8 TO ADD LEAVE
 			//event.getOriginGuild();

@@ -14,11 +14,11 @@ package cf.adriantodt.David.modules.cmds;
 
 import cf.adriantodt.David.commands.base.Commands;
 import cf.adriantodt.David.commands.base.ICommand;
-import cf.adriantodt.David.commands.base.ProvidesCommand;
+import cf.adriantodt.David.loader.Module.Command;
 import cf.adriantodt.utils.HTML2Discord;
 
 public class UtilsCmd {
-	@ProvidesCommand("utils")
+	@Command("utils")
 	private static ICommand utils() {
 		return Commands.buildTree()
 			.addCommand("convert", Commands.buildTree()

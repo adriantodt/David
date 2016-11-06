@@ -26,7 +26,7 @@ import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-import static cf.adriantodt.oldbot.data.DataManager.getPath;
+
 
 public class ConfigUtils {
 	private static final Charset UTF8 = Charset.forName("UTF-8");

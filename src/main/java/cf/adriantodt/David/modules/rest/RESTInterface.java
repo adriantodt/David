@@ -12,25 +12,35 @@
 
 package cf.adriantodt.David.modules.rest;
 
-import cf.adriantodt.oldbot.Bot;
+import cf.adriantodt.David.loader.Module;
+import cf.adriantodt.David.loader.Module.JDAInstance;
+import cf.adriantodt.David.loader.Module.PostReady;
+import net.dv8tion.jda.core.JDA;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Controller;
 
+import static cf.adriantodt.David.loader.Module.Type.STATIC;
+
+@Module(STATIC)
 @Controller
 @SpringBootApplication
-public class BotWebInterface {
+public class RESTInterface {
+	@JDAInstance
+	public static JDA jda = null;
+
+	@PostReady
 	public static void startWebServer() {
-		SpringApplication.run(BotWebInterface.class);
+		SpringApplication.run(RESTInterface.class);
 	}
 
 	@Bean
 	public EmbeddedServletContainerCustomizer containerCustomizer() {
 		return (container -> {
 			container.setPort(8012);
-			container.setDisplayName(Bot.SELF.getName() + " REST API");
+			container.setDisplayName(jda.getSelfUser().getName() + " REST API");
 		});
 	}
 }

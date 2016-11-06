@@ -14,6 +14,8 @@ package cf.adriantodt.David.modules.db;
 
 import cf.adriantodt.David.loader.Module;
 import cf.adriantodt.David.loader.Module.JDAInstance;
+import cf.adriantodt.David.loader.Module.PreReady;
+import cf.adriantodt.David.loader.Module.Ready;
 import cf.adriantodt.utils.AsyncUtils;
 import cf.adriantodt.utils.TaskManager;
 import cf.adriantodt.utils.data.ConfigUtils;
@@ -46,7 +48,8 @@ public class UserModule {
 	private static Map<User, Data> userMap = new HashMap<>();
 	private static Map<Data, Integer> timeoutUntilDbRemoval = new HashMap<>();
 
-	static {
+	@PreReady
+	private static void preReady() {
 		TaskManager.startAsyncTask("UserTimeoutCleanup", () -> {
 			timeoutUntilDbRemoval.replaceAll((guild, integer) -> Math.min(integer - 1, 0));
 			timeoutUntilDbRemoval.entrySet().stream().filter(entry -> entry.getValue() == 0).map(Map.Entry::getKey).forEach(data -> {
@@ -54,14 +57,13 @@ public class UserModule {
 				timeoutUntilDbRemoval.remove(data);
 			});
 		}, 60);
-
-		AsyncUtils.asyncSleepThen(100, UserModule::loadAll);
 	}
 
 	public static List<Data> all() {
 		return Collections.unmodifiableList(all);
 	}
 
+	@Ready
 	private static void loadAll() {
 		DBModule.onDB(r -> r.table("users")).run().cursorExpected().forEach(UserModule::unpack);
 	}
@@ -79,13 +81,13 @@ public class UserModule {
 	}
 
 	@SubscribeEvent
-	public static void newUser(GuildMemberJoinEvent e) {
+	private static void newUser(GuildMemberJoinEvent e) {
 		Data data = fromDiscord(e.getMember().getUser());
 		if (timeoutUntilDbRemoval.containsKey(data)) timeoutUntilDbRemoval.remove(data);
 	}
 
 	@SubscribeEvent
-	public static void byeUser(GuildMemberLeaveEvent e) {
+	private static void byeUser(GuildMemberLeaveEvent e) {
 		if (e.getJDA().getGuilds().stream().anyMatch(guild -> guild != e.getGuild() && guild.isMember(e.getMember().getUser())))
 			return;
 		timeoutUntilDbRemoval.put(fromDiscord(e.getMember().getUser()), 5);

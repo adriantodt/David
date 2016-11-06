@@ -13,9 +13,11 @@
 package cf.adriantodt.David.modules.db;
 
 import cf.adriantodt.David.commands.base.CommandEvent;
-import cf.adriantodt.oldbot.data.DataManager;
-import cf.adriantodt.oldbot.data.entities.Guilds;
+import cf.adriantodt.David.loader.Module;
+import cf.adriantodt.David.loader.Module.JDAInstance;
+import cf.adriantodt.David.loader.Module.Type;
 import cf.adriantodt.David.utils.DiscordUtils;
+import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.User;
 
 import java.lang.reflect.Modifier;
@@ -72,7 +74,8 @@ Permissões:
 	(62/Z)	STOP_BOT
 				Stops/Resets the Bot
  */
-public class MakePermissionsAModule {
+@Module(Type.STATIC)
+public class PermissionsModule {
 	public static final long
 		RUN_CMDS = bits(0),
 		RUN_USER_CMDS = bits(1),
@@ -91,15 +94,13 @@ public class MakePermissionsAModule {
 		USE_INTERFACES = bits(36),
 		SCRIPTS_UNSAFEENV = bits(37),
 		STOP_BOT = bits(62);
-
 	public static final long
 		BASE_USER = RUN_CMDS | RUN_USER_CMDS | GUILD_PASS | USE_INTERFACES,
 		GUILD_MOD = BASE_USER | MANAGE_USER_CMDS | MANAGE_SPECIAL_USER_CMDS | SET_PERMS | PERMSYS_GM | PUSH_SUBSCRIBE,
 		GUILD_OWNER = GUILD_MOD | SCRIPTS | SET_GUILD | PERMSYS_GO,
 		BOT_OWNER = GUILD_OWNER | SCRIPTS_UNSAFEENV | PUSH_SEND | STOP_BOT | PERMSYS_BO | RUN_SCRIPT_CMDS;
-
 	public static Map<String, Long> perms = new HashMap<String, Long>() {{
-		Arrays.stream(MakePermissionsAModule.class.getDeclaredFields()) //This Reflection is used to HashMap-fy all the Fields above.
+		Arrays.stream(PermissionsModule.class.getDeclaredFields()) //This Reflection is used to HashMap-fy all the Fields above.
 			.filter(field -> Modifier.isStatic(field.getModifiers()) && Modifier.isFinal(field.getModifiers()) && Modifier.isPublic(field.getModifiers())) //public static final fields only
 			.forEach(field -> {
 				try {
@@ -108,6 +109,8 @@ public class MakePermissionsAModule {
 				}
 			});
 	}};
+	@JDAInstance
+	private static JDA jda = null;
 
 	private static long bits(long... bits) {
 		long mask = 0;
@@ -117,11 +120,11 @@ public class MakePermissionsAModule {
 		return mask;
 	}
 
-	public static long getSenderPerm(Guilds.Data guild, CommandEvent event) {
+	public static long getSenderPerm(GuildModule.Data guild, CommandEvent event) {
 		return getPermFor(guild, event.getAuthor().getId());
 	}
 
-	public static boolean setPerms(Guilds.Data guild, CommandEvent event, String target, long permsToAdd, long permsToTake) {
+	public static boolean setPerms(GuildModule.Data guild, CommandEvent event, String target, long permsToAdd, long permsToTake) {
 		target = DiscordUtils.processId(target); //Un-mention ID
 		if (target.equals(event.getAuthor().getId())) return false; //Disable changing itself
 		long senderPerm = getSenderPerm(guild, event), targetPerm = getPermFor(guild, target); //Get perrms
@@ -141,18 +144,18 @@ public class MakePermissionsAModule {
 		return targetPerm <= senderPerm;
 	}
 
-	public static long getPermFor(Guilds.Data guild, String target) {
+	public static long getPermFor(GuildModule.Data guild, String target) {
 		target = DiscordUtils.processId(target);
-		long global = Guilds.GLOBAL.getUserPerms(target, 0L), unrevokeable = (target.equals(DiscordUtils.processId(DataManager.mainConfig.get("ownerID").getAsString())) || target.equals("console") ? BOT_OWNER : (guild.getGuild() != null && guild.getGuild().getOwner().getUser().getId().equals(target)) ? GUILD_OWNER : 0);
+		long global = GuildModule.GLOBAL.getUserPerms(target, 0L), unrevokeable = (target.equals(DiscordUtils.processId(DBModule.getConfig().get("ownerID").getAsString())) || target.equals("console") ? BOT_OWNER : (guild.getGuild(jda) != null && guild.getGuild(jda).getOwner().getUser().getId().equals(target)) ? GUILD_OWNER : 0);
 		return global | guild.getUserPerms(target, (global == 0 ? guild.getUserPerms("default", BASE_USER) : global)) | unrevokeable;
 		//this will merge the Global Perms, the Local Perms, and Unrevokeable Perms (BOT_OWNER or GUILD_OWNER)
 	}
 
-	public static boolean canRunCommand(Guilds.Data guild, CommandEvent event) {
+	public static boolean canRunCommand(GuildModule.Data guild, CommandEvent event) {
 		return havePermsRequired(guild, event.getAuthor(), event.getCommand().retrievePerm());
 	}
 
-	public static boolean havePermsRequired(Guilds.Data guild, User user, long perms) {
+	public static boolean havePermsRequired(GuildModule.Data guild, User user, long perms) {
 		return (perms & getPermFor(guild, user.getId())) == perms;
 	}
 

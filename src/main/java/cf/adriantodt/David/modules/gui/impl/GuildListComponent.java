@@ -7,7 +7,7 @@
 
 package cf.adriantodt.David.modules.gui.impl;
 
-import cf.adriantodt.oldbot.Bot;
+
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.events.guild.GuildJoinEvent;

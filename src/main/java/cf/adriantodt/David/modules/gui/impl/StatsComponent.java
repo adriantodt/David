@@ -7,8 +7,8 @@
 
 package cf.adriantodt.David.modules.gui.impl;
 
-import cf.adriantodt.oldbot.Bot;
-import cf.adriantodt.David.commands.utils.Statistics;
+
+import cf.adriantodt.David.modules.init.Statistics;
 import cf.adriantodt.David.modules.init.MergeTasksWithInitModule;
 
 import javax.swing.*;
@@ -16,7 +16,7 @@ import java.awt.*;
 import java.util.Arrays;
 import java.util.Date;
 
-import static cf.adriantodt.David.commands.utils.Statistics.*;
+import static cf.adriantodt.David.modules.init.Statistics.*;
 import static cf.adriantodt.David.modules.gui.impl.GuiTranslationHandler.get;
 
 public class StatsComponent extends JComponent {

@@ -22,13 +22,7 @@ import static cf.adriantodt.David.loader.Module.Type.*;
 
 @Module(STATIC)
 public class UserCommandsModule {
-	/**
-	 * A cache of commands (Command -> Primary Key)
-	 */
 	private static Map<UserCommand, String> cachedCommands = new HashMap<>();
-	/**
-	 * Control of Commands (Guild -> Command Name -> Command)
-	 */
 	private static Map<GuildModule.Data, Map<String, UserCommand>> guildCommands = new HashMap<>();
 
 	public static void register(UserCommand command, String name, GuildModule.Data guild) {

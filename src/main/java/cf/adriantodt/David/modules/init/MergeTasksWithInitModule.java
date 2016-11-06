@@ -16,7 +16,7 @@ import cf.adriantodt.David.commands.base.Holder;
 import cf.adriantodt.David.modules.cmds.Feeds;
 import cf.adriantodt.David.modules.cmds.Pushes;
 import cf.adriantodt.David.modules.gui.impl.QueueLogAppender;
-import cf.adriantodt.David.modules.rest.BotWebInterface;
+import cf.adriantodt.David.modules.rest.RESTInterface;
 import cf.adriantodt.utils.TaskManager;
 import cf.adriantodt.utils.ThreadBuilder;
 import com.sun.management.OperatingSystemMXBean;
@@ -28,11 +28,10 @@ import static cf.adriantodt.utils.TaskManager.startAsyncTask;
 
 public class MergeTasksWithInitModule {
 
-	public static double cpuUsage = 0;
+
 
 	public static void startAsyncTasks() {
-		final OperatingSystemMXBean os = ((OperatingSystemMXBean) ManagementFactory.getOperatingSystemMXBean());
-		startAsyncTask("CPU Usage", () -> cpuUsage = (Math.floor(os.getProcessCpuLoad() * 10000) / 100), 2);
+
 
 		startAsyncTask("User Timeout", () -> {
 			synchronized (userTimeout) {
@@ -44,7 +43,7 @@ public class MergeTasksWithInitModule {
 	public static void startJDAAsyncTasks() {
 		TaskManager.startAsyncTask("Feed Main Task", Feeds::loop, 5);
 
-		new ThreadBuilder().setDaemon(true).setName("Web-Interface").build(() -> new Thread(BotWebInterface::startWebServer)).start();
+		new ThreadBuilder().setDaemon(true).setName("Web-Interface").build(() -> new Thread(RESTInterface::startWebServer)).start();
 
 		new ThreadBuilder().setDaemon(true).setName("Log4j2Discord").build(() -> new Thread(() -> {
 			System.out.println("Log4j2Discord Enabled!");

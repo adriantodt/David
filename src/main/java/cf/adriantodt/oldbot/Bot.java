@@ -12,8 +12,9 @@
 
 package cf.adriantodt.oldbot;
 
-import cf.adriantodt.oldbot.data.DataManager;
-import cf.adriantodt.oldbot.data.entities.I18n;
+import cf.adriantodt.David.modules.db.I18nModule;
+
+
 import cf.adriantodt.David.modules.cmds.Pushes;
 import cf.adriantodt.David.modules.init.MergeTasksWithInitModule;
 import org.apache.logging.log4j.LogManager;
@@ -21,18 +22,12 @@ import org.apache.logging.log4j.LogManager;
 public class Bot {
 
 	public static void init() throws Exception {
-		DataManager.init();
 		MergeTasksWithInitModule.startAsyncTasks();
 
-		LOADED = true;
-		onLoaded.forEach(Runnable::run);
-		onLoaded = null;
-		LOGGER = LogManager.getLogger(SELF.getName());
-		LOGGER.info("Bot: " + SELF.getName() + " (#" + SELF.getId() + ")");
-		//LOGGER.info("ConfigUtils: " + DataManager.getSaveFile().toAbsolutePath().toString());
+
 		MergeTasksWithInitModule.startJDAAsyncTasks();
 
-		Pushes.pushSimple("start", channel -> I18n.getLocalized("bot.startup", channel));
+
 	}
 
 

@@ -13,8 +13,7 @@
 package cf.adriantodt.David.commands.base;
 
 import cf.adriantodt.David.modules.cmds.MakeCommandManagerAModule;
-import cf.adriantodt.David.modules.db.MakePermissionsAModule;
-import cf.adriantodt.oldbot.data.entities.I18n;
+import cf.adriantodt.David.modules.db.PermissionsModule;
 import org.apache.logging.log4j.LogManager;
 
 import java.util.HashMap;
@@ -22,7 +21,8 @@ import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-import static cf.adriantodt.oldbot.data.entities.I18n.getLocalized;
+import static cf.adriantodt.David.modules.db.I18nModule.getLocalized;
+
 
 public class Commands {
 	public static CommandBuilder buildSimple() {
@@ -82,7 +82,7 @@ public class Commands {
 
 				@Override
 				public String toString(String language) {
-					return String.format(I18n.getLocalized("alias.of", language), name);
+					return String.format(getLocalized("alias.of", language), name);
 				}
 			};
 		}
@@ -106,7 +106,7 @@ public class Commands {
 
 				@Override
 				public String toString(String language) {
-					return String.format(I18n.getLocalized("alias.of", language), name + " " + args);
+					return String.format(getLocalized("alias.of", language), name + " " + args);
 				}
 			};
 		}
@@ -115,7 +115,7 @@ public class Commands {
 	public static class CommandBuilder {
 		private static final Function<String, String> DEFAULT_NOOP_PROVIDER = (s) -> null;
 		private Consumer<CommandEvent> action = null;
-		private long permRequired = MakePermissionsAModule.RUN_CMDS;
+		private long permRequired = PermissionsModule.RUN_CMDS;
 		private Function<String, String> usageProvider = DEFAULT_NOOP_PROVIDER;
 
 		public CommandBuilder() {
@@ -192,7 +192,7 @@ public class Commands {
 			Holder<StringBuilder> b = new Holder<>();
 			Holder<Boolean> first = new Holder<>();
 
-			b.var = new StringBuilder(I18n.getLocalized("tree.subcmds", lang) + ":");
+			b.var = new StringBuilder(getLocalized("tree.subcmds", lang) + ":");
 			first.var = true;
 			SUBCMDS.forEach((cmdName, cmd) -> {
 				String usage = (cmd == null) ? null : cmd.toString(lang);
@@ -200,13 +200,13 @@ public class Commands {
 				if (first.var) {
 					first.var = false;
 				}
-				String a = "\n - " + (cmdName.isEmpty() ? "(" + I18n.getLocalized("tree.default", lang) + ")" : cmdName) + ": " + usage.replace("\n", "\n    ");
+				String a = "\n - " + (cmdName.isEmpty() ? "(" + getLocalized("tree.default", lang) + ")" : cmdName) + ": " + usage.replace("\n", "\n    ");
 				b.var.append(a);
 			});
 			if (first.var) return null;
 			return b.var.toString();
 		};
-		private long permRequired = MakePermissionsAModule.RUN_CMDS;
+		private long permRequired = PermissionsModule.RUN_CMDS;
 		private Function<String, String> usageProvider = USAGE_IMPL;
 
 		public TreeCommandBuilder() {

@@ -12,6 +12,7 @@
 
 package cf.adriantodt.David.modules.cmds;
 
+import cf.adriantodt.David.modules.db.I18nModule;
 import cf.adriantodt.utils.EncodingUtil;
 import cf.adriantodt.utils.HTML2Discord;
 import cf.adriantodt.utils.PatternCollection;
@@ -45,7 +46,7 @@ public class FeedingUtil {
 		return IOHelper.newURL(shorten(url.toString(), shorturl));
 	}
 
-	public static Function<TextChannel, String> handleEntry(final Feeds.Subscription subscription, final SyndEntry feed) {
+	public static Function<TextChannel, String> handleEntry(final FeedCmd.Subscription subscription, final SyndEntry feed) {
 		//Compile static things
 		Function<TextChannel, String> chunk2, chunk4, chunk6, chunk7;
 		String chunk1 = "***:envelope_with_arrow: - ";
@@ -59,23 +60,23 @@ public class FeedingUtil {
 			String titleStatic = limit(compileReplace(PatternCollection.MULTIPLE_LINES, "\n").apply(HTML2Discord.toPlainText(feed.getTitle())), 70);
 			chunk2 = c -> titleStatic;
 		} else {
-			chunk2 = c -> I18n.getLocalized("feed.untitled", c);
+			chunk2 = c -> I18nModule.getLocalized("feed.untitled", c);
 		}
 
 		if (feed.getLink() != null) {
 			String linkStatic = shorten(HTML2Discord.toPlainText(feed.getLink()));
 			chunk4 = c -> linkStatic;
 		} else {
-			chunk4 = c -> I18n.getLocalized("feed.unknown", c);
+			chunk4 = c -> I18nModule.getLocalized("feed.unknown", c);
 		}
 
-		chunk6 = c -> I18n.getLocalized("feed.at", c);
+		chunk6 = c -> I18nModule.getLocalized("feed.at", c);
 
 		if (feed.getPublishedDate() != null) {
 			String dateStatic = feed.getPublishedDate().toString();
 			chunk7 = c -> dateStatic;
 		} else {
-			chunk7 = c -> I18n.getLocalized("feed.unknown", c);
+			chunk7 = c -> I18nModule.getLocalized("feed.unknown", c);
 		}
 
 		return channel -> chunk1 + chunk2.apply(channel) + chunk3 + chunk4.apply(channel) + chunk5 + chunk6.apply(channel) + " " + chunk7.apply(channel) + chunk8;

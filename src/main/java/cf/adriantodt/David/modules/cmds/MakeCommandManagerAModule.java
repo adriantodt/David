@@ -12,25 +12,23 @@
 
 package cf.adriantodt.David.modules.cmds;
 
-import cf.adriantodt.David.modules.db.MakePermissionsAModule;
-import cf.adriantodt.oldbot.Bot;
 import cf.adriantodt.David.commands.base.CommandEvent;
 import cf.adriantodt.David.commands.base.ICommand;
-import cf.adriantodt.David.commands.base.ProvidesCommand;
 import cf.adriantodt.David.commands.base.UserCommand;
-import cf.adriantodt.David.commands.utils.Statistics;
-import cf.adriantodt.oldbot.data.entities.Guilds;
-import cf.adriantodt.oldbot.data.entities.UserCommands;
+import cf.adriantodt.David.modules.db.GuildModule;
+import cf.adriantodt.David.modules.db.PermissionsModule;
+import cf.adriantodt.David.modules.db.UserCommandsModule;
+import cf.adriantodt.David.modules.init.Statistics;
+
 import net.dv8tion.jda.core.entities.User;
-import net.dv8tion.jda.core.events.ReadyEvent;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.core.hooks.SubscribeEvent;
-import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static cf.adriantodt.utils.AsyncUtils.async;
 import static cf.adriantodt.utils.AsyncUtils.asyncSleepThen;
@@ -41,19 +39,20 @@ import static cf.adriantodt.utils.StringUtils.splitArgs;
 public class MakeCommandManagerAModule {
 	public static final Logger LOGGER = logger();
 	public static final Map<String, ICommand> COMMANDS = new HashMap<>();
-	public static boolean toofast = true;
+
 
 	public static void execute(CommandEvent event) {
-		if (MakePermissionsAModule.canRunCommand(Guilds.GLOBAL, event) || MakePermissionsAModule.canRunCommand(event.getGuild(), event))
+		if (PermissionsModule.canRunCommand(GuildModule.GLOBAL, event) || PermissionsModule.canRunCommand(event.getGuild(), event))
 			event.getCommand().run(event);
 		else event.getAnswers().noperm().queue();
 	}
 
 	@SubscribeEvent
 	public static void onMessageReceived(GuildMessageReceivedEvent msgEvent) {
-		if (msgEvent.getAuthor().equals(Bot.SELF)) {
+		if (msgEvent.getAuthor().equals(msgEvent.getJDA().getSelfUser())) {
 			asyncSleepThen(15 * 1000, () -> {
-				if (Guilds.fromDiscord(msgEvent.getGuild()).getFlag("cleanup")) msgEvent.getMessage().deleteMessage();
+				if (GuildModule.fromDiscord(msgEvent.getGuild()).getFlag("cleanup"))
+					msgEvent.getMessage().deleteMessage();
 			}).run();
 			return;
 		} else if (msgEvent.getAuthor().isBot()) {
@@ -64,15 +63,15 @@ public class MakeCommandManagerAModule {
 	}
 
 	public static void onCommand(GuildMessageReceivedEvent msgEvent) {
-		Guilds.Data local = Guilds.fromDiscord(msgEvent.getGuild()), global = Guilds.GLOBAL, target = local;
-		if (!MakePermissionsAModule.havePermsRequired(global, msgEvent.getAuthor(), MakePermissionsAModule.RUN_CMDS) || !MakePermissionsAModule.havePermsRequired(local, msgEvent.getAuthor(), MakePermissionsAModule.RUN_CMDS))
+		GuildModule.Data local = GuildModule.fromDiscord(msgEvent.getGuild()), global = GuildModule.GLOBAL, target = local;
+		if (!PermissionsModule.havePermsRequired(global, msgEvent.getAuthor(), PermissionsModule.RUN_CMDS) || !PermissionsModule.havePermsRequired(local, msgEvent.getAuthor(), PermissionsModule.RUN_CMDS))
 			return;
 
 		String cmd = msgEvent.getMessage().getRawContent();
 
 		List<String> prefixes = new ArrayList<>(local.getCmdPrefixes());
-		prefixes.add("<@!" + Bot.SELF.getId() + "> ");
-		prefixes.add("<@" + Bot.SELF.getId() + "> ");
+		prefixes.add("<@!" + msgEvent.getJDA().getSelfUser().getId() + "> ");
+		prefixes.add("<@" + msgEvent.getJDA().getSelfUser().getId() + "> ");
 		boolean isCmd = false;
 		for (String prefix : prefixes) {
 			if (cmd.startsWith(prefix)) {
@@ -89,8 +88,8 @@ public class MakeCommandManagerAModule {
 				String guildname = baseCmd.substring(0, baseCmd.indexOf(':'));
 				baseCmd = baseCmd.substring(baseCmd.indexOf(':') + 1);
 
-				Guilds.Data guild = Guilds.fromName(guildname);
-				if (guild != null && (MakePermissionsAModule.havePermsRequired(guild, msgEvent.getAuthor(), MakePermissionsAModule.GUILD_PASS) || MakePermissionsAModule.havePermsRequired(global, msgEvent.getAuthor(), MakePermissionsAModule.GUILD_PASS)))
+				GuildModule.Data guild = GuildModule.fromName(guildname);
+				if (guild != null && (PermissionsModule.havePermsRequired(guild, msgEvent.getAuthor(), PermissionsModule.GUILD_PASS) || PermissionsModule.havePermsRequired(global, msgEvent.getAuthor(), PermissionsModule.GUILD_PASS)))
 					target = guild;
 			}
 
@@ -98,8 +97,8 @@ public class MakeCommandManagerAModule {
 
 			if (command != null) {
 				CommandEvent event = new CommandEvent(msgEvent, target, command, splitArgs(cmd, 2)[1]);
-				if (!MakePermissionsAModule.canRunCommand(target, event)) event.getAnswers().noperm().queue();
-				else if (toofast && !TooFast.canExecuteCmd(msgEvent)) event.getAnswers().toofast().queue();
+				if (!PermissionsModule.canRunCommand(target, event)) event.getAnswers().noperm().queue();
+				else if (TooFast.enabled && !TooFast.canExecuteCmd(msgEvent)) event.getAnswers().toofast().queue();
 				else {
 					if (event.getCommand().sendStartTyping()) event.sendAwaitableTyping();
 					Statistics.cmds++;
@@ -114,19 +113,11 @@ public class MakeCommandManagerAModule {
 		}
 	}
 
-	@SubscribeEvent
-	public static void onReady(ReadyEvent event) {
-		Arrays.asList(
-			BotCmd.class, CmdsCmd.class, FeedCmd.class, FunnyCmd.class, GuildCmd.class, PushCmd.class, UserCmd.class, TestCmds.class, UtilsCmd.class
-		).forEach(Loader::load);
-	}
-
-
 	public static void addCommand(String name, ICommand command) {
 		COMMANDS.put(name.toLowerCase(), command);
 	}
 
-	public static Map<String, ICommand> getCommands(Guilds.Data guild) {
+	public static Map<String, ICommand> getCommands(GuildModule.Data guild) {
 		return concatMaps(getBaseCommands(), new HashMap<>(getUserCommands(guild)));
 	}
 
@@ -134,35 +125,21 @@ public class MakeCommandManagerAModule {
 		return COMMANDS;
 	}
 
-	public static Map<String, UserCommand> getUserCommands(Guilds.Data guild) {
+	public static Map<String, UserCommand> getUserCommands(GuildModule.Data guild) {
 		return concatMaps(getGlobalUserCommands(), getLocalUserCommands(guild));
 	}
 
 	public static Map<String, UserCommand> getGlobalUserCommands() {
-		return getLocalUserCommands(Guilds.GLOBAL);
+		return getLocalUserCommands(GuildModule.GLOBAL);
 	}
 
-	public static Map<String, UserCommand> getLocalUserCommands(Guilds.Data guild) {
-		return UserCommands.allFrom(guild);
-	}
-
-	public static class Loader {
-		public static void load(Class clazz) {
-			for (Method m : clazz.getDeclaredMethods()) {
-				if (!m.isAnnotationPresent(ProvidesCommand.class) || !Modifier.isStatic(m.getModifiers())) continue;
-				if (m.getParameterTypes().length == 0 && ICommand.class.isAssignableFrom(m.getReturnType())) {
-					m.setAccessible(true);
-					try {
-						addCommand(m.getAnnotation(ProvidesCommand.class).value(), (ICommand) m.invoke(null));
-					} catch (Exception e) {
-						LogManager.getLogger("CommandManager - AnnotationLoader").error("Error while creating new Command: ", e);
-					}
-				}
-			}
-		}
+	public static Map<String, UserCommand> getLocalUserCommands(GuildModule.Data guild) {
+		return UserCommandsModule.allFrom(guild);
 	}
 
 	public static class TooFast {
+		public static boolean enabled = true;
+
 		public static final Map<User, Integer> userTimeout = new HashMap<>();
 
 		public static boolean canExecuteCmd(GuildMessageReceivedEvent event) {

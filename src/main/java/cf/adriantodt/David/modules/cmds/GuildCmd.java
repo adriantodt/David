@@ -15,23 +15,23 @@ package cf.adriantodt.David.modules.cmds;
 import cf.adriantodt.David.commands.base.Commands;
 import cf.adriantodt.David.commands.base.ICommand;
 import cf.adriantodt.David.commands.base.ProvidesCommand;
-import cf.adriantodt.oldbot.data.entities.Guilds;
-import cf.adriantodt.oldbot.data.entities.I18n;
+
+
 import cf.adriantodt.utils.data.Commitable;
 
 import java.util.Arrays;
 import java.util.List;
 
-import static cf.adriantodt.David.modules.db.MakePermissionsAModule.*;
-import static cf.adriantodt.oldbot.data.entities.I18n.getLocalized;
+import static cf.adriantodt.David.modules.db.PermissionsModule.*;
+
 
 public class GuildCmd {
-	@ProvidesCommand("guild")
+	@Command("guild")
 	private static ICommand createCommand() {
 		return Commands.buildTree()
 			.addCommand("info",
 				Commands.buildSimple("guild.info.usage")
-					.setAction(event -> event.awaitTyping().getAnswers().sendCased(Guilds.toString(event.getGuild(), event.getJDA(), I18n.getLocale(event))).queue())
+					.setAction(event -> event.awaitTyping().getAnswers().sendCased(Guilds.toString(event.getGuild(), event.getJDA(), I18nModule.getLocale(event))).queue())
 					.build()
 			)
 			.addDefault("info")

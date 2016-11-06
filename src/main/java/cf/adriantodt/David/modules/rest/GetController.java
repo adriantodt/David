@@ -12,9 +12,8 @@
 
 package cf.adriantodt.David.modules.rest;
 
-import cf.adriantodt.oldbot.Bot;
-import cf.adriantodt.oldbot.data.DataManager;
-import cf.adriantodt.oldbot.data.entities.Guilds;
+import cf.adriantodt.David.modules.db.DBModule;
+import cf.adriantodt.David.modules.db.GuildModule;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -29,6 +28,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
+import static cf.adriantodt.David.modules.rest.RESTInterface.jda;
 import static cf.adriantodt.David.modules.rest.WebInterfaceHelper.*;
 
 @RestController
@@ -39,23 +39,23 @@ public class GetController {
 		api.put("user", map -> {
 			String id = map.getOrDefault("id", "");
 			if (id.isEmpty()) return error("Invalid User");
-			User user = Bot.API.getUserById(id);
+			User user = jda.getUserById(id);
 			if (user == null) return error("User not found");
 			JsonObject object = object();
 			JsonArray array = new JsonArray();
-			Bot.API.getGuilds().stream().filter(guild -> guild.getOwner().getUser().equals(user)).forEach(g -> {
+			jda.getGuilds().stream().filter(guild -> guild.getOwner().getUser().equals(user)).forEach(g -> {
 				if (map.containsKey("detailed")) array.add(toJson(g));
 				else array.add(new JsonPrimitive(g.getId()));
 			});
 			object.add("guildsOwned", array);
-			object.addProperty("owner", DataManager.mainConfig.get("ownerID").getAsString().equals(id));
+			object.addProperty("owner", DBModule.getConfig().get("ownerID").getAsString().equals(id));
 			return object;
 		});
 
 		api.put("me", map -> {
 			JsonObject object = object();
-			object.addProperty("avatar", Bot.SELF.getAvatarUrl());
-			object.addProperty("owner", DataManager.mainConfig.get("ownerID").getAsString());
+			object.addProperty("avatar", jda.getSelfUser().getAvatarUrl());
+			object.addProperty("owner", DBModule.getConfig().get("ownerID").getAsString());
 			return object;
 		});
 	}
@@ -65,7 +65,7 @@ public class GetController {
 		guild.addProperty("id", g.getId());
 		guild.addProperty("name", g.getName());
 		guild.addProperty("avatar", g.getIconUrl());
-		guild.addProperty("vip", Guilds.fromDiscord(g).getFlag("vip"));
+		guild.addProperty("vip", GuildModule.fromDiscord(g).getFlag("vip"));
 		return guild;
 	}
 

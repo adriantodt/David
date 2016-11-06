@@ -13,7 +13,7 @@
 package cf.adriantodt.David.modules.cmds.utils.scripting;
 
 import cf.adriantodt.David.commands.base.CommandEvent;
-import cf.adriantodt.oldbot.data.entities.I18n;
+import cf.adriantodt.David.modules.db.I18nModule;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
@@ -45,7 +45,7 @@ public class JS {
 					event.getArgs() +
 					"}" +
 					"})();");
-			event.awaitTyping().getAnswers().send(out == null ? I18n.getLocalized("bot.eval.noOut", event) : out.toString()).queue();
+			event.awaitTyping().getAnswers().send(out == null ? I18nModule.getLocalized("bot.eval.noOut", event) : out.toString()).queue();
 		} catch (ScriptException e) {
 			event.awaitTyping().getAnswers().exception(e).queue();
 		}
@@ -60,7 +60,7 @@ public class JS {
 					event.getArgs() +
 					"}" +
 					"})();");
-			event.awaitTyping().getAnswers().send(out == null ? I18n.getLocalized("eval.noOut", event) : out.toString()).queue();
+			event.awaitTyping().getAnswers().send(out == null ? I18nModule.getLocalized("eval.noOut", event) : out.toString()).queue();
 		} catch (ScriptException e) {
 			event.awaitTyping().getAnswers().exception(e).queue();
 		}

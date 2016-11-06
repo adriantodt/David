@@ -12,8 +12,8 @@
 
 package cf.adriantodt.David.modules.gui.impl;
 
-import cf.adriantodt.oldbot.Bot;
-import cf.adriantodt.oldbot.data.entities.I18n;
+
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,7 +46,7 @@ public class GuiTranslationHandler {
 
 	public static String get(String unlocalized) {
 		if (!Bot.LOADED) return unlocalized;
-		else return I18n.getLocalized("gui." + unlocalized, lang);
+		else return I18nModule.getLocalized("gui." + unlocalized, lang);
 	}
 
 	public static String getLang() {

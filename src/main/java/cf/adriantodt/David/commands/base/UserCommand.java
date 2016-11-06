@@ -12,13 +12,15 @@
 
 package cf.adriantodt.David.commands.base;
 
-import cf.adriantodt.David.modules.db.MakePermissionsAModule;
-import cf.adriantodt.oldbot.data.entities.I18n;
+import cf.adriantodt.David.modules.db.I18nModule;
+import cf.adriantodt.David.modules.db.PermissionsModule;
+
 import cf.adriantodt.David.utils.DiscordUtils;
 
 import java.util.*;
 
-import static cf.adriantodt.oldbot.Bot.RAND;
+import static cf.adriantodt.utils.CollectionUtils.random;
+
 
 //import cf.adriantodt.bot.commands.cmds.utils.scripting.JS;
 
@@ -27,7 +29,7 @@ public class UserCommand implements ICommand, ITranslatable {
 
 	@Override
 	public void run(CommandEvent event) {
-		String response = responses.get(RAND.nextInt(responses.size()));
+		String response = random(responses);
 		if (response.length() > 7) {
 //			if (response.substring(0, 6).equals("get://")) {
 //				event.getAnswers().send(IOHelper.toString(response.substring(6))).queue();
@@ -37,7 +39,7 @@ public class UserCommand implements ICommand, ITranslatable {
 				//	Audio.queue(IOHelper.newURL(response.substring(6)), event);
 				//	return;
 			} else if (response.substring(0, 5).equals("js://")) {
-				if (MakePermissionsAModule.havePermsRequired(event.getGuild(), event.getAuthor(), MakePermissionsAModule.RUN_SCRIPT_CMDS)) {
+				if (PermissionsModule.havePermsRequired(event.getGuild(), event.getAuthor(), PermissionsModule.RUN_SCRIPT_CMDS)) {
 					//JS.eval(event.getGuild(), response.substring(5), event.getEvent());
 				} else {
 					event.awaitTyping().getAnswers().noperm().queue();
@@ -48,16 +50,16 @@ public class UserCommand implements ICommand, ITranslatable {
 		Map<String, String> dynamicMap = new HashMap<>();
 		dynamicMap.put("event.username", event.getAuthor().getName());
 		dynamicMap.put("event.nickname", event.getMember().getNickname());
-		dynamicMap.put("event.name", DiscordUtils.name(event.getAuthor(), event.getGuild().getGuild()));
+		dynamicMap.put("event.name", DiscordUtils.name(event.getAuthor(), event.getGuild().getGuild(event.getJDA())));
 		dynamicMap.put("event.mentionUser", event.getAuthor().getAsMention());
 		dynamicMap.put("event.args", event.getArgs());
 		dynamicMap.put("event.guild", event.getGuild().getName());
-		event.awaitTyping().getAnswers().send(I18n.dynamicTranslate(response, I18n.getLocale(event), Optional.of(dynamicMap))).queue();
+		event.awaitTyping().getAnswers().send(I18nModule.dynamicTranslate(response, I18nModule.getLocale(event), Optional.of(dynamicMap))).queue();
 	}
 
 	@Override
 	public long retrievePerm() {
-		return MakePermissionsAModule.RUN_CMDS | MakePermissionsAModule.RUN_USER_CMDS;
+		return PermissionsModule.RUN_CMDS | PermissionsModule.RUN_USER_CMDS;
 	}
 
 	@Override

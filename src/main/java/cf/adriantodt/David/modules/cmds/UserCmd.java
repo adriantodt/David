@@ -12,19 +12,19 @@
 
 package cf.adriantodt.David.modules.cmds;
 
-import cf.adriantodt.oldbot.Bot;
+
 import cf.adriantodt.David.commands.base.Commands;
 import cf.adriantodt.David.commands.base.Holder;
 import cf.adriantodt.David.commands.base.ICommand;
 import cf.adriantodt.David.commands.base.ProvidesCommand;
-import cf.adriantodt.oldbot.data.entities.Users;
+
 import cf.adriantodt.David.utils.DiscordUtils;
 
-import static cf.adriantodt.oldbot.data.entities.I18n.getLocale;
-import static cf.adriantodt.oldbot.data.entities.I18n.getLocalized;
+
+
 
 public class UserCmd {
-	@ProvidesCommand("user")
+	@Command("user")
 	private static ICommand createCommand() {
 		return Commands.buildTree()
 			.addCommand("info", Commands.buildSimple("user.info.usage")
