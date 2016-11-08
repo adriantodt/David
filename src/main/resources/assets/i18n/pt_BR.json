@@ -57,7 +57,7 @@
         },
         "eval": {
           "desc": "Executa Scripts no JVM",
-      "params": "[script]"
+          "params": "[script]",
           "info": "Apenas o Dono do Bot pode usar.",
           "translations": {
             "noOut": "Executou com sucesso (Nenhum objeto foi retornado)"
