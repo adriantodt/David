@@ -1,97 +1,202 @@
 {
   "translations": {
-    "user.lang.setNone": "Agora eu vou falar na lingua padrão da Guild!",
-    "gui.load": "$$=bot.load;",
-    "cmds.commandsAvailable" : "Comandos Disponíveis",
-    "cmds.userCommandsAvailable": "Comandos de Usuários Disponíveis",
-    "tree.subcmds": "Sub-Comandos",
-    "gui.cmds.help": "Mostra todos os Comandos de Console",
-    "guild.admin": "Admin",
-    "bot.startup": "Olá! Agora eu estou Online e pronto para receber comandos!",
+    "gui": {
+      "cmds": {
+        "help": "Mostra todos os Comandos de Console",
+        "restart": "$$=bot.restart.usage;",
+        "stop": "$$=bot.stop.usage;",
+        "lang": "Definir linguagem da GUI"
+      },
+      "load": "$$=bot.load;",
+      "guilds": "Guilds",
+      "input": "Input",
+      "title": "$(dynamic.botname) - GUI",
+      "stats": "Estatísticas",
+      "stats4": "Uso de CPU: %.2f%%.",
+      "stats3": "RAM(Usando/Total/Max): %s MB/%d MB/%d MB.",
+      "stats2": "%d wgets; %d threads ativas.",
+      "stats1": "%d msgs; %d cmds; %d crashes; %d spam; %d noperms; %d invalidargs.",
+      "stats0": "Uptime: %s",
+      "done": "Feito.",
+      "logAndChat": "Log e Chat",
+      "save": "$$=bot.save;"
+    },
+    "answers": {
+      "dear": "Caro(a)",
+      "calmDown": "Acalme-se",
+      "invalidArgs": "você enviou argumentos inválidos ao comando.",
+      "exception": "uma exceção ocorreu enquanto eu executava o comando:",
+      "tooFast": "Você está executando comandos rápido de mais!"
+    },
+    "tree": {
+      "subcmds": "Sub-Comandos",
+      "default": "padrão"
+    },
     "alias.of": "Alias de %s",
-    "user.nick": "Apelido",
-    "tree.default": "padrão",
-    "answers.exception": "uma exceção ocorreu durante a execução do comando:",
-    "answers.tooFast": "Você está executando comandos rápido de mais",
-    "bot.restart": "Reiniciando...",
-    "gui.cmds.restart": "$$=bot.restart.usage;",
-    "user.lang.set": "Agora eu vou falar em %s para você!",
-    "bot.help": "Olá! Eu sou o $(dynamic.botname).\nPara começar a usar os Comandos, envie: $(dynamic.mention) cmds\nPara me convidar para a sua Guild, envie: $(dynamic.mention) bot inviteme",
-    "guild.channels": "Canais",
-    "guild.cmds": "Comandos",
-    "perms.get.none": "nenhuma",
     "stats.timeFormat": "%d dias, %d horas, %d minutos, %d segundos",
-    "eval.noOut": "Executou com sucesso (Nenhum objeto foi retornado)",
-    "gui.stats": "Estatísticas",
-    "user.name": "Nome",
-    "user.commonGuilds": "Guilds em Comum",
-    "bot.hello1": "Oi! Eu sou o $(dynamic.botname). Alguém me jogou aqui!",
-    "user.memberSince": "Membro Desde",
-    "error.contentmanager": "O ContentManager falhou ao carregar o conteúdo. Por favor reporte isso ao desenvolvedor.",
-    "bot.hello2": "Alguém chame %s para definir minha Língua Padrão!\n(Por causa da Região, eu adivinhei a língua como `%s`, mas o Guild Owner pode defini-la a qualquer mmomento executando `$(dynamic.mention) guild lang <en_US|pt_BR|etc>`)",
-    "guild.guild": "Guild",
-    "gui.cmds.stop": "$$=bot.stop.usage;",
-    "gui.stats2": "%d wgets; %d threads ativas.",
-    "user.playing": "Jogando",
-    "gui.logAndChat": "Log e Chat",
-    "guild.lang.set": "Agora eu vou falar em %s nessa Guild!",
-    "stats.negativeTime": "<Diferença negativa de tempo>",
-    "gui.done": "Feito.",
-    "answers.invalidArgs": "você enviou argumento(s) incorreto(s) para o comando.",
-    "gui.save": "$$=bot.save;",
-    "answers.calmDown": "Acalme-se",
-    "guild.users": "Usuários",
-    "inviteme.link": "Clique no Link para convidar o Bot para a sua Guild",
-    "gui.cmds.lang": "Define a Língua da GUI",
-    "answers.dear": "Prezado",
-    "user.none": "nenhum",
-    "perms.get.userPerms": "Permissões do Usuário",
-    "bot.stop": "Saindo...",
-    "user.roles": "Cargos",
-    "feed.at": "Ás"
+    "error.contentmanager": "O ContentManager falhou a carregar o conteúdo. Por favor reporte isso aos desenvolvedores.",
+    "stats.negativeTime": "<Diferença negativa de tempo>"
   },
   "meta": {
-    "params": "Parâmetros",
+    "params": "Parametros",
     "noParams": "nenhum",
-    "noDesc": "(Nenhuma descrição adicionada)"
+    "noDesc": "(Nenhuma Descrição Provida)"
   },
   "commands": {
-    "bot.version": {
-      "desc": "Envia a Versão do Bot (e Libs)",
-      "params": "nenhum"
-    },
-    "bot.toofast": {
+    "bot": {
+      "subs": {
+        "version": {
+          "desc": "Envia a Versão do Bot (e Libs)"
+        },
+        "toofast": {
       "desc": "Ativa ou Desativa o \"Toofast\" SpamProtection",
-      "params": "nenhum",
       "info": "Apenas o Dono do Bot pode usar. Ativado por padrão"
+        },
+        "session": {
+          "desc": "Mostra informações da sessão"
+        },
+        "eval": {
+          "desc": "Executa Scripts no JVM",
+          "params": "[script]",
+          "info": "Apenas o Dono do Bot pode usar.",
+          "translations": {
+            "noOut": "Executou com sucesso (Nenhum objeto foi retornado)"
+          }
+        },
+        "inviteme": {
+          "desc": "Envia um Link para Conviar o Bot para a sua Guild",
+          "info": "Você precida da permissão de GERENCIAR SERVIDOR no servidor em que você deseja convidar o bot.",
+          "translations": {
+            "link": "Clique no Link para convidar o Bot para a sua Guild"
+          }
+        },
+        "stop": {
+          "desc": "Desliga o Bot",
+          "info": "Apenas o Dono do Bot pode usar."
+        }
+      },
+      "translations": {
+        "startup": "Olá! Agora eu estou Online e pronto para receber comandos!",
+        "restart": "Reiniciando...",
+        "stop": "Desligando...",
+        "help": "Olá! Eu sou o $(dynamic.botname).\nPara começar a usar os Comandos, envie: $(dynamic.mention) cmds\nPara me convidar para a sua Guild, envie: $(dynamic.mention) bot inviteme",
+        "hello1": "Oi! Eu sou o $(dynamic.botname). Alguém me jogou aqui!",
+        "hello2": "Alguém chame %s para definir minha Língua Padrão!\n(Por causa da Região, eu adivinhei a língua como `%s`, mas o Guild Owner pode defini-la a qualquer momento executando `$(dynamic.mention) guild lang <en_US|pt_BR|etc>`)"
+      }
     },
-    "bot.session": {
-      "desc": "Mostra informações da sessão",
-      "params": "nenhum"
+    "cmds": {
+      "translations": {
+        "commandsAvailable": "Comandos Disponíveis",
+        "userCommandsAvailable": "Comandos de Usuários Disponíveis"
+      }
     },
-    "guild.perms.set": {
-      "desc": "Define as Permissões de um Usuário",
-      "params": "<usuário> <permissões...>",
-      "info": "Define as permissões do usuário suprido pelo parâmetro.\nPorém, ele não permite a usuários de rank menor alterar permissões de usuários de rank maior."
+    "feed": {
+      "translations": {
+        "at": "Ás"
+      }
     },
-    "guild.perms.list": {
-      "desc": "Lista todas as permissões",
-      "params": "nenhum"
+    "funny": {
+      "subs": {
+        "skyrim": {
+          "subs": {
+            "lydia": {
+              "desc": "Envia frases aleatórias da Lydia",
+              "params": "[vezes]",
+              "info": "Frases tiradas de http://elderscrolls.wikia.com/wiki/Lydia. Especifique um número para gerar múltiplos."
+            },
+            "guard": {
+              "desc": "Envia frases aleatórias dos guardas de Skyrim",
+              "params": "[vezes]",
+              "info": "Frases tiradas de http://www.uesp.net/wiki/Skyrim:Guard_Dialogue. Especifique um número para gerar múltiplos."
+            }
+          }
+        },
+        "stevenuniverse": {
+          "subs": {
+            "theorygenerator": {
+              "desc": "Gera Teorias Aletórias de Steven Universo",
+              "params": "[vezes]",
+              "info": "Baseado nos dados em http://www.generatorland.com/usergenerator.aspx?id=10737. Especifique um número para gerar múltiplos."
+            },
+            "stevonnie": {
+              "desc": "Envia frases aleatórias da Stevonnie",
+              "params": "[vezes]",
+              "info": "Frases tiradas de http://steven-universe.wikia.com/wiki/Stevonnie/Quotes (Sem Spoilers além dela própria). Especifique um número para gerar múltiplos."
+            }
+          }
+        },
+        "minecraft": {
+          "subs": {
+            "drama": {
+              "desc": "Gera Minecraft Modding Drama",
+              "params": "[vezes]",
+              "info": "Gerado pelo site https://drama.thog.eu/drama. Especifique um número para gerar múltiplos."
+            }
+          }
+        }
+      }
     },
-    "guild.perms.get": {
-      "desc": "Mostrar as Permissões que o Usuário tem",
-      "params": "[usuário]",
-      "info": "Se executado sem argumentos, retorna as suas permissões.\nSe um usuário for suprido, retorna as permissões do usuário."
+    "guild": {
+      "subs": {
+        "info": {
+          "desc": "Mostra informações da Guild."
+        },
+        "perms": {
+          "subs": {
+            "get": {
+              "desc": "Mostra as Permissões que o Usuário tem",
+              "params": "[usuário]",
+              "info": "Se executado sem argumentos, retorna as suas permissões.\nSe um usuário for suprido, retorna as permissões do usuário."
+            },
+            "set": {
+              "desc": "Define as Permissões de um Usuário",
+              "params": "<usuário> <permissões...>",
+              "info": "Define as permissões do usuário suprido pelo parâmetro.\nPorém, ele não permite a usuários de rank menor alterar permissões de usuários de rank maior."
+            },
+            "list": {
+              "desc": "Lista todas as permissões"
+            }
+          },
+          "translations": {
+            "get": {
+              "userPerms": "Permissões do usuário",
+              "none": "nenhum"
+            }
+          }
+        }
+      },
+      "translations": {
+        "admin": "Dono",
+        "channels": "Canais",
+        "cmds": "Comandos",
+        "guild": "Guild",
+        "vip": "VIP",
+        "lang.set": "Agora eu vou falar em %s nessa Guild!",
+        "id": "ID",
+        "users": "Usuários"
+      }
     },
-    "funny.skyrim.lydia": {
-      "desc": "Envia frases aleatórias da Lydia",
-      "params": "[vezes]",
-      "info": "Frases tiradas de http://elderscrolls.wikia.com/wiki/Lydia.\n Especifique um número para gerar múltiplos."
+    "push": {
     },
-    "funny.stevenuniverse.theorygenerator": {
-      "desc": "Gera Teorias Aletórias de Steven Universo",
-      "params": "[vezes]",
-      "info": "Baseado nos dados em http://www.generatorland.com/usergenerator.aspx?id=10737. Especifique um número para gerar múltiplos."
+    "user": {
+      "translations": {
+        "status": "Status",
+        "lang": {
+          "setNone": "Agora eu vou falar na Lingua Padrão da Guild pra você!",
+          "set": "Agora eu vou falar em %s para você!"
+        },
+        "avatar": "Avatar",
+        "nick": "Nick",
+        "id": "ID",
+        "playing": "Jogando",
+        "roles": "Cargos",
+        "none": "nenhum",
+        "name": "Nome",
+        "commonGuilds": "Guilds em comum",
+        "memberSince": "Membro desde"
+      }
+    },
+    "utils": {
     }
   }
 }

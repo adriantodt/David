@@ -1,0 +1,180 @@
+{
+  "translations": {
+    "answers": {
+      "dear": "Caro(a)",
+      "calmDown": "Calmati",
+      "invalidArgs": "Gli argomenti o le parole inviate non sono giuste al tipo di comando che vuoi usare.",
+      "exception": "il programma ha lanciato un errore mentre eseguiva il comando:",
+      "tooFast": "Troppi comandi contemporaneamente!"
+    },
+    "tree": {
+      "subcmds": "Sotto (sub) Comandi",
+      "default": "predefinito"
+    },
+    "alias.of": "Alias of %s",
+    "stats.timeFormat": "%d days, %d hours, %d minutes, %d seconds",
+    "error.contentmanager": "The ContentManager failed at loading the content. Please report it to the devs.",
+    "stats.negativeTime": "<Negative difference of time>"
+  },
+  "meta": {
+    "params": "Parameters",
+    "noParams": "none",
+    "noDesc": "(No Description Provided)"
+  },
+  "commands": {
+    "bot": {
+      "subs": {
+        "version": {
+          "desc": "Print Bot (and Libs) Version"
+        },
+        "toofast": {
+          "desc": "Toggles \"TooFast\" SpamProtection",
+          "info": "Only the Bot Owner can use it. Enabled by default"
+        },
+        "session": {
+          "desc": "Show session info"
+        },
+        "eval": {
+          "desc": "Executes Scripts in JVM",
+          "info": "Only the Bot Owner can use it.",
+          "translations": {
+            "noOut": "Executed successfully (No output was provided)"
+          }
+        },
+        "inviteme": {
+          "desc": "Sends an Link to Invite the Bot to your Guild",
+          "info": "You need to have the MANAGE SERVER permission on the server you want to put the bot.",
+          "translations": {
+            "link": "Click the Link to invite the Bot to your Guild"
+          }
+        },
+        "stop": {
+          "desc": "Stops the Bot",
+          "info": "Only the Bot Owner can use it."
+        }
+      },
+      "translations": {
+        "startup": "Hello! I'm now Online and ready to receive commands!",
+        "restart": "Restarting...",
+        "stop": "Stopping...",
+        "help": "Hello! I'm $(dynamic.botname).\nTo get started with the Commands, send: $(dynamic.mention) cmds\nTo invite me to your Guild, send: $(dynamic.mention) bot inviteme",
+        "hello1": "Hello! I'm $(dynamic.botname). Someone dropped me here!",
+        "hello2": "Someone call %s to set my Default Language!\n(Because of the Region, I guessed the language as `%s`, but the Guild Owner can set it anytime by executing `$(dynamic.mention) guild lang <en_US|pt_BR|etc>`)"
+      }
+    },
+    "cmds": {
+      "translations": {
+        "commandsAvailable": "Commands Available",
+        "userCommandsAvailable": "User Commands Available"
+      }
+    },
+    "feed": {
+      "translations": {
+        "at": "At"
+      }
+    },
+    "funny": {
+      "subs": {
+        "skyrim": {
+          "subs": {
+            "lydia": {
+              "desc": "Say random Lydia quotes",
+              "params": "[times]",
+              "info": "Quotes pumped from http://elderscrolls.wikia.com/wiki/Lydia.\n Specify a number to generate multiple."
+            },
+            "guard": {
+              "desc": "Say random Guard quotes",
+              "params": "[times]",
+              "info": "Quotes pumped from http://www.uesp.net/wiki/Skyrim:Guard_Dialogue.\n Specify a number to generate multiple."
+            }
+          }
+        },
+        "stevenuniverse": {
+          "subs": {
+            "theorygenerator": {
+              "desc": "Generate Edgy Steven Universe Theories",
+              "params": "[times]",
+              "info": "Based on http://www.generatorland.com/usergenerator.aspx?id=10737 data. Specify a number to generate multiple."
+            },
+            "stevonnie": {
+              "desc": "Say random Stevonnie quotes",
+              "params": "[times]",
+              "info": "Quotes pumped from http://steven-universe.wikia.com/wiki/Stevonnie/Quotes (Spoilers removed).\n Specify a number to generate multiple."
+            }
+          }
+        },
+        "minecraft": {
+          "subs": {
+            "drama": {
+              "desc": "Generate Minecraft Modding Drama",
+              "params": "[times]",
+              "info": "Generated from https://drama.thog.eu/drama API. Specify a number to generate multiple."
+            }
+          }
+        }
+      }
+    },
+    "guild": {
+      "subs": {
+        "info": {
+          "desc": "Show Guild info."
+        },
+        "perms": {
+          "subs": {
+            "get": {
+              "desc": "Show the current User Permissions",
+              "params": "[user]",
+              "info": "If executed without arguments, return the sender's permissions.\nIf a user is specified, the user's permissions is returned instead."
+            },
+            "set": {
+              "desc": "Define the User Permissions",
+              "params": "<user> <perms...>",
+              "info": "Define the permissions of a user specified by the parameter.\nIt doesn't allow, however, lower-ranks changing higher-ranks permissions."
+            },
+            "list": {
+              "desc": "List all the permissions"
+            }
+          },
+          "translations": {
+            "get": {
+              "userPerms": "User Permissions",
+              "none": "none"
+            }
+          }
+        }
+      },
+      "translations": {
+        "admin": "Admin",
+        "channels": "Channels",
+        "cmds": "Commands",
+        "guild": "Guild",
+        "vip": "VIP",
+        "lang.set": "Now I'll speak %s in this Guild!",
+        "id": "ID",
+        "users": "Users"
+      }
+    },
+    "push": {
+    },
+    "user": {
+      "translations": {
+        "status": "Status",
+        "lang": {
+          "setNone": "Now I'll speak the Guild's Default Language!",
+          "set": "Now I'll speak in %s to you!"
+        },
+        "avatar": "Avatar",
+        "nick": "Nick",
+        "id": "ID",
+        "playing": "Playing",
+        "roles": "Roles",
+        "none": "none",
+        "name": "Name",
+        "commonGuilds": "Common Guilds",
+        "memberSince": "Member Since"
+      }
+    },
+    "utils": {
+    }
+  }
+}
