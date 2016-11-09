@@ -12,13 +12,13 @@
 
 package cf.adriantodt.David.loader;
 
+import cf.adriantodt.David.commands.base.ICommand;
 import cf.adriantodt.David.loader.Module.LoggerInstance;
 import cf.adriantodt.David.loader.Module.Resource;
 import cf.adriantodt.David.loader.Module.Type;
 import cf.adriantodt.David.loader.entities.ModuleContainer;
 import cf.adriantodt.David.loader.entities.impl.ModuleContainerImpl;
-import cf.adriantodt.David.modules.cmds.MakeCommandManagerAModule;
-import cf.adriantodt.David.commands.base.ICommand;
+import cf.adriantodt.David.modules.cmds.manager.CommandManager;
 import net.dv8tion.jda.core.events.ReadyEvent;
 import net.dv8tion.jda.core.hooks.SubscribeEvent;
 import org.apache.logging.log4j.Logger;
@@ -129,8 +129,6 @@ public class ModuleManager {
 
 	@SubscribeEvent
 	private static void ready(ReadyEvent event) {
-		event.getJDA().removeEventListener(ModuleManager.class);
-
 		for (ModuleContainer module : INSTANCE_MAP.values()) {
 			for (Field f : module.getFieldsForAnnotation(Module.JDAInstance.class)) {
 				try {
@@ -139,9 +137,16 @@ public class ModuleManager {
 					LOGGER.error("Error while injecting JDA Instance into " + f + ":", e);
 				}
 			}
+			for (Field f : module.getFieldsForAnnotation(Module.SelfUserInstance.class)) {
+				try {
+					f.set(module.getInstance(), event.getJDA().getSelfUser());
+				} catch (Exception e) {
+					LOGGER.error("Error while injecting SelfUser Instance into " + f + ":", e);
+				}
+			}
 			for (Method m : module.getMethodsForAnnotation(Module.Command.class)) {
 				try {
-					MakeCommandManagerAModule.addCommand(m.getAnnotation(Module.Command.class).value(), (ICommand) m.invoke(module.getInstance()));
+					CommandManager.addCommand(m.getAnnotation(Module.Command.class).value(), (ICommand) m.invoke(module.getInstance()));
 				} catch (Exception e) {
 					LOGGER.error("Error while registering command \"" + m.getAnnotation(Module.Command.class).value() + "\" from " + m + ":", e);
 				}

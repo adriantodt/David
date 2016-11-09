@@ -7,26 +7,22 @@
  * GNU Lesser General Public License v2.1:
  * https://github.com/adriantodt/David/blob/master/LICENSE
  *
- * File Created @ [05/11/16 20:42]
+ * File Created @ [07/11/16 21:23]
  */
 
 package cf.adriantodt.David.modules.init;
 
 import cf.adriantodt.David.loader.Module;
 import cf.adriantodt.David.loader.Module.*;
-import cf.adriantodt.David.modules.cmds.Pushes;
-import cf.adriantodt.David.modules.db.DBModule;
-import cf.adriantodt.David.modules.db.I18nModule;
+import cf.adriantodt.David.oldmodules.db.DBModule;
+import cf.adriantodt.David.oldmodules.db.I18nModule;
 import cf.adriantodt.David.utils.DiscordUtils;
 import cf.adriantodt.utils.Java;
 import cf.adriantodt.utils.Log4jUtils;
 import net.dv8tion.jda.core.JDA;
-import net.dv8tion.jda.core.OnlineStatus;
 import net.dv8tion.jda.core.entities.Game;
+import net.dv8tion.jda.core.entities.SelfUser;
 import net.dv8tion.jda.core.entities.User;
-import net.dv8tion.jda.core.events.ReadyEvent;
-import net.dv8tion.jda.core.hooks.SubscribeEvent;
-import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.File;
@@ -45,6 +41,9 @@ public class InitModule {
 	@LoggerInstance
 	private static Logger logger = null;
 
+	@SelfUserInstance
+	private static SelfUser user = null;
+
 	@OnEnabled
 	public static void init() {
 		logger.info("Pre-Initializating...");
@@ -52,6 +51,7 @@ public class InitModule {
 			File file = new File("./tmp/");
 			if (file.exists())
 				delete(file);
+			//noinspection ResultOfMethodCallIgnored
 			file.mkdir();
 			System.setProperty("java.io.tmpdir", file.getCanonicalPath());
 		} catch (Exception e) {
@@ -63,11 +63,10 @@ public class InitModule {
 		DiscordUtils.hackJDALog();
 	}
 
-	@SubscribeEvent
-	public static void ready(ReadyEvent event) {
-		logger = LogManager.getLogger(event.getJDA().getSelfUser().getName());
-		logger.info("Bot: " + event.getJDA().getSelfUser().getName() + " (#" + event.getJDA().getSelfUser().getId() + ")");
-		event.getJDA().getPresence().setGame(Game.of("mention me for help"));
+	@Ready
+	public static void ready() {
+		logger.info("Bot: " + user.getName() + " (#" + jda.getSelfUser().getId() + ")");
+		jda.getPresence().setGame(Game.of("mention me for help"));
 	}
 
 	@PostReady
@@ -79,24 +78,20 @@ public class InitModule {
 			logger.info("Owner recognized: " + user.getName() + "#" + user.getDiscriminator() + " (ID: " + user.getId() + ")");
 		}
 
-		Pushes.pushSimple("start", channel -> I18nModule.getLocalized("bot.startup", channel));
+		//Pushes.pushSimple("start", channel -> I18nModule.getLocalized("bot.startup", channel));
 	}
 
-	@SuppressWarnings("ConstantConditions")
 	private static void delete(File f) throws IOException {
-		if (f.isDirectory()) {
-			for (File c : f.listFiles())
-				delete(c);
-		}
-		if (!f.delete())
-			throw new FileNotFoundException("Failed to delete file: " + f);
+		if (f.isDirectory()) //noinspection ConstantConditions
+			for (File c : f.listFiles()) delete(c);
+		if (!f.delete()) throw new FileNotFoundException("Failed to delete file: " + f);
 	}
 
 	public static void stopBot() {
 		jda.getPresence().setGame(Game.of("Stopping..."));
 		jda.getPresence().setIdle(true);
 		logger.info("Bot exiting...");
-		Pushes.pushSimple("stop", channel -> boldAndItalic(I18nModule.getLocalized("bot.stop", channel)));
+		//Pushes.pushSimple("stop", channel -> boldAndItalic(I18nModule.getLocalized("bot.stop", channel)));
 		try {
 			Thread.sleep(2 * 1000);
 		} catch (Exception ignored) {

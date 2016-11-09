@@ -12,12 +12,9 @@
 
 package cf.adriantodt.oldbot;
 
-import cf.adriantodt.David.modules.db.I18nModule;
-
 
 import cf.adriantodt.David.modules.cmds.Pushes;
-import cf.adriantodt.David.modules.init.MergeTasksWithInitModule;
-import org.apache.logging.log4j.LogManager;
+import cf.adriantodt.David.oldmodules.init.MergeTasksWithInitModule;
 
 public class Bot {
 

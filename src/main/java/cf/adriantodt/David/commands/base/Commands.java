@@ -12,8 +12,8 @@
 
 package cf.adriantodt.David.commands.base;
 
-import cf.adriantodt.David.modules.cmds.MakeCommandManagerAModule;
-import cf.adriantodt.David.modules.db.PermissionsModule;
+import cf.adriantodt.David.oldmodules.cmds.CommandManager;
+import cf.adriantodt.David.modules.cmds.PermissionsModule;
 import org.apache.logging.log4j.LogManager;
 
 import java.util.HashMap;
@@ -21,7 +21,7 @@ import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-import static cf.adriantodt.David.modules.db.I18nModule.getLocalized;
+import static cf.adriantodt.David.oldmodules.db.I18nModule.getLocalized;
 
 
 public class Commands {
@@ -246,7 +246,7 @@ public class Commands {
 				String[] args = event.getArgs(2);
 				ICommand cmd = SUBCMDS.get(args[0].toLowerCase());
 				if (cmd == null) event.getAnswers().invalidargs().queue();
-				else MakeCommandManagerAModule.execute(new CommandEvent(event.getEvent(), event.getGuild(), cmd, args[1]));
+				else CommandManager.execute(new CommandEvent(event.getEvent(), event.getGuild(), cmd, args[1]));
 			}).build();
 		}
 	}

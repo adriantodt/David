@@ -33,6 +33,12 @@ public @interface Module {
 	@Retention(RetentionPolicy.RUNTIME)
 	@Target(ElementType.FIELD)
 	@Inherited
+	@interface SelfUserInstance {
+	}
+
+	@Retention(RetentionPolicy.RUNTIME)
+	@Target(ElementType.FIELD)
+	@Inherited
 	@interface JDAInstance {
 	}
 

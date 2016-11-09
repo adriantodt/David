@@ -12,8 +12,8 @@
 
 package cf.adriantodt.David.commands.base;
 
-import cf.adriantodt.David.modules.init.Statistics;
-import cf.adriantodt.David.modules.db.GuildModule;
+import cf.adriantodt.David.oldmodules.init.Statistics;
+import cf.adriantodt.David.oldmodules.db.GuildModule;
 import cf.adriantodt.utils.TaskManager;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.*;

@@ -12,7 +12,7 @@
 
 package cf.adriantodt.David.commands.base;
 
-import cf.adriantodt.David.modules.db.PermissionsModule;
+import cf.adriantodt.David.modules.cmds.PermissionsModule;
 
 public interface ICommand extends ITranslatable {
 	void run(CommandEvent event);
