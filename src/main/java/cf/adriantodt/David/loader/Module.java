@@ -18,11 +18,12 @@ import java.lang.annotation.*;
 @Target(ElementType.TYPE)
 @Inherited
 public @interface Module {
+	String name();
+	Type[] type();
+
 	enum Type {
 		STATIC, INSTANCE
 	}
-
-	Type[] value();
 
 	@Retention(RetentionPolicy.RUNTIME)
 	@Target(ElementType.FIELD)
@@ -34,6 +35,12 @@ public @interface Module {
 	@Target(ElementType.FIELD)
 	@Inherited
 	@interface SelfUserInstance {
+	}
+
+	@Retention(RetentionPolicy.RUNTIME)
+	@Target(ElementType.FIELD)
+	@Inherited
+	@interface Container {
 	}
 
 	@Retention(RetentionPolicy.RUNTIME)
@@ -52,6 +59,19 @@ public @interface Module {
 	@Target(ElementType.FIELD)
 	@Inherited
 	@interface Resource {
+		String value();
+	}
+
+	@Retention(RetentionPolicy.RUNTIME)
+	@Target(ElementType.FIELD)
+	@Inherited
+	@interface ResourceManager {
+	}
+
+	@Retention(RetentionPolicy.RUNTIME)
+	@Target(ElementType.FIELD)
+	@Inherited
+	@interface JSONResource {
 		String value();
 	}
 

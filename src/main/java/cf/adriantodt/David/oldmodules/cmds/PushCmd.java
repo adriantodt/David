@@ -30,9 +30,9 @@ import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-import static cf.adriantodt.David.oldmodules.db.I18nModule.getLocalized;
-import static cf.adriantodt.David.modules.cmds.PermissionsModule.PUSH_SEND;
-import static cf.adriantodt.David.modules.cmds.PermissionsModule.PUSH_SUBSCRIBE;
+import static cf.adriantodt.David.modules.db.I18nModule.getLocalized;
+import static cf.adriantodt.David.modules.cmds.manager.PermissionsModule.PUSH_SEND;
+import static cf.adriantodt.David.modules.cmds.manager.PermissionsModule.PUSH_SUBSCRIBE;
 import static cf.adriantodt.utils.Log4jUtils.logger;
 
 
@@ -193,7 +193,7 @@ public class PushCmd {
 				.setAction(event -> {
 					Set<String> args = new HashSet<>();
 					Collections.addAll(args, event.getArgs(0));
-					event.awaitTyping().getAnswers().bool(Pushes.subscribe(event.getChannel(), args)).queue();
+					event.awaitTyping().getAnswers().bool(subscribe(event.getChannel(), args)).queue();
 				})
 				.build()
 			)
@@ -201,20 +201,20 @@ public class PushCmd {
 				.setAction(event -> {
 					Set<String> args = new HashSet<>();
 					Collections.addAll(args, event.getArgs(0));
-					event.awaitTyping().getAnswers().bool(Pushes.unsubscribe(event.getChannel(), args)).queue();
+					event.awaitTyping().getAnswers().bool(unsubscribe(event.getChannel(), args)).queue();
 				})
 				.build()
 			)
 			.addCommand("send", Commands.buildSimple("push.send.usage", PUSH_SEND)
 				.setAction(event -> {
-					Pushes.pushSimple(event.getArg(2, 0), (channel) -> event.getArg(2, 1));
+					pushSimple(event.getArg(2, 0), (channel) -> event.getArg(2, 1));
 					event.awaitTyping().getAnswers().bool(true).queue();
 				})
 				.build()
 			)
 			.addCommand("list", Commands.buildSimple("push.list.usage")
 				.setAction(event -> {
-					Set<String> subscribed = new TreeSet<>(Pushes.subscriptionsFor(event.getChannel())), all = new TreeSet<>(Pushes.resolveTypeSet());
+					Set<String> subscribed = new TreeSet<>(subscriptionsFor(event.getChannel())), all = new TreeSet<>(resolveTypeSet());
 					Holder<StringBuilder> b = new Holder<>(new StringBuilder().append("**").append(getLocalized("push.list", event)).append(":**\n "));
 					Holder<Boolean> first = new Holder<>(true);
 					first.var = true;

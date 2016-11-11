@@ -16,10 +16,10 @@ import cf.adriantodt.David.Info;
 import cf.adriantodt.David.commands.base.Commands;
 import cf.adriantodt.David.commands.base.ICommand;
 import cf.adriantodt.David.modules.cmds.manager.CommandManager.TooFast;
+import cf.adriantodt.David.modules.init.BotGreeter;
 import cf.adriantodt.David.modules.init.InitModule;
-import cf.adriantodt.David.oldmodules.cmds.BotGreeter;
 import cf.adriantodt.David.oldmodules.cmds.utils.scripting.JS;
-import cf.adriantodt.David.oldmodules.db.I18nModule;
+import cf.adriantodt.David.modules.db.I18nModule;
 import cf.adriantodt.David.oldmodules.init.Statistics;
 import cf.adriantodt.David.loader.Module;
 import cf.adriantodt.David.loader.Module.Command;
@@ -28,10 +28,10 @@ import net.dv8tion.jda.core.JDAInfo;
 
 import java.util.Optional;
 
-import static cf.adriantodt.David.modules.cmds.PermissionsModule.*;
-import static cf.adriantodt.David.oldmodules.db.I18nModule.getLocalized;
+import static cf.adriantodt.David.modules.cmds.manager.PermissionsModule.*;
+import static cf.adriantodt.David.modules.db.I18nModule.getLocalized;
 
-@Module(Type.STATIC)
+@Module(name = "cmds.bot", type = Type.STATIC)
 public class BotCmd {
 	@Command("bot")
 	private static ICommand createCommand() {

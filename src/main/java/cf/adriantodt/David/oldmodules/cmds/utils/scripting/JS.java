@@ -13,7 +13,7 @@
 package cf.adriantodt.David.oldmodules.cmds.utils.scripting;
 
 import cf.adriantodt.David.commands.base.CommandEvent;
-import cf.adriantodt.David.oldmodules.db.I18nModule;
+import cf.adriantodt.David.modules.db.I18nModule;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;

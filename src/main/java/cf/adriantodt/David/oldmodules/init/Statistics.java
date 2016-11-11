@@ -13,9 +13,9 @@
 package cf.adriantodt.David.oldmodules.init;
 
 
-import cf.adriantodt.David.oldmodules.db.GuildModule;
-import cf.adriantodt.David.oldmodules.db.I18nModule;
-import cf.adriantodt.David.modules.cmds.PermissionsModule;
+import cf.adriantodt.David.modules.db.GuildModule;
+import cf.adriantodt.David.modules.db.I18nModule;
+import cf.adriantodt.David.modules.cmds.manager.PermissionsModule;
 import cf.adriantodt.David.commands.base.CommandEvent;
 
 

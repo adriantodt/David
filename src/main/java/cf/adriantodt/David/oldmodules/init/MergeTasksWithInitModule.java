@@ -13,11 +13,11 @@
 package cf.adriantodt.David.oldmodules.init;
 
 import cf.adriantodt.David.commands.base.Holder;
-import cf.adriantodt.David.modules.cmds.Feeds;
-import cf.adriantodt.David.modules.cmds.Pushes;
-import cf.adriantodt.David.oldmodules.cmds.CommandManager.TooFast;
-import cf.adriantodt.David.oldmodules.gui.impl.QueueLogAppender;
-import cf.adriantodt.David.oldmodules.rest.RESTInterface;
+import cf.adriantodt.David.modules.cmds.FeedCmd;
+import cf.adriantodt.David.modules.cmds.manager.CommandManager.TooFast;
+import cf.adriantodt.David.modules.gui.impl.QueueLogAppender;
+import cf.adriantodt.David.modules.rest.RESTInterface;
+import cf.adriantodt.David.oldmodules.cmds.PushCmd;
 import cf.adriantodt.utils.TaskManager;
 import cf.adriantodt.utils.ThreadBuilder;
 
@@ -38,7 +38,7 @@ public class MergeTasksWithInitModule {
 	}
 
 	public static void startJDAAsyncTasks() {
-		TaskManager.startAsyncTask("Feed Main Task", Feeds::loop, 5);
+		TaskManager.startAsyncTask("Feed Main Task", FeedCmd::loop, 5);
 
 		new ThreadBuilder().setDaemon(true).setName("Web-Interface").build(() -> new Thread(RESTInterface::startWebServer)).start();
 
@@ -46,7 +46,7 @@ public class MergeTasksWithInitModule {
 			System.out.println("Log4j2Discord Enabled!");
 			Holder<String> s = new Holder<>();
 			while ((s.var = QueueLogAppender.getNextLogEvent("DiscordLogListeners")) != null) {
-				Pushes.pushSimple("get", channel -> "[LOG] " + s.var);
+				PushCmd.pushSimple("get", channel -> "[LOG] " + s.var);
 			}
 			System.out.println("Log4j2Discord Disabled...");
 		})).start();

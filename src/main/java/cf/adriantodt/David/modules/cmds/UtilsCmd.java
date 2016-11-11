@@ -17,10 +17,9 @@ import cf.adriantodt.David.commands.base.ICommand;
 import cf.adriantodt.David.loader.Module;
 import cf.adriantodt.David.loader.Module.Command;
 import cf.adriantodt.David.loader.Module.Type;
-import cf.adriantodt.David.oldmodules.cmds.FeedingUtil;
 import cf.adriantodt.utils.HTML2Discord;
 
-@Module(Type.STATIC)
+@Module(name = "cmds.utils", type = Type.STATIC)
 public class UtilsCmd {
 	@Command("utils")
 	private static ICommand utils() {

@@ -13,8 +13,8 @@
 package cf.adriantodt.David.commands.base;
 
 import cf.adriantodt.David.oldmodules.init.Statistics;
-import cf.adriantodt.David.oldmodules.db.I18nModule;
-import cf.adriantodt.David.modules.cmds.PermissionsModule;
+import cf.adriantodt.David.modules.db.I18nModule;
+import cf.adriantodt.David.modules.cmds.manager.PermissionsModule;
 import net.dv8tion.jda.core.entities.Message;
 import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.requests.RestAction;

@@ -12,8 +12,8 @@
 
 package cf.adriantodt.David.commands.base;
 
-import cf.adriantodt.David.oldmodules.db.I18nModule;
-import cf.adriantodt.David.modules.cmds.PermissionsModule;
+import cf.adriantodt.David.modules.db.I18nModule;
+import cf.adriantodt.David.modules.cmds.manager.PermissionsModule;
 
 import cf.adriantodt.David.utils.DiscordUtils;
 

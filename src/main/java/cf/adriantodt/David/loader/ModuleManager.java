@@ -13,13 +13,14 @@
 package cf.adriantodt.David.loader;
 
 import cf.adriantodt.David.commands.base.ICommand;
-import cf.adriantodt.David.loader.Module.LoggerInstance;
-import cf.adriantodt.David.loader.Module.Resource;
-import cf.adriantodt.David.loader.Module.Type;
+import cf.adriantodt.David.loader.Module.*;
 import cf.adriantodt.David.loader.entities.ModuleContainer;
+import cf.adriantodt.David.loader.entities.ModuleResourceManager;
 import cf.adriantodt.David.loader.entities.impl.ModuleContainerImpl;
+import cf.adriantodt.David.loader.entities.impl.ModuleResourceManagerImpl;
 import cf.adriantodt.David.modules.cmds.manager.CommandManager;
 import net.dv8tion.jda.core.events.ReadyEvent;
+import net.dv8tion.jda.core.events.ReconnectedEvent;
 import net.dv8tion.jda.core.hooks.SubscribeEvent;
 import org.apache.logging.log4j.Logger;
 
@@ -30,7 +31,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
 
-import static cf.adriantodt.David.Loader.resource;
 import static cf.adriantodt.David.loader.Module.Type.INSTANCE;
 import static cf.adriantodt.David.loader.Module.Type.STATIC;
 import static cf.adriantodt.utils.Log4jUtils.logger;
@@ -53,39 +53,59 @@ public class ModuleManager {
 
 			if (!clazz.isAnnotationPresent(Module.class)) return;
 
+			Module module = clazz.getAnnotation(Module.class);
+
 			//Can be instantiable?
 			Object instance = makeInstance(clazz);
 			if (instance == null) return;
 
-			ModuleContainer module = new ModuleContainerImpl(clazz, instance);
+			ModuleResourceManager resourceManager = new ModuleResourceManagerImpl(module);
+
+			ModuleContainer container = new ModuleContainerImpl(module, clazz, instance, resourceManager);
 
 			//Fields being initialized before Module.Predicate
-			for (Field f : module.getFieldsForAnnotation(LoggerInstance.class)) {
+			for (Field f : container.getFieldsForAnnotation(LoggerInstance.class)) {
 				try {
-					f.set(module.getInstance(), logger(clazz));
+					f.set(container.getInstance(), logger(clazz));
 				} catch (Exception e) {
 					LOGGER.error("Error while injecting Logger into " + f + ":", e);
 				}
 			}
 
-			for (Field f : module.getFieldsForAnnotation(Module.Instance.class)) {
+			for (Field f : container.getFieldsForAnnotation(Module.Instance.class)) {
 				try {
-					f.set(module.getInstance(), module.getInstance());
+					f.set(container.getInstance(), container.getInstance());
 				} catch (Exception e) {
 					LOGGER.error("Error while injecting Instance into " + f + ":", e);
 				}
 			}
 
-			for (Field f : module.getFieldsForAnnotation(Resource.class)) {
+			for (Field f : container.getFieldsForAnnotation(ResourceManager.class)) {
 				try {
-					f.set(module.getInstance(), resource(f.getAnnotation(Resource.class).value()));
+					f.set(container.getInstance(), resourceManager);
+				} catch (Exception e) {
+					LOGGER.error("Error while injecting ResourceManager into " + f + ":", e);
+				}
+			}
+
+			for (Field f : container.getFieldsForAnnotation(Resource.class)) {
+				try {
+					f.set(container.getInstance(), resourceManager.get(f.getAnnotation(Resource.class).value()));
 				} catch (Exception e) {
 					LOGGER.error("Error while injecting Resource \"" + f.getAnnotation(Resource.class).value() + "\" into " + f + ":", e);
 				}
 			}
 
+			for (Field f : container.getFieldsForAnnotation(JSONResource.class)) {
+				try {
+					f.set(container.getInstance(), resourceManager.getAsJson(f.getAnnotation(JSONResource.class).value()));
+				} catch (Exception e) {
+					LOGGER.error("Error while injecting Resource \"" + f.getAnnotation(JSONResource.class).value() + "\" into " + f + ":", e);
+				}
+			}
+
 			//If any Module.Predicate is present and fails, it will stop the
-			if (!module.getMethodsForAnnotation(Module.Predicate.class).stream().allMatch(method -> {
+			if (!container.getMethodsForAnnotation(Module.Predicate.class).stream().allMatch(method -> {
 				try {
 					return (Boolean) method.invoke(instance);
 				} catch (Exception e) {
@@ -93,17 +113,17 @@ public class ModuleManager {
 				}
 				return false;
 			})) {
-				fireEventsFor(module, Module.OnDisabled.class);
+				fireEventsFor(container, Module.OnDisabled.class);
 				return;
 			} else {
-				fireEventsFor(module, Module.OnEnabled.class);
+				fireEventsFor(container, Module.OnEnabled.class);
 			}
 
 			//We past this far. Time to register.
-			INSTANCE_MAP.put(clazz, module);
+			INSTANCE_MAP.put(clazz, container);
 
 			//Yeah, we need to make this.
-			if (module.isAnnotationPresent(Module.SubscribeJDA.class)) JDA_LISTENERS.add(module.getInstance());
+			if (container.isAnnotationPresent(Module.SubscribeJDA.class)) JDA_LISTENERS.add(container.getInstance());
 		} catch (RuntimeException e) {
 			throw e;
 		} catch (Exception e) {
@@ -156,6 +176,19 @@ public class ModuleManager {
 		fireEvents(Module.Ready.class);
 	}
 
+	@SubscribeEvent
+	private static void reconnect(ReconnectedEvent event) {
+		for (ModuleContainer module : INSTANCE_MAP.values()) {
+			for (Field f : module.getFieldsForAnnotation(Module.SelfUserInstance.class)) {
+				try {
+					f.set(module.getInstance(), event.getJDA().getSelfUser());
+				} catch (Exception e) {
+					LOGGER.error("Error while injecting SelfUser Instance into " + f + " on Reconnecting:", e);
+				}
+			}
+		}
+	}
+
 	private static void fireEvents(Class<? extends Annotation> annotation) {
 		for (ModuleContainer module : INSTANCE_MAP.values()) fireEventsFor(module, annotation);
 	}
@@ -173,7 +206,7 @@ public class ModuleManager {
 	public static Object makeInstance(Class<?> clazz) throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
 		//Creates a Set from the ModuleType[]
 		Set<Type> moduleTypes = new HashSet<>();
-		Collections.addAll(moduleTypes, clazz.getAnnotation(Module.class).value());
+		Collections.addAll(moduleTypes, clazz.getAnnotation(Module.class).type());
 
 		//Instanciates a new Instance, leave it null or return
 		if (moduleTypes.contains(INSTANCE)) {

@@ -1,11 +1,14 @@
 [
+  //Init
   "cf.adriantodt.David.modules.init.InitModule",
+  //GUI
   "cf.adriantodt.David.modules.gui.GUIModule",
+  //DB + subs
   "cf.adriantodt.David.modules.db.DBModule",
-  "cf.adriantodt.David.modules.rest.RESTInterface",
   "cf.adriantodt.David.modules.db.UserModule",
   "cf.adriantodt.David.modules.db.GuildModule",
   "cf.adriantodt.David.modules.db.I18nModule",
   "cf.adriantodt.David.modules.db.PermissionsModule",
-  "cf.adriantodt.David.modules.db.UserCommandsModule"
+  "cf.adriantodt.David.modules.db.UserCommandsModule",
+  "cf.adriantodt.David.modules.rest.RESTInterface"
 ]

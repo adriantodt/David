@@ -13,7 +13,7 @@
 package cf.adriantodt.David.commands.base;
 
 import cf.adriantodt.David.oldmodules.cmds.CommandManager;
-import cf.adriantodt.David.modules.cmds.PermissionsModule;
+import cf.adriantodt.David.modules.cmds.manager.PermissionsModule;
 import org.apache.logging.log4j.LogManager;
 
 import java.util.HashMap;
@@ -21,7 +21,7 @@ import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-import static cf.adriantodt.David.oldmodules.db.I18nModule.getLocalized;
+import static cf.adriantodt.David.modules.db.I18nModule.getLocalized;
 
 
 public class Commands {

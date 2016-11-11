@@ -12,6 +12,8 @@
 
 package cf.adriantodt.David.loader.entities;
 
+import cf.adriantodt.David.loader.Module.Type;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -23,6 +25,12 @@ public interface ModuleContainer {
 	Class<?> getModuleClass();
 
 	Object getInstance();
+
+	String getName();
+
+	Type[] getType();
+
+	ModuleResourceManager getResourceManager();
 
 	default Set<Field> getFieldsForAnnotation(Class<? extends Annotation> annotation) {
 		return Stream.of(getModuleClass().getDeclaredFields()).filter(f -> f.isAnnotationPresent(annotation)).collect(Collectors.toSet());

@@ -26,6 +26,7 @@ import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
+import static cf.adriantodt.utils.data.DBUtils.getPath;
 
 
 public class ConfigUtils {

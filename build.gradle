@@ -25,7 +25,7 @@ apply plugin: 'application'
 group 'cf.adriantodt.bot'
 version '4.0-BETA'
 
-mainClassName = "cf.adriantodt.bot.Startup"
+mainClassName = "cf.adriantodt.David.Loader"
 
 println System.getProperty("java.home")
 

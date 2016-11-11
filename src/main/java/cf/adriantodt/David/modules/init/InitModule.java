@@ -14,8 +14,7 @@ package cf.adriantodt.David.modules.init;
 
 import cf.adriantodt.David.loader.Module;
 import cf.adriantodt.David.loader.Module.*;
-import cf.adriantodt.David.oldmodules.db.DBModule;
-import cf.adriantodt.David.oldmodules.db.I18nModule;
+import cf.adriantodt.David.modules.db.DBModule;
 import cf.adriantodt.David.utils.DiscordUtils;
 import cf.adriantodt.utils.Java;
 import cf.adriantodt.utils.Log4jUtils;
@@ -30,9 +29,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import static cf.adriantodt.David.loader.Module.Type.STATIC;
-import static cf.adriantodt.David.utils.Formatter.boldAndItalic;
 
-@Module(STATIC)
+@Module(type = STATIC)
 @SubscribeJDA
 public class InitModule {
 	@JDAInstance

@@ -12,19 +12,24 @@
 
 package cf.adriantodt.David.loader.entities.impl;
 
+import cf.adriantodt.David.loader.Module;
+import cf.adriantodt.David.loader.Module.Type;
 import cf.adriantodt.David.loader.entities.ModuleContainer;
-
-import java.lang.annotation.Annotation;
+import cf.adriantodt.David.loader.entities.ModuleResourceManager;
 
 public class ModuleContainerImpl implements ModuleContainer {
 
 
 	private final Class<?> moduleClass;
 	private final Object moduleInstance;
+	private final Module module;
+	private final ModuleResourceManager manager;
 
-	public ModuleContainerImpl(Class<?> moduleClass, Object moduleInstance) {
+	public ModuleContainerImpl(Module module, Class<?> moduleClass, Object moduleInstance, ModuleResourceManager manager) {
+		this.module = module;
 		this.moduleClass = moduleClass;
 		this.moduleInstance = moduleInstance;
+		this.manager = manager;
 	}
 
 	@Override
@@ -35,5 +40,20 @@ public class ModuleContainerImpl implements ModuleContainer {
 	@Override
 	public Object getInstance() {
 		return moduleInstance;
+	}
+
+	@Override
+	public String getName() {
+		return module.name();
+	}
+
+	@Override
+	public Type[] getType() {
+		return module.type();
+	}
+
+	@Override
+	public ModuleResourceManager getResourceManager() {
+		return manager;
 	}
 }

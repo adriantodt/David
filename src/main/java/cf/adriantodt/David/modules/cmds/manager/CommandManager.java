@@ -18,9 +18,8 @@ import cf.adriantodt.David.commands.base.UserCommand;
 import cf.adriantodt.David.loader.Module;
 import cf.adriantodt.David.loader.Module.LoggerInstance;
 import cf.adriantodt.David.loader.Module.SubscribeJDA;
-import cf.adriantodt.David.oldmodules.db.GuildModule;
-import cf.adriantodt.David.modules.cmds.PermissionsModule;
-import cf.adriantodt.David.oldmodules.db.UserCommandsModule;
+import cf.adriantodt.David.modules.db.GuildModule;
+import cf.adriantodt.David.modules.db.UserCommandsModule;
 import cf.adriantodt.David.oldmodules.init.Statistics;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
@@ -38,7 +37,7 @@ import static cf.adriantodt.utils.AsyncUtils.asyncSleepThen;
 import static cf.adriantodt.utils.CollectionUtils.concatMaps;
 import static cf.adriantodt.utils.StringUtils.splitArgs;
 
-@Module(STATIC)
+@Module(name = "cmdmanager", type = STATIC)
 @SubscribeJDA
 public class CommandManager {
 	private static final Map<String, ICommand> COMMANDS = new HashMap<>();

@@ -21,7 +21,7 @@ public class Java {
 	public static void restartApp() {
 		try {
 			final String javaBin = System.getProperty("java.home") + File.separator + "bin" + File.separator + "java";
-			final File currentJar = new File(Bot.class.getProtectionDomain().getCodeSource().getLocation().toURI());
+			final File currentJar = new File(Java.class.getProtectionDomain().getCodeSource().getLocation().toURI());
 			if (!currentJar.getName().endsWith(".jar")) throw new RuntimeException("Can't find jar!");
 			final ArrayList<String> command = new ArrayList<>();
 			command.add(javaBin);
