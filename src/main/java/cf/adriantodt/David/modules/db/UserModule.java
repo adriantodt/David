@@ -39,7 +39,7 @@ import java.util.function.Function;
 import static cf.adriantodt.David.loader.Module.Type.STATIC;
 import static cf.adriantodt.utils.StringUtils.notNullOrDefault;
 
-@Module(type = STATIC)
+@Module(name = "db.user", type = STATIC)
 public class UserModule {
 	@JDAInstance
 	private static JDA jda = null;

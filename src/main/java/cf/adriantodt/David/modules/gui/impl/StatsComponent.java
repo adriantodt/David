@@ -14,7 +14,6 @@ package cf.adriantodt.David.modules.gui.impl;
 
 
 import cf.adriantodt.David.oldmodules.init.Statistics;
-import cf.adriantodt.David.oldmodules.init.MergeTasksWithInitModule;
 
 import javax.swing.*;
 import java.awt.*;
@@ -64,7 +63,7 @@ public class StatsComponent extends JComponent {
 			this.msgs[1] = String.format(get("stats1"), Statistics.restActions, Statistics.cmds, Statistics.crashes, Statistics.toofasts, Statistics.noperm, Statistics.invalidargs);
 			this.msgs[2] = String.format(get("stats2"), Statistics.wgets, Thread.activeCount());
 			this.msgs[3] = String.format(get("stats3"), (instance.totalMemory() - instance.freeMemory()) / mb, instance.totalMemory() / mb, instance.maxMemory() / mb);
-			this.msgs[4] = String.format(get("stats4"), MergeTasksWithInitModule.cpuUsage);
+			this.msgs[4] = String.format(get("stats4"), Statistics.cpuUsage);
 		}
 		addToArray(Statistics.restActions - lastValue);
 		lastValue = Statistics.restActions;

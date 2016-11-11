@@ -12,7 +12,7 @@
 
 package cf.adriantodt.David.commands.base;
 
-import cf.adriantodt.David.oldmodules.cmds.CommandManager;
+import cf.adriantodt.David.modules.cmds.manager.CommandManager;
 import cf.adriantodt.David.modules.cmds.manager.PermissionsModule;
 import org.apache.logging.log4j.LogManager;
 

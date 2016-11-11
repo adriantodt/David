@@ -15,6 +15,9 @@ package cf.adriantodt.David.modules.rest;
 import cf.adriantodt.David.loader.Module;
 import cf.adriantodt.David.loader.Module.JDAInstance;
 import cf.adriantodt.David.loader.Module.PostReady;
+import cf.adriantodt.utils.AsyncUtils;
+import cf.adriantodt.utils.TaskManager;
+import cf.adriantodt.utils.ThreadBuilder;
 import net.dv8tion.jda.core.JDA;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -24,7 +27,7 @@ import org.springframework.stereotype.Controller;
 
 import static cf.adriantodt.David.loader.Module.Type.STATIC;
 
-@Module(type = STATIC)
+@Module(name = "rest", type = STATIC)
 @Controller
 @SpringBootApplication
 public class RESTInterface {
@@ -33,7 +36,7 @@ public class RESTInterface {
 
 	@PostReady
 	public static void startWebServer() {
-		SpringApplication.run(RESTInterface.class);
+		AsyncUtils.async("RESTInterface", () -> SpringApplication.run(RESTInterface.class)).run();
 	}
 
 	@Bean

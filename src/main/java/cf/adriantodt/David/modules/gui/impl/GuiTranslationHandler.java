@@ -15,6 +15,8 @@ package cf.adriantodt.David.modules.gui.impl;
 
 
 
+import cf.adriantodt.David.modules.db.I18nModule;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;

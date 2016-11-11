@@ -30,7 +30,7 @@ import java.io.IOException;
 
 import static cf.adriantodt.David.loader.Module.Type.STATIC;
 
-@Module(type = STATIC)
+@Module(name = "init", type = STATIC)
 @SubscribeJDA
 public class InitModule {
 	@JDAInstance

@@ -12,8 +12,8 @@
 
 package cf.adriantodt.David.modules.gui.impl;
 
-
-import cf.adriantodt.David.modules.cmds.Pushes;
+import cf.adriantodt.David.modules.init.InitModule;
+import cf.adriantodt.David.oldmodules.cmds.PushCmd;
 import cf.adriantodt.utils.StringUtils;
 
 import java.text.SimpleDateFormat;
@@ -35,7 +35,7 @@ public class ConsoleHandler {
 		CMDS.put("cmds", CMDS.get("?"));
 		HELP.put(CMDS.get("?"), "help");
 
-		CMDS.put("stop", (s, in) -> Bot.stopBot());
+		CMDS.put("stop", (s, in) -> InitModule.stopBot());
 		HELP.put(CMDS.get("stop"), "stop");
 
 		CMDS.put("threads", (s, in) -> Thread.getAllStackTraces().keySet().forEach(t -> in.accept(t.getName())));
@@ -45,7 +45,7 @@ public class ConsoleHandler {
 			if (args[0].isEmpty() || args[1].isEmpty()) {
 				in.accept("Invalid args.");
 			} else {
-				Pushes.pushSimple(args[0], args[1]);
+				PushCmd.pushSimple(args[0], args[1]);
 			}
 		});
 

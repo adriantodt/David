@@ -20,7 +20,7 @@ import java.util.*;
 
 import static cf.adriantodt.David.loader.Module.Type.*;
 
-@Module(type = STATIC)
+@Module(name = "db.usercmds", type = STATIC)
 public class UserCommandsModule {
 	private static Map<UserCommand, String> cachedCommands = new HashMap<>();
 	private static Map<GuildModule.Data, Map<String, UserCommand>> guildCommands = new HashMap<>();

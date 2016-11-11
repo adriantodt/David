@@ -33,6 +33,7 @@ import static cf.adriantodt.David.utils.Formatter.boldAndItalic;
 import static cf.adriantodt.David.utils.Formatter.encase;
 import static cf.adriantodt.utils.TaskManager.startAsyncTask;
 
+//TODO CLEANUP THIS WHOLE SHIT. TOO MUCH TO FIX.
 @SuppressWarnings("unchecked")
 public class Statistics {
 

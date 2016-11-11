@@ -22,7 +22,7 @@ import net.dv8tion.jda.core.hooks.SubscribeEvent;
 import javax.swing.*;
 import java.util.Vector;
 
-public class GuildListComponent extends JList implements Runnable {
+public class GuildListComponent extends JList<String> implements Runnable {
 	public GuildListComponent() {
 		run();
 		Bot.onLoaded.add(this);

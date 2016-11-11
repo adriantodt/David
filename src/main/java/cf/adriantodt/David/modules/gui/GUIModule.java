@@ -13,12 +13,16 @@
 package cf.adriantodt.David.modules.gui;
 
 import cf.adriantodt.David.Loader;
+import cf.adriantodt.David.commands.base.Holder;
 import cf.adriantodt.David.loader.Module;
 import cf.adriantodt.David.loader.Module.LoggerInstance;
 import cf.adriantodt.David.loader.Module.OnDisabled;
 import cf.adriantodt.David.loader.Module.OnEnabled;
 import cf.adriantodt.David.loader.Module.Predicate;
 import cf.adriantodt.David.modules.gui.impl.BotGui;
+import cf.adriantodt.David.modules.gui.impl.QueueLogAppender;
+import cf.adriantodt.David.oldmodules.cmds.PushCmd;
+import cf.adriantodt.utils.ThreadBuilder;
 import org.apache.logging.log4j.Logger;
 
 import java.awt.*;
@@ -26,7 +30,7 @@ import java.util.Arrays;
 
 import static cf.adriantodt.David.loader.Module.Type.STATIC;
 
-@Module(type = STATIC)
+@Module(name = "gui", type = STATIC)
 public class GUIModule {
 	@LoggerInstance
 	private static Logger logger = null;
@@ -41,6 +45,15 @@ public class GUIModule {
 	public static void enabled() {
 		logger.info("Loading GUI...");
 		UI = BotGui.createBotGui();
+		
+		new ThreadBuilder().setDaemon(true).setName("Log4j2Discord").build(() -> new Thread(() -> {
+			System.out.println("Log4j2Discord Enabled!");
+			Holder<String> s = new Holder<>();
+			while ((s.var = QueueLogAppender.getNextLogEvent("DiscordLogListeners")) != null) {
+				PushCmd.pushSimple("get", channel -> "[LOG] " + s.var);
+			}
+			System.out.println("Log4j2Discord Disabled...");
+		})).start();
 	}
 
 	@OnDisabled

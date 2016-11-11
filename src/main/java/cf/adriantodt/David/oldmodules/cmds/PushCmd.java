@@ -16,6 +16,7 @@ import cf.adriantodt.David.commands.base.Commands;
 import cf.adriantodt.David.commands.base.Holder;
 import cf.adriantodt.David.commands.base.ICommand;
 import cf.adriantodt.David.loader.Module.Command;
+import cf.adriantodt.David.modules.db.GuildModule;
 import com.google.common.collect.MultimapBuilder;
 import com.google.common.collect.SetMultimap;
 import com.google.gson.JsonElement;
@@ -54,7 +55,7 @@ public class PushCmd {
 		pushParenting.put("i18n", "*");
 		pushParenting.put("feeds", "*");
 
-		dynamicParenting.put(() -> Bot.API.getGuilds().stream().map(guild -> "guild_" + Guilds.fromDiscord(guild).getName()).collect(Collectors.toSet()), "guild");
+		dynamicParenting.put(() -> Bot.API.getGuilds().stream().map(guild -> "guild_" + GuildModule.fromDiscord(guild).getName()).collect(Collectors.toSet()), "guild");
 
 		h.from(r.table("pushSubs").run(conn)).cursorExpected().forEach(json -> {
 			JsonObject subscription = json.getAsJsonObject();

@@ -21,6 +21,7 @@ import cf.adriantodt.David.loader.Module.SubscribeJDA;
 import cf.adriantodt.David.modules.db.GuildModule;
 import cf.adriantodt.David.modules.db.UserCommandsModule;
 import cf.adriantodt.David.oldmodules.init.Statistics;
+import cf.adriantodt.utils.TaskManager;
 import net.dv8tion.jda.core.entities.User;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.core.hooks.SubscribeEvent;
@@ -141,6 +142,14 @@ public class CommandManager {
 	}
 
 	public static class TooFast {
+		static {
+			TaskManager.startAsyncTask("User Timeout", () -> {
+				synchronized (TooFast.userTimeout) {
+					TooFast.userTimeout.replaceAll((user, integer) -> Math.max(0, integer - 1));
+				}
+			}, 5);
+		}
+		
 		public static final Map<User, Integer> userTimeout = new HashMap<>();
 		public static boolean enabled = true;
 
